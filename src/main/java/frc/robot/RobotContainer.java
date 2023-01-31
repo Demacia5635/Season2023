@@ -17,9 +17,8 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
 import frc.robot.commands.GoUpRamp;
-import frc.robot.commands.GotoCommunity;
-import frc.robot.commands.GotoLoadingZone;
-import frc.robot.commands.GotoNodes;
+import frc.robot.commands.TestDecceleration;
+import frc.robot.commands.TestDriveRadius;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Chassis.Module;
 
@@ -87,10 +86,10 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new GotoLoadingZone(chassis, controller));
-        bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
+        aButton.onTrue(new TestDecceleration(chassis));
+        bButton.onTrue(new TestDriveRadius(chassis));
         xButton.onTrue(new GoUpRamp(chassis, 1.5));
-        yButton.onTrue(new StartEndCommand(() -> chassis.rawRotate(3600, testModuleChooser.getSelected()),
+        yButton.whileTrue(new StartEndCommand(() -> chassis.rawRotate(360 * 10, testModuleChooser.getSelected()),
                 chassis::stop, chassis));
     }
 
