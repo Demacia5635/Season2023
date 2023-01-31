@@ -365,6 +365,33 @@ public class Chassis extends SubsystemBase {
         return sign * Math.sqrt(arr[0] * arr[0] + arr[1] * arr[1]);
     }
 
+    /**
+     * Represents a module on the robot
+     */
+    public enum Module {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
+
+        /**
+         * Gets the index of the module
+         * 
+         * @return The index of the module
+         */
+        public int getIndex() {
+            return ordinal();
+        }
+    }
+
+
+    /**
+     * Rotates a module by a certain amount of degrees
+     * 
+     * @param degrees The amount of degrees to rotate the module by
+     * @param module  The module to rotate
+     */
+    public void rawRotate(double degrees, Module module) {
+        modules[module.getIndex()].rawRotate(degrees);
+    }
+
     @Override
     public void periodic() {
         poseEstimator.update(getGyroRotation(), getModulePositions());

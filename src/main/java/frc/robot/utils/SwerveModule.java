@@ -116,6 +116,16 @@ public class SwerveModule implements Sendable {
     }
 
     /**
+     * Rotates the module by a certain amount of degrees
+     * 
+     * @param degrees The amount of degrees to rotate the module by
+     */
+    public void rawRotate(double degrees) {
+        angleMotor.set(ControlMode.Position,
+                angleMotor.getSelectedSensorPosition() + (degrees * SwerveModuleConstants.PULSE_PER_DEGREE));
+    }
+
+    /**
      * Stops the angle motor
      */
     public void stopAngleMotor() {
