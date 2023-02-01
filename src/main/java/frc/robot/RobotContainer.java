@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
 import frc.robot.commands.GoUpRamp;
@@ -32,11 +33,7 @@ import frc.robot.subsystems.Chassis.Module;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final XboxController controller = new XboxController(0);
-    private final JoystickButton aButton = new JoystickButton(controller, 1);
-    private final JoystickButton bButton = new JoystickButton(controller, 2);
-    private final JoystickButton xButton = new JoystickButton(controller, 3);
-    private final JoystickButton yButton = new JoystickButton(controller, 4);
+    private final CommandXboxController controller = new CommandXboxController(0);
     private final Chassis chassis;
 
     private final SendableChooser<Module> testModuleChooser;
@@ -48,7 +45,7 @@ public class RobotContainer {
      */
     private RobotContainer() {
         chassis = new Chassis();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
+        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
 
         testModuleChooser = new SendableChooser<>();
@@ -86,10 +83,10 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new TestDecceleration(chassis));
-        bButton.onTrue(new TestDriveRadius(chassis));
-        xButton.onTrue(new GoUpRamp(chassis, 1.5));
-        yButton.whileTrue(new StartEndCommand(() -> chassis.rawRotate(360 * 10, testModuleChooser.getSelected()),
+        controller.a().onTrue(new TestDecceleration(chassis));
+        controller.b().onTrue(new TestDriveRadius(chassis));
+        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
+        controller.y().whileTrue(new StartEndCommand(() -> chassis.rawRotate(360 * 10, testModuleChooser.getSelected()),
                 chassis::stop, chassis));
     }
 
