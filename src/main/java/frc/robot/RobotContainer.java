@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
 import frc.robot.commands.GoUpRamp;
@@ -30,10 +31,7 @@ import frc.robot.subsystems.Chassis;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final XboxController controller = new XboxController(0);
-    private final JoystickButton aButton = new JoystickButton(controller, 1);
-    private final JoystickButton bButton = new JoystickButton(controller, 2);
-    private final JoystickButton xButton = new JoystickButton(controller, 3);
+    private final CommandXboxController controller = new CommandXboxController(0);
     private final Chassis chassis;
     private static RobotContainer instance;
 
@@ -42,7 +40,7 @@ public class RobotContainer {
      */
     private RobotContainer() {
         chassis = new Chassis();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
+        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
 
         configureButtonBindings();
@@ -67,9 +65,9 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new GotoLoadingZone(chassis, controller));
-        bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
-        xButton.onTrue(new GoUpRamp(chassis, 1.5));
+        controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
+        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**
