@@ -18,18 +18,14 @@ public class TrajectoryGenerator {
     private final List<Pose2d> positions;
     private final List<Rotation2d> headings;
     private final List<Double> velocities;
-    private final Alliance alliance;
 
     /**
-     * Constructs a new TrajectoryGenerator
-     * 
-     * @param alliance The trajectory's alliance
+     * Constructs a new TrajectoryGenerator, all points relative to the blue alliance
      */
-    public TrajectoryGenerator(Alliance alliance) {
+    public TrajectoryGenerator() {
         positions = new ArrayList<>();
         headings = new ArrayList<>();
         velocities = new ArrayList<>();
-        this.alliance = alliance;
     }
 
     /**
@@ -79,14 +75,14 @@ public class TrajectoryGenerator {
     }
 
     /**
-     * Generates the trajectory, converts the points to the current alliance
+     * Generates the trajectory, relative to the alliance specified in the
      * 
      * @param startPosition The robot's starting position to enter the trajectory
      *                      (relative to the field)
      * @return The generated trajectory
      */
     public PathPoint[] generate(Pose2d startPosition) {
-        if (alliance != Utils.getAlliance())
+        if (Utils.getAlliance() != Alliance.Blue)
             startPosition = new Pose2d(
                     new Translation2d(Constants.FIELD_WIDTH - startPosition.getX(), startPosition.getY()),
                     startPosition.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
@@ -98,7 +94,7 @@ public class TrajectoryGenerator {
     }
 
     /**
-     * Generates the trajectory, converts the points to the current alliance
+     * Generates the trajectory, relative to the blue alliance
      * 
      * @return The generated trajectory
      */
@@ -110,8 +106,7 @@ public class TrajectoryGenerator {
             double velocity = velocities.get(i);
             if (heading == null)
                 heading = calculateHeading(i);
-            path[i] = Utils.createAllianceRelativePathPoint(position.getTranslation(), heading,
-                    position.getRotation(), velocity, alliance);
+            path[i] = new PathPoint(position.getTranslation(), heading, position.getRotation(), velocity);
         }
 
         return path;

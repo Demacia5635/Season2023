@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,7 +112,7 @@ public class GotoNodes extends CommandBase {
             node = node.plus(new Translation2d(DISTANCE_CONE, 0));
         }
 
-        TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
+        TrajectoryGenerator generator = new TrajectoryGenerator();
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
