@@ -148,11 +148,7 @@ public class Chassis extends SubsystemBase {
      *         left, back right
      */
     private SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (int i = 0; i < 4; i++) {
-            states[i] = modules[i].getState();
-        }
-        return states;
+        return Arrays.stream(modules).map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
     /**
@@ -250,6 +246,7 @@ public class Chassis extends SubsystemBase {
                         new PIDController(SwerveConstants.AUTO_TRANSLATION_KP, SwerveConstants.AUTO_TRANSLATION_KI, 0),
                         new PIDController(SwerveConstants.AUTO_ROTATION_KP, SwerveConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
+                        true,
                         this));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
