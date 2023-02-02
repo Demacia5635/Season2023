@@ -126,4 +126,9 @@ public final class Constants {
         public static final double CAPTURE_LATENCY = 11; // ms
         public static final Translation2d CAMERA_OFFSET = new Translation2d(0.3, 0.0); // in meters
     }
+
+    public static final class GripperConstants {
+        public static final double CLOSE_POWER = 0.3;
+        public static final double OPEN_POWER = 0.5;
+    }
 }
