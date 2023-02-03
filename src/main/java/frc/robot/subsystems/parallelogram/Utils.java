@@ -1,9 +1,7 @@
-package frc.robot.utils;
+package frc.robot.subsystems.parallelogram;
 
-import frc.robot.Constants;
-import frc.robot.Constants.ParallelConstants;
 
-public class ParallelogramUtils {
+public class Utils {
 
     /**
      * Calculates the wanted parallelogram angle using the desired height.
@@ -12,8 +10,8 @@ public class ParallelogramUtils {
      * @return Returns the paralellogram angle.
      */
     public static double calculateAngle(double height) {
-        double angle = Math.asin((height - Constants.ParallelConstants.ROBOT_HEIGHT) /
-                Constants.ParallelConstants.PARALLEL_LENGTH);
+        double angle = Math.asin((height - ParallelConstants.ROBOT_HEIGHT) /
+                ParallelConstants.PARALLEL_LENGTH);
         return angle;
     }
 }
