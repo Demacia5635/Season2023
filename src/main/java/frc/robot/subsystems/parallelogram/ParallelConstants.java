@@ -1,6 +1,6 @@
 package frc.robot.subsystems.parallelogram;
 
-    /**
+/**
  * Parallelogram constants.
  */
 public final class ParallelConstants {
