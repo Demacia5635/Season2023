@@ -19,4 +19,13 @@ public final class ParallelConstants {
 
     public static final double KS_VELOCITY = 0;
     public static final double KV_VELOCITY = 0;
+
+    public static final double DIGITAL_INPUT_ANGLE = 0;
+    public static final int PORT_DIGITAL_INPUT = -1;
+
+    public static final double KP_POSITION = 0;
+    public static final double KI_POSITION = 0;
+    public static final double KD_POSITION = 0;
+    
+    public static final double CALIBRATION_POWER = 0.3;
 }
