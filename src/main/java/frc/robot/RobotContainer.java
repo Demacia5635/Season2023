@@ -17,6 +17,7 @@ import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,12 +35,14 @@ public class RobotContainer {
     private final JoystickButton xButton = new JoystickButton(controller, 3);
     private final Chassis chassis;
     private static RobotContainer instance;
+    public Parallelogram parallelogram;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
         chassis = new Chassis();
+        parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, controller));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
 
