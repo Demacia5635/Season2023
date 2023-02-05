@@ -40,7 +40,7 @@ public class RobotContainer {
      */
     private RobotContainer() {
         chassis = new Chassis();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
+        // chassis.setDefaultCommand(new Drive(chassis, controller));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
 
         configureButtonBindings();
@@ -65,9 +65,9 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new GotoLoadingZone(chassis, controller));
-        bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
-        xButton.onTrue(new GoUpRamp(chassis, 1.5));
+        // aButton.onTrue(new GotoLoadingZone(chassis, controller));
+        // bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
+        // xButton.onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**

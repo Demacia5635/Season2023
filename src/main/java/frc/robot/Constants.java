@@ -126,4 +126,11 @@ public final class Constants {
         public static final double CAPTURE_LATENCY = 11; // ms
         public static final Translation2d CAMERA_OFFSET = new Translation2d(0.3, 0.0); // in meters
     }
+
+    public static final class AlternativeGripper{
+        public static final int GRIPPER_OPENNER_ID = 20;
+        public static final int CONTROLLER_ID = 1;
+        public static final double MAX_SPEED_GRIPPER_OPENNER = 0.5;
+
+    }
 }
