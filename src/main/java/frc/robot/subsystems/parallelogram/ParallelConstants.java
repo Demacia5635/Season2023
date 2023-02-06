@@ -28,4 +28,9 @@ public final class ParallelConstants {
     public static final double KD_POSITION = 0;
     
     public static final double CALIBRATION_POWER = 0.3;
+
+    public static final double ARM_FEED_FORWARD_KS = 0;
+    public static final double ARM_FEED_FORWARD_KG = 0;
+    public static final double ARM_FEED_FORWARD_KV = 0;
+
 }

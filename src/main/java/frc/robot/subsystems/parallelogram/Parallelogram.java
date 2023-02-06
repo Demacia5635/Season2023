@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -21,6 +22,7 @@ public class Parallelogram extends SubsystemBase {
 
     private TalonFX motor;
     private SimpleMotorFeedforward feedForwardVelocity;
+    private ArmFeedforward armFeedForward;
     private DigitalInput magneticDigitalInput;
     private boolean isBrake;
 
@@ -31,6 +33,8 @@ public class Parallelogram extends SubsystemBase {
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
         feedForwardVelocity = new SimpleMotorFeedforward(ParallelConstants.KS_VELOCITY, ParallelConstants.KV_VELOCITY);
+        armFeedForward = new ArmFeedforward(ParallelConstants.ARM_FEED_FORWARD_KS,
+                ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
         motor.config_kP(0, ParallelConstants.KP_POSITION);
         motor.config_kI(0, ParallelConstants.KI_POSITION);
@@ -76,10 +80,11 @@ public class Parallelogram extends SubsystemBase {
     /**
      * Sets the position of the arm.
      * 
-     * @param position is where we want the parallelogram to be.
+     * @param angle is where we want the parallelogram to be.
      */
-    public void setAngle(double position) {
-        motor.set(ControlMode.Position, position * ParallelConstants.PULSE_PER_ANGLE);
+    public void setAngle(double angle) {
+        motor.set(ControlMode.Position, angle * ParallelConstants.PULSE_PER_ANGLE, DemandType.ArbitraryFeedForward,
+                armFeedForward.calculate(getAngle(), getVelocity()));
     }
 
     /**
@@ -89,6 +94,9 @@ public class Parallelogram extends SubsystemBase {
      * @return current angle
      */
     public double getAngle() {
+        if (getDigitalInput()) {
+            resetPosition();
+        }
         return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
 
