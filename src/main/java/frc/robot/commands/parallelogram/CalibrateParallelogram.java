@@ -1,4 +1,4 @@
-package frc.robot.commands.parallelogramCommands;
+package frc.robot.commands.parallelogram;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
