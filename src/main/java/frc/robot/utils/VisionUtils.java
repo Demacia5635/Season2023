@@ -1,5 +1,7 @@
 package frc.robot.utils;
 
+import java.util.Arrays;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +15,8 @@ import frc.robot.Constants.VisionConstants;
  */
 public class VisionUtils {
 
+    private static double[] lastPose = { 0, 0, 0, 0, 0, 0};
+
     /**
      * Gets the pose of the robot from the vision system
      * 
@@ -24,17 +28,19 @@ public class VisionUtils {
         if (hasTarget == 0)
             return null;
 
-        double[] limeLightPose = VisionConstants.LIMELIGHT_TABLE.getEntry("botpose").getDoubleArray(new double[0]);
-        if (limeLightPose.length != 6)
+        double[] robotPose = VisionConstants.LIMELIGHT_TABLE.getEntry("botpose").getDoubleArray(new double[0]);
+        if (robotPose.length != 6)
+            return null;
+        
+        if (Arrays.compare(lastPose, robotPose) == 0)
             return null;
 
         double latency = VisionConstants.LIMELIGHT_TABLE.getEntry("tl").getDouble(0);
-        limeLightPose[0] = Constants.FIELD_WIDTH / 2 - limeLightPose[0];
-        limeLightPose[1] = limeLightPose[1] + Constants.FIELD_HEIGHT / 2;
+        robotPose[0] = Constants.FIELD_WIDTH / 2 - robotPose[0];
+        robotPose[1] = robotPose[1] + Constants.FIELD_HEIGHT / 2;
 
-        Rotation2d robotRotation = Rotation2d.fromDegrees(limeLightPose[5]);
-        Translation2d robotTranslation = new Translation2d(limeLightPose[0], limeLightPose[1])
-                .minus(VisionConstants.CAMERA_OFFSET.rotateBy(robotRotation));
+        Rotation2d robotRotation = Rotation2d.fromDegrees(robotPose[5]);
+        Translation2d robotTranslation = new Translation2d(robotPose[0], robotPose[1]);
 
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
