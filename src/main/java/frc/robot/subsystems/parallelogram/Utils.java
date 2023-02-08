@@ -20,8 +20,20 @@ public class Utils {
         }
         return toDegrees(angle);
     }
-
+/**
+ * Converts angle from radians to degrees.
+ * @param rads the angle in radians
+ * @return the angle in degrees.
+ */
     public static double toDegrees(double rads) {
         return new Rotation2d(rads).getDegrees();
+    }
+/**
+ * Converts angle from degrees to radians.
+ * @param degrees the angle in degrees
+ * @return the angle in radians
+ */
+    public static double toRads(double degrees) {
+        return Rotation2d.fromDegrees(degrees).getRadians();
     }
 }

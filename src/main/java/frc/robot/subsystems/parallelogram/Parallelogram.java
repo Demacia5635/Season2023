@@ -84,8 +84,10 @@ public class Parallelogram extends SubsystemBase {
      */
     public void setAngle(double angle) {
         motor.set(ControlMode.Position, angle * ParallelConstants.PULSE_PER_ANGLE, DemandType.ArbitraryFeedForward,
-                armFeedForward.calculate(getAngle(), getVelocity()));
+                armFeedForward.calculate(Utils.toRads(getAngle()), getVelocity()));
     }
+
+    //TODO: Upon seeing the ArmFeedForward, I think we should try no feed forward first! ~ Noya
 
     /**
      * Gets current angle of the arm.
@@ -142,9 +144,7 @@ public class Parallelogram extends SubsystemBase {
         return isBrake;
     }
 
-    /**
-     * SmartDashboard commands/controls(?).
-     */
+    
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("is Digital Input", getDigitalInput());
