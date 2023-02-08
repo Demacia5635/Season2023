@@ -32,7 +32,7 @@ public class VisionUtils {
         if (robotPose.length != 6)
             return null;
         
-        if (Arrays.compare(lastPose, robotPose) == 0)
+        if (Arrays.equals(lastPose, robotPose))
             return null;
 
         double latency = VisionConstants.LIMELIGHT_TABLE.getEntry("tl").getDouble(0);
