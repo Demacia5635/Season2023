@@ -7,7 +7,7 @@ import frc.robot.subsystems.Chassis;
 public class TestDecceleration extends CommandBase {
     
     private final Chassis chassis;
-    private static final double VELOCITY = 4;
+    private static final double VELOCITY = 3.5;
     private int count;
 
     /**
@@ -37,7 +37,7 @@ public class TestDecceleration extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return chassis.getVelocity().getNorm() < 0.1;
+        return chassis.getVelocity().getNorm() < 0.1 && count >= 0;
     }
 
     @Override
