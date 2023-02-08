@@ -26,6 +26,10 @@ public final class ParallelConstants {
     public static final double KP_POSITION = 0;
     public static final double KI_POSITION = 0;
     public static final double KD_POSITION = 0;
+
+    public static final double KP_VELOCITY = 0;
+    public static final double KI_VELOCITY = 0;
+    public static final double KD_VELOCITY = 0;
     
     public static final double CALIBRATION_POWER = 0.3;
 
