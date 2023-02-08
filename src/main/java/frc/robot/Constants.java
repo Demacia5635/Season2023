@@ -124,6 +124,5 @@ public final class Constants {
     public static final class VisionConstants {
         public static final NetworkTable LIMELIGHT_TABLE = NetworkTableInstance.getDefault().getTable("limelight");
         public static final double CAPTURE_LATENCY = 11; // ms
-        public static final Translation2d CAMERA_OFFSET = new Translation2d(0.3, 0.0); // in meters
     }
 }
