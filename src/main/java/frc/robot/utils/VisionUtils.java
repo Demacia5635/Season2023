@@ -34,6 +34,8 @@ public class VisionUtils {
         
         if (Arrays.equals(lastPose, robotPose))
             return null;
+        
+        lastPose = robotPose;
 
         double latency = VisionConstants.LIMELIGHT_TABLE.getEntry("tl").getDouble(0);
         robotPose[0] = Constants.FIELD_WIDTH / 2 - robotPose[0];
