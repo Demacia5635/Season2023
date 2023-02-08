@@ -71,10 +71,10 @@ public class Chassis extends SubsystemBase {
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
         isBreak = true;
 
-        SmartDashboard.putData(this);
-
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
+        
+        SmartDashboard.putData(this);
     }
 
     /**
@@ -421,5 +421,8 @@ public class Chassis extends SubsystemBase {
                 module.calibrateOffset();
             }
         }).ignoringDisable(true));
+
+        Utils.addDoubleProperty(builder, "Velocity", () -> { return getVelocity().getNorm(); }, 2);
+        Utils.addDoubleProperty(builder, "Velocity Angle", () -> { return getVelocity().getAngle().getDegrees(); }, 2);
     }
 }
