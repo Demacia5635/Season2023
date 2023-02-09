@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.chassis;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,9 +33,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.SwerveModuleConstants;
-import frc.robot.utils.SwerveModule;
+import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
+import frc.robot.subsystems.chassis.utils.SwerveModule;
 import frc.robot.utils.Utils;
 import frc.robot.utils.VisionUtils;
 
@@ -56,18 +55,18 @@ public class Chassis extends SubsystemBase {
      */
     public Chassis() {
         field = new Field2d();
-        gyro = new PigeonIMU(SwerveConstants.GYRO_ID);
+        gyro = new PigeonIMU(ChassisConstants.GYRO_ID);
         modules = new SwerveModule[] {
                 new SwerveModule(SwerveModuleConstants.FRONT_LEFT),
                 new SwerveModule(SwerveModuleConstants.FRONT_RIGHT),
                 new SwerveModule(SwerveModuleConstants.BACK_LEFT),
                 new SwerveModule(SwerveModuleConstants.BACK_RIGHT)
         };
-        angleController = new PIDController(SwerveConstants.TELEOP_ROTATION_KP,
-                SwerveConstants.TELEOP_ROTATION_KI, 0);
+        angleController = new PIDController(ChassisConstants.TELEOP_ROTATION_KP,
+                ChassisConstants.TELEOP_ROTATION_KI, 0);
         angleController.enableContinuousInput(0, 2 * Math.PI);
-        angleController.setTolerance(SwerveConstants.ANGLE_TOLERANCE);
-        poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.KINEMATICS, getGyroRotation(),
+        angleController.setTolerance(ChassisConstants.ANGLE_TOLERANCE);
+        poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
         isBreak = true;
 
@@ -117,7 +116,7 @@ public class Chassis extends SubsystemBase {
      */
     public void setVelocities(double vx, double vy, double omega) {
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getRotation());
-        SwerveModuleState[] states = SwerveConstants.KINEMATICS.toSwerveModuleStates(speeds);
+        SwerveModuleState[] states = ChassisConstants.KINEMATICS.toSwerveModuleStates(speeds);
         setModuleStates(states);
     }
 
@@ -143,7 +142,7 @@ public class Chassis extends SubsystemBase {
      *               back left, back right
      */
     private void setModuleStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, ChassisConstants.MAX_SPEED);
         for (int i = 0; i < 4; i++) {
             states[i] = SwerveModuleState.optimize(states[i], modules[i].getAngleRotation());
             modules[i].setState(states[i]);
@@ -227,7 +226,7 @@ public class Chassis extends SubsystemBase {
      * @return The velocity of the robot, in meters per second
      */
     public Translation2d getVelocity() {
-        ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
+        ChassisSpeeds speeds = ChassisConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
         return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
@@ -250,10 +249,10 @@ public class Chassis extends SubsystemBase {
                 new PPSwerveControllerCommand(
                         trajectory,
                         this::getPose,
-                        SwerveConstants.KINEMATICS,
-                        new PIDController(SwerveConstants.AUTO_TRANSLATION_KP, SwerveConstants.AUTO_TRANSLATION_KI, 0),
-                        new PIDController(SwerveConstants.AUTO_TRANSLATION_KP, SwerveConstants.AUTO_TRANSLATION_KI, 0),
-                        new PIDController(SwerveConstants.AUTO_ROTATION_KP, SwerveConstants.AUTO_ROTATION_KI, 0),
+                        ChassisConstants.KINEMATICS,
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI, 0),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI, 0),
+                        new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
                         true,
                         this));
@@ -269,7 +268,7 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events) {
-        var trajectory = PathPlanner.loadPath(path, SwerveConstants.PATH_CONSTRAINTS);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
         return createPathFollowingCommand(trajectory, events, false);
     }
 
@@ -283,7 +282,7 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose) {
-        var trajectory = PathPlanner.loadPath(path, SwerveConstants.PATH_CONSTRAINTS);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
         return createPathFollowingCommand(trajectory, events, resetPose);
     }
 
@@ -306,7 +305,7 @@ public class Chassis extends SubsystemBase {
     public Command createPathFollowingCommand(PathPoint... points) {
         if (points.length < 2)
             return null;
-        var trajectory = PathPlanner.generatePath(SwerveConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, new HashMap<>(), false);
     }
 
