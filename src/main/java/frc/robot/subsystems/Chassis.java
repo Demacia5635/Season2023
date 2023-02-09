@@ -75,6 +75,10 @@ public class Chassis extends SubsystemBase {
 
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
+
+        setupVisionListener();
+
+        SmartDashboard.putData(this);
     }
 
     /**
@@ -87,7 +91,7 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
-     * Gets the rotation of the robot
+     * Gets the rotation of the robot acourding to the gyro
      * 
      * @return The rotation of the robot
      */
@@ -95,6 +99,11 @@ public class Chassis extends SubsystemBase {
         return Rotation2d.fromDegrees(getAngle());
     }
 
+    /**
+     * Gets the rotation of the robot acourding to the pose estimator
+     * 
+     * @return The rotation of the robot
+     */
     public Rotation2d getRotation() {
         return poseEstimator.getEstimatedPosition().getRotation();
     }
@@ -304,12 +313,11 @@ public class Chassis extends SubsystemBase {
     /**
      * Adds a vision input to the estimated pose of the robot
      * 
-     * @param estimatedPose     The estimated pose of the robot by vision
-     * @param timeOfMeasurement The time of the vision measurement by
-     *                          {@link Timer#getFPGATimestamp()}
+     * @param visionInput The estimated pose of the robot by vision and the time of
+     *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
-    public void addVisionInput(Pose2d estimatedPose, double timeOfMeasurement) {
-        poseEstimator.addVisionMeasurement(estimatedPose, timeOfMeasurement);
+    public void addVisionInput(Pair<Pose2d, Double> visionInput) {
+        poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
     }
 
     /**
@@ -343,7 +351,7 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(pitch);
         else
             sign = Math.signum(roll);
-        return sign * Math.sqrt(pitch * pitch + roll * roll);
+        return sign * Math.hypot(pitch, roll);
     }
 
     /**
@@ -362,13 +370,34 @@ public class Chassis extends SubsystemBase {
         return sign * Math.sqrt(arr[0] * arr[0] + arr[1] * arr[1]);
     }
 
+    /**
+     * Represents a module on the robot
+     */
+    public enum Module {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
+
+        /**
+         * Gets the index of the module
+         * 
+         * @return The index of the module
+         */
+        public int getIndex() {
+            return ordinal();
+        }
+    }
+
+    /**
+     * Sets up the vision listener, so that {@link #addVisionInput(Pair)} can be
+     * used when vision data is received
+     */
+    public void setupVisionListener() {
+        VisionUtils.setupVisionListener(this::addVisionInput);
+    }
+
     @Override
     public void periodic() {
         poseEstimator.update(getGyroRotation(), getModulePositions());
         field.setRobotPose(getPose());
-        Pair<Pose2d, Double> visionInput = VisionUtils.getVisionPose();
-        if (visionInput != null)
-            addVisionInput(visionInput.getFirst(), visionInput.getSecond());
     }
 
     @Override
@@ -394,5 +423,12 @@ public class Chassis extends SubsystemBase {
                 module.calibrateOffset();
             }
         }).ignoringDisable(true));
+
+        Utils.addDoubleProperty(builder, "Velocity", () -> {
+            return getVelocity().getNorm();
+        }, 2);
+        Utils.addDoubleProperty(builder, "Velocity Angle", () -> {
+            return getVelocity().getAngle().getDegrees();
+        }, 2);
     }
 }
