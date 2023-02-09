@@ -73,7 +73,9 @@ public class Chassis extends SubsystemBase {
 
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
-        
+
+        setupVisionListener();
+
         SmartDashboard.putData(this);
     }
 
@@ -304,12 +306,11 @@ public class Chassis extends SubsystemBase {
     /**
      * Adds a vision input to the estimated pose of the robot
      * 
-     * @param estimatedPose     The estimated pose of the robot by vision
-     * @param timeOfMeasurement The time of the vision measurement by
-     *                          {@link Timer#getFPGATimestamp()}
+     * @param visionInput The estimated pose of the robot by vision and the time of
+     *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
-    public void addVisionInput(Pose2d estimatedPose, double timeOfMeasurement) {
-        poseEstimator.addVisionMeasurement(estimatedPose, timeOfMeasurement);
+    public void addVisionInput(Pair<Pose2d, Double> visionInput) {
+        poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
     }
 
     /**
@@ -343,7 +344,7 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(pitch);
         else
             sign = Math.signum(roll);
-        return sign * Math.sqrt(pitch * pitch + roll * roll);
+        return sign * Math.hypot(pitch, roll);
     }
 
     /**
@@ -378,7 +379,6 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-
     /**
      * Rotates a module by a certain amount of degrees
      * 
@@ -389,13 +389,18 @@ public class Chassis extends SubsystemBase {
         modules[module.getIndex()].rawRotate(degrees);
     }
 
+    /**
+     * Sets up the vision listener, so that {@link #addVisionInput(Pair)} can be
+     * used when vision data is received
+     */
+    public void setupVisionListener() {
+        VisionUtils.setupVisionListener(this::addVisionInput);
+    }
+
     @Override
     public void periodic() {
         poseEstimator.update(getGyroRotation(), getModulePositions());
         field.setRobotPose(getPose());
-        Pair<Pose2d, Double> visionInput = VisionUtils.getVisionPose();
-        if (visionInput != null)
-            addVisionInput(visionInput.getFirst(), visionInput.getSecond());
     }
 
     @Override
@@ -422,7 +427,11 @@ public class Chassis extends SubsystemBase {
             }
         }).ignoringDisable(true));
 
-        Utils.addDoubleProperty(builder, "Velocity", () -> { return getVelocity().getNorm(); }, 2);
-        Utils.addDoubleProperty(builder, "Velocity Angle", () -> { return getVelocity().getAngle().getDegrees(); }, 2);
+        Utils.addDoubleProperty(builder, "Velocity", () -> {
+            return getVelocity().getNorm();
+        }, 2);
+        Utils.addDoubleProperty(builder, "Velocity Angle", () -> {
+            return getVelocity().getAngle().getDegrees();
+        }, 2);
     }
 }
