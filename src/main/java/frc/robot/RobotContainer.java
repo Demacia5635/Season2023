@@ -20,8 +20,8 @@ import frc.robot.commands.Drive;
 import frc.robot.commands.GoUpRamp;
 import frc.robot.commands.TestDecceleration;
 import frc.robot.commands.TestDriveRadius;
-import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.Chassis.Module;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.Chassis.Module;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
