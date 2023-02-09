@@ -88,7 +88,7 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
-     * Gets the rotation of the robot
+     * Gets the rotation of the robot according to the gyro
      * 
      * @return The rotation of the robot
      */
@@ -96,6 +96,11 @@ public class Chassis extends SubsystemBase {
         return Rotation2d.fromDegrees(getAngle());
     }
 
+    /**
+     * Gets the rotation of the robot according to the pose estimator
+     * 
+     * @return The rotation of the robot
+     */
     public Rotation2d getRotation() {
         return poseEstimator.getEstimatedPosition().getRotation();
     }
