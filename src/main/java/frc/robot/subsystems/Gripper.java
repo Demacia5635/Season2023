@@ -17,10 +17,10 @@ public class Gripper extends SubsystemBase {
   private DigitalInput limitSwitch1;
   private DigitalInput limitSwitch2;
   /** Creates a new Gripper. */
-  public Gripper(TalonSRX motor, DigitalInput limitSwitch1, DigitalInput limitSwitch2) {
-    this.motor = motor;
-    this.limitSwitch1 = limitSwitch1;
-    this.limitSwitch2 = limitSwitch2;
+  public Gripper(int motorId, int limSwitch1Id, int limSwitch2Id) {
+    motor = new TalonSRX(motorId);
+    limitSwitch1 = new DigitalInput(limSwitch1Id);
+    limitSwitch2 = new DigitalInput(limSwitch2Id);
   }
 
 
