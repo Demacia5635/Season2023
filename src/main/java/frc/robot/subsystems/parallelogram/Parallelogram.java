@@ -40,6 +40,10 @@ public class Parallelogram extends SubsystemBase {
         motor.config_kI(0, ParallelConstants.KI_POSITION);
         motor.config_kD(0, ParallelConstants.KD_POSITION);
 
+        motor.config_kP(1, ParallelConstants.KP_VELOCITY);
+        motor.config_kI(1, ParallelConstants.KI_VELOCITY);
+        motor.config_kD(1, ParallelConstants.KD_VELOCITY);
+
         isBrake = false;
 
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
@@ -64,6 +68,7 @@ public class Parallelogram extends SubsystemBase {
      * @param velocity the velocity we want the motor have.
      */
     public void setVelocity(double velocity) {
+        motor.selectProfileSlot(1, 0);
         motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_METER,
                 DemandType.ArbitraryFeedForward, feedForwardVelocity.calculate(velocity));
     }
@@ -74,6 +79,7 @@ public class Parallelogram extends SubsystemBase {
      * @return the velocity.
      */
     public double getVelocity() {
+        motor.selectProfileSlot(0, 0);
         return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_METER;
     }
 
