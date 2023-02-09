@@ -13,35 +13,27 @@ public class CalibrateParallelogram extends CommandBase {
      */
     public CalibrateParallelogram(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
+        parallelogram.resetPosition();
     }
 
-    /**
-     * Setting the motor's neutral mode as brake.
-     */
+
     @Override
     public void initialize() {
         parallelogram.setBrake();
     }
 
-    /**
-     * Setting the motor's power.
-     */
+
     @Override
     public void execute() {
         parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
     }
 
-    /**
-     * Checking if arm has reached the magnet (Digital Input = true).
-     */
+
     @Override
     public boolean isFinished() {
         return parallelogram.getDigitalInput();
     }
 
-    /**
-     * Setting the motor's power to 0, neutral mode to coast and reseting the position/angle.
-     */
     @Override
     public void end(boolean interrupted) {
         parallelogram.setPower(0);

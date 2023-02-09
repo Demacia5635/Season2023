@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
+import frc.robot.commands.parallelogram.GoToAngle;
 
 /**
  * Paralellogram subsystem.
@@ -36,21 +37,23 @@ public class Parallelogram extends SubsystemBase {
         armFeedForward = new ArmFeedforward(ParallelConstants.ARM_FEED_FORWARD_KS,
                 ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
+        motor.setInverted(ParallelConstants.MOTOR_INVERT_TYPE);
+
         motor.config_kP(0, ParallelConstants.KP_POSITION);
         motor.config_kI(0, ParallelConstants.KI_POSITION);
         motor.config_kD(0, ParallelConstants.KD_POSITION);
 
-        motor.config_kP(1, ParallelConstants.KP_VELOCITY);
-        motor.config_kI(1, ParallelConstants.KI_VELOCITY);
-        motor.config_kD(1, ParallelConstants.KD_VELOCITY);
-
         isBrake = false;
 
+        resetPosition();
+
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
-        SmartDashboard.putNumber("wanted angle", 0);
-        SmartDashboard.putData("set angle", new InstantCommand(() -> {
-            setAngle(SmartDashboard.getNumber("wanted angle", 0));
-        }));
+        SmartDashboard.putNumber("desired angle", 0);
+        // SmartDashboard.putData("set angle", new InstantCommand(() -> {
+        //     setAngle(SmartDashboard.getNumber("wanted angle", 0));
+        // }));
+        SmartDashboard.putData("Go to angle", 
+        new GoToAngle(this, SmartDashboard.getNumber("desired angle", getAngle())));
     }
 
     /**
@@ -68,7 +71,6 @@ public class Parallelogram extends SubsystemBase {
      * @param velocity the velocity we want the motor have.
      */
     public void setVelocity(double velocity) {
-        motor.selectProfileSlot(1, 0);
         motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_METER,
                 DemandType.ArbitraryFeedForward, feedForwardVelocity.calculate(velocity));
     }
@@ -79,7 +81,6 @@ public class Parallelogram extends SubsystemBase {
      * @return the velocity.
      */
     public double getVelocity() {
-        motor.selectProfileSlot(0, 0);
         return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_METER;
     }
 
@@ -90,7 +91,7 @@ public class Parallelogram extends SubsystemBase {
      */
     public void setAngle(double angle) {
         motor.set(ControlMode.Position, angle * ParallelConstants.PULSE_PER_ANGLE, DemandType.ArbitraryFeedForward,
-                armFeedForward.calculate(Utils.toRads(getAngle()), getVelocity()));
+                armFeedForward.calculate(Utils.toRads(angle), 0));
     }
 
     //TODO: Upon seeing the ArmFeedForward, I think we should try no feed forward first! ~ Noya
@@ -130,7 +131,7 @@ public class Parallelogram extends SubsystemBase {
      * @return whether the arm reached the magnet or not (boolean).
      */
     public boolean getDigitalInput() {
-        return magneticDigitalInput.get();
+        return !magneticDigitalInput.get();
     }
 
     /**
@@ -153,11 +154,11 @@ public class Parallelogram extends SubsystemBase {
     
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("is Digital Input", getDigitalInput());
-        SmartDashboard.putBoolean("is Brake", isBrake);
+        SmartDashboard.putBoolean("parallelogram/is Digital Input", getDigitalInput());
+        SmartDashboard.putBoolean("parallelogram/is Brake", isBrake);
 
-        SmartDashboard.putNumber("arm angle", getAngle());
-        SmartDashboard.putNumber("pulli velocity", getVelocity());
+        SmartDashboard.putNumber("parallelogram/arm angle", getAngle());
+        SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
     }
 
 }

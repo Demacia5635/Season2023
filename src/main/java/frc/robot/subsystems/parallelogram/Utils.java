@@ -61,4 +61,10 @@ public class Utils {
     public static boolean bButtonPressed(XboxController controller) {
         return controller.getBButtonPressed();
     }
+
+    // public static double calculatePower(double currentAngle, double setPointAngle) {
+    //     if ((setPointAngle<90) && (currentAngle>90)) {
+            
+    //     }
+    // }
 }
