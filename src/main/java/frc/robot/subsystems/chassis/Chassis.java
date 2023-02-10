@@ -70,8 +70,6 @@ public class Chassis extends SubsystemBase {
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
         isBreak = true;
 
-        SmartDashboard.putData(this);
-
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
 
@@ -240,7 +238,7 @@ public class Chassis extends SubsystemBase {
      * @return The path following command
      */
     public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
-            boolean resetPose) {
+            boolean resetPose, boolean keepPosition) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     if (resetPose)
@@ -250,11 +248,18 @@ public class Chassis extends SubsystemBase {
                         trajectory,
                         this::getPose,
                         ChassisConstants.KINEMATICS,
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI, 0),
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI, 0),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
                         new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
-                        this));
+                        this) {
+                    @Override
+                    public boolean isFinished() {
+                        return keepPosition ? false : super.isFinished();
+                    }
+                });
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
     }
@@ -268,7 +273,7 @@ public class Chassis extends SubsystemBase {
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events) {
         var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, false);
+        return createPathFollowingCommand(trajectory, events, false, true);
     }
 
     /**
@@ -282,7 +287,24 @@ public class Chassis extends SubsystemBase {
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose) {
         var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, resetPose);
+        return createPathFollowingCommand(trajectory, events, resetPose, true);
+    }
+
+    /**
+     * Creates a path following command
+     * 
+     * @param path         The path to follow
+     * @param events       The events to run on the markers in the path
+     * @param resetPose    Whether to reset the pose of the robot at the start of
+     *                     the command
+     * @param keepPosition Whether to keep the position of the robot at the end of
+     *                     the command
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose,
+            boolean keepPosition) {
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        return createPathFollowingCommand(trajectory, events, resetPose, keepPosition);
     }
 
     /**
@@ -305,7 +327,7 @@ public class Chassis extends SubsystemBase {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, new HashMap<>(), false);
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, true);
     }
 
     /**
@@ -365,7 +387,7 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(arr[0]);
         else
             sign = Math.signum(arr[1]);
-        return sign * Math.sqrt(arr[0] * arr[0] + arr[1] * arr[1]);
+        return sign * Math.hypot(arr[0], arr[1]);
     }
 
     /**
