@@ -128,7 +128,8 @@ public final class Constants {
     }
 
     public static final class GripperConstants {
-        public static final double CLOSE_POWER = 0.3;
+        public static final double CLOSE_POWER = -0.8;
         public static final double OPEN_POWER = 0.5;
+        public static final int MOTOR_ID = 20;
     }
 }

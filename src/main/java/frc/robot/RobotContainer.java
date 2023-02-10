@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
@@ -18,6 +19,7 @@ import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.Gripper;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,6 +34,7 @@ public class RobotContainer {
     private final CommandXboxController controller = new CommandXboxController(0);
     private final Chassis chassis;
     private static RobotContainer instance;
+    private final Gripper gripper;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -40,7 +43,8 @@ public class RobotContainer {
         chassis = new Chassis();
         chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
-
+         gripper = new Gripper(Constants.GripperConstants.MOTOR_ID);
+        SmartDashboard.putData(gripper);
         configureButtonBindings();
     }
 

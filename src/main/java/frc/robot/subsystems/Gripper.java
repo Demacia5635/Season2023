@@ -5,23 +5,34 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Gripper extends SubsystemBase {
   private TalonSRX motor;
-  private DigitalInput limitSwitch1;
-  private DigitalInput limitSwitch2;
   /** Creates a new Gripper. */
-  public Gripper(int motorId, int limSwitch1Id, int limSwitch2Id) {
+  public Gripper(int motorId) {
     motor = new TalonSRX(motorId);
-    limitSwitch1 = new DigitalInput(limSwitch1Id);
-    limitSwitch2 = new DigitalInput(limSwitch2Id);
+    motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
+    motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
   }
+
+  private boolean getLimSwitchOpen(){
+    return(motor.isRevLimitSwitchClosed() == 1);
+  }
+
+  private boolean getLimSwitchClose(){
+    return(motor.isFwdLimitSwitchClosed() == 1);
+  }
+
 
 
 
@@ -32,15 +43,15 @@ public class Gripper extends SubsystemBase {
 
   public void open(){
     motor.set(ControlMode.PercentOutput, Constants.GripperConstants.OPEN_POWER);
-    if(limitSwitch1.get()){
-      motor.set(ControlMode.PercentOutput, 0);
-    }
   }
 
   public void close(){
     motor.set(ControlMode.PercentOutput, Constants.GripperConstants.CLOSE_POWER);
-    if(limitSwitch2.get()){
-      motor.set(ControlMode.PercentOutput, 0);
-    }
   }
+  
+  public void initSendable(SendableBuilder builder) {
+    builder.addBooleanProperty("limSwitch close", this::getLimSwitchOpen, null);
+    builder.addBooleanProperty("limSwitch open", this::getLimSwitchClose, null);
+  }
+
 }
