@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
@@ -32,7 +33,7 @@ import frc.robot.subsystems.Gripper;
  */
 public class RobotContainer {
     private final CommandXboxController controller = new CommandXboxController(0);
-    private final Chassis chassis;
+    // private final Chassis chassis;
     private static RobotContainer instance;
     private final Gripper gripper;
 
@@ -40,9 +41,9 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
-        chassis = new Chassis();
-        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
-        SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
+        // chassis = new Chassis();
+        // chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
+        // SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
          gripper = new Gripper(Constants.GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
@@ -67,9 +68,9 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
-        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
-        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
+        // controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
+        // controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+        // controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**
@@ -78,6 +79,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return null;
+        RepeatCommand test = new RepeatCommand(gripper.getCloseCommand().andThen(gripper.getOpenCommand()));
+        return test;
     }
 }
