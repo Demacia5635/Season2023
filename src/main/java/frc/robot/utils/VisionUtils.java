@@ -25,8 +25,8 @@ public class VisionUtils {
      */
     public static void setupVisionListener(Consumer<Pair<Pose2d, Double>> listener) {
         NetworkTableInstance.getDefault().addListener(VisionConstants.LIMELIGHT_TABLE.getEntry("botpose"),
-                EnumSet.of(Kind.kValueRemote), (event) -> {
-                    Pair<Pose2d, Double> pose = getVisionPose(event.timeSyncData.serverTimeOffset / 1000.);
+                EnumSet.of(Kind.kValueAll), (event) -> {
+                    Pair<Pose2d, Double> pose = getVisionPose();
                     if (pose != null)
                         listener.accept(pose);
                 });
@@ -35,11 +35,10 @@ public class VisionUtils {
     /**
      * Gets the pose of the robot from the vision system
      * 
-     * @param serverOffset The offset of the server time from the robot time, in ms
      * @return The pose of the robot from the vision system, and the timestamp of
      *         the measurement, or null if no target is found
      */
-    public static Pair<Pose2d, Double> getVisionPose(double serverOffset) {
+    public static Pair<Pose2d, Double> getVisionPose() {
         double hasTarget = VisionConstants.LIMELIGHT_TABLE.getEntry("tv").getDouble(0);
         if (hasTarget == 0)
             return null;
@@ -49,7 +48,7 @@ public class VisionUtils {
             return null;
 
         double latency = VisionConstants.LIMELIGHT_TABLE.getEntry("tl").getDouble(0);
-        robotPose[0] = Constants.FIELD_WIDTH / 2 - robotPose[0];
+        robotPose[0] = Constants.FIELD_WIDTH / 2 + robotPose[0];
         robotPose[1] = robotPose[1] + Constants.FIELD_HEIGHT / 2;
 
         Rotation2d robotRotation = Rotation2d.fromDegrees(robotPose[5]);
@@ -57,6 +56,6 @@ public class VisionUtils {
 
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
-                Timer.getFPGATimestamp() - ((latency + VisionConstants.CAPTURE_LATENCY + serverOffset) / 1000));
+                Timer.getFPGATimestamp() - ((latency + VisionConstants.CAPTURE_LATENCY) / 1000));
     }
 }

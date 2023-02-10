@@ -254,7 +254,6 @@ public class Chassis extends SubsystemBase {
                         new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI, 0),
                         new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
-                        true,
                         this));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
@@ -429,5 +428,7 @@ public class Chassis extends SubsystemBase {
         Utils.addDoubleProperty(builder, "Velocity Angle", () -> {
             return getVelocity().getAngle().getDegrees();
         }, 2);
+
+        builder.addBooleanProperty("Is Break", () -> isBreak, null);
     }
 }

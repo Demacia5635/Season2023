@@ -3,14 +3,15 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.chassis.Chassis;
-import frc.robot.utils.Utils;
-import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
+import frc.robot.utils.Utils;
 
 /**
  * Drives the robot semi autonomously to the community zone.
@@ -35,7 +36,7 @@ public class GotoCommunity extends CommandBase {
     @Override
     public void initialize() {
         command = new InstantCommand();
-        TrajectoryGenerator generator = new TrajectoryGenerator();
+        TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
         if (zone == Zone.COMMUNITY_BOTTOM || zone == Zone.COMMUNITY_TOP || zone == Zone.COMMUNITY_MIDDLE) {
