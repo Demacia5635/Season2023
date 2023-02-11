@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.utils.Utils;
@@ -55,7 +56,7 @@ public class ChassisUtils {
     public static PathPoint createAllianceRelativePathPoint(Translation2d position, Rotation2d heading,
             Rotation2d holonomicRotation, double velocity, Alliance alliance) {
 
-        if (Utils.getAlliance() != alliance) {
+        if (DriverStation.getAlliance() != alliance) {
             position = new Translation2d(Constants.FIELD_WIDTH - position.getX(), position.getY());
             heading = heading.rotateBy(Rotation2d.fromDegrees(180));
             holonomicRotation = holonomicRotation.rotateBy(Rotation2d.fromDegrees(180));
