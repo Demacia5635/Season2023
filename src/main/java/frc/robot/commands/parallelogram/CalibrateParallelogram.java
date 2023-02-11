@@ -36,8 +36,8 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        parallelogram.setPower(0);
-        parallelogram.setCoast();
         parallelogram.resetPosition();
+        parallelogram.setPower(-ParallelConstants.CALIBRATION_POWER);
+        parallelogram.setPower(0);
     }
 }

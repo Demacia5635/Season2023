@@ -7,14 +7,15 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
+import frc.robot.commands.parallelogram.GoToHeight;
 
 /**
  * Paralellogram subsystem.
@@ -31,6 +32,8 @@ public class Parallelogram extends SubsystemBase {
      * constructs a new parallelogram
      */
     public Parallelogram() {
+        SmartDashboard.putNumber("wangle", 0);
+
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
         feedForwardVelocity = new SimpleMotorFeedforward(ParallelConstants.KS_VELOCITY, ParallelConstants.KV_VELOCITY);
@@ -45,15 +48,23 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        resetPosition();
+        resetPosition(90);
 
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
-        SmartDashboard.putNumber("desired angle", 0);
         // SmartDashboard.putData("set angle", new InstantCommand(() -> {
         //     setAngle(SmartDashboard.getNumber("wanted angle", 0));
         // }));
-        SmartDashboard.putData("Go to angle", 
-        new GoToAngle(this, SmartDashboard.getNumber("desired angle", getAngle())));
+        SmartDashboard.putData("Go to 90", 
+        new GoToAngle(this, 90));
+
+        SmartDashboard.putData("Go to end", 
+        new GoToAngle(this, 119.17));
+
+        // SmartDashboard.putData("reset 90",
+        // new InstantCommand(()-> resetPosition(90)));
+
+        SmartDashboard.putData("go to height", 
+        new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
     }
 
     /**
@@ -142,6 +153,10 @@ public class Parallelogram extends SubsystemBase {
         motor.setSelectedSensorPosition(ParallelConstants.DIGITAL_INPUT_ANGLE * ParallelConstants.PULSE_PER_ANGLE);
     }
 
+    public void resetPosition(double angle) {
+        motor.setSelectedSensorPosition(angle * ParallelConstants.PULSE_PER_ANGLE);
+    }
+
     /**
      * checks if the motor's neutral mode is set on brake or coast.
      * 
@@ -151,13 +166,18 @@ public class Parallelogram extends SubsystemBase {
         return isBrake;
     }
 
-    
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        
+    }
+
+
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("parallelogram/is Digital Input", getDigitalInput());
         SmartDashboard.putBoolean("parallelogram/is Brake", isBrake);
 
-        SmartDashboard.putNumber("parallelogram/arm angle", getAngle());
+        SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
         SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
     }
 
