@@ -180,10 +180,7 @@ public class Chassis extends SubsystemBase {
      * Stops all motors
      */
     public void stop() {
-        for (SwerveModule module : modules) {
-            module.stopAngleMotor();
-            module.stopMoveMotor();
-        }
+        Arrays.stream(modules).forEach(SwerveModule::stop);
     }
 
     /**

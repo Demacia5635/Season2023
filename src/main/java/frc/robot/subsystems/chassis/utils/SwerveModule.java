@@ -131,6 +131,14 @@ public class SwerveModule implements Sendable {
     }
 
     /**
+     * Stops the module
+     */
+    public void stop() {
+        stopAngleMotor();
+        stopMoveMotor();
+    }
+
+    /**
      * Gets the state of the module
      * 
      * @return The state of the module
