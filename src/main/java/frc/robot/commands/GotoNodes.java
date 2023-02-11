@@ -98,8 +98,6 @@ public class GotoNodes extends CommandBase {
 
         gridPosition = Position.BOTTOM;
         nodePosition = Position.BOTTOM;
-
-        Utils.putData("Choose Node", "Choose", new InstantCommand(this::changeTarget).ignoringDisable(true));
     }
 
     /**
@@ -140,6 +138,12 @@ public class GotoNodes extends CommandBase {
         initCommand();
         if (isScheduled)
             command.schedule();
+    }
+
+    @Override
+    public void execute() {
+        if (nodePosition != nodePositionChooser.getSelected() || gridPosition != gridPositionChooser.getSelected())
+            changeTarget();
     }
 
     @Override

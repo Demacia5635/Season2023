@@ -11,6 +11,7 @@ import java.util.Map;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -79,25 +80,34 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
-     * Gets the angle of the robot
+     * Gets the angle of the robot according to the gyro
      * 
      * @return The angle of the robot, between 0 and 360 degrees
      */
-    public double getAngle() {
+    public double getGyroAngle() {
         return Utils.normalizeDegrees(gyro.getFusedHeading());
     }
 
     /**
-     * Gets the rotation of the robot acourding to the gyro
+     * Gets the rotation of the robot according to the gyro
      * 
      * @return The rotation of the robot
      */
     public Rotation2d getGyroRotation() {
-        return Rotation2d.fromDegrees(getAngle());
+        return Rotation2d.fromDegrees(getGyroAngle());
     }
 
     /**
-     * Gets the rotation of the robot acourding to the pose estimator
+     * Gets the angle of the robot according to the pose estimator
+     * 
+     * @return The angle of the robot, between 0 and 360 degrees
+     */
+    public double getAngle() {
+        return Utils.normalizeDegrees(getRotation().getDegrees());
+    }
+
+    /**
+     * Gets the rotation of the robot according to the pose estimator
      * 
      * @return The rotation of the robot
      */
@@ -204,7 +214,7 @@ public class Chassis extends SubsystemBase {
      *         back left, back right
      */
     private SwerveModulePosition[] getModulePositions() {
-        return Arrays.stream(modules).map((module) -> module.getPosition()).toArray(SwerveModulePosition[]::new);
+        return Arrays.stream(modules).map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
 
     /**
@@ -255,7 +265,14 @@ public class Chassis extends SubsystemBase {
                         this) {
                     @Override
                     public boolean isFinished() {
-                        return keepPosition ? false : super.isFinished();
+                        if (keepPosition) {
+                            PathPlannerState endState = trajectory.getEndState();
+                            double locationError = endState.poseMeters.getTranslation().getDistance(getPose().getTranslation());
+                            double rotationError = endState.holonomicRotation.minus(getRotation()).getDegrees();
+                            return Math.abs(locationError) <= 0.01
+                                    && Math.abs(rotationError) <= 0.5;
+                        }
+                        return super.isFinished();
                     }
                 });
 
@@ -427,7 +444,7 @@ public class Chassis extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
 
-        builder.addDoubleProperty("Angle", this::getAngle, null);
+        Utils.addDoubleProperty(builder, "Angle", this::getAngle, 2);
 
         Utils.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
         Utils.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
