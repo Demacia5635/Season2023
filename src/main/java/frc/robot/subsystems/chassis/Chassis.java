@@ -88,7 +88,7 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
-     * Gets the rotation of the robot acourding to the gyro
+     * Gets the rotation of the robot according to the gyro
      * 
      * @return The rotation of the robot
      */
