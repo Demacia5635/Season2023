@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.utils.Rectangle;
 
@@ -42,6 +43,20 @@ public final class Constants {
      */
     public static final class VisionConstants {
         public static final NetworkTable LIMELIGHT_TABLE = NetworkTableInstance.getDefault().getTable("limelight");
+
+        public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE.getEntry("tv"); // double not boolean
+        
+        /**
+         * An array of doubles with the following values:
+         * [0] - meters from the middle of the field in the x axis
+         * [1] - meters from the middle of the field in the y axis
+         * [2] - meters from the the field carpet in the z axis
+         * [3] - roll in degrees
+         * [4] - pitch in degrees
+         * [5] - yaw in degrees
+         */
+        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
+        public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
         public static final double CAPTURE_LATENCY = 11; // ms
     }
 }

@@ -351,7 +351,7 @@ public class Chassis extends SubsystemBase {
      * @param visionInput The estimated pose of the robot by vision and the time of
      *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
-    public void addVisionInput(Pair<Pose2d, Double> visionInput) {
+    private void addVisionInput(Pair<Pose2d, Double> visionInput) {
         poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
     }
 
@@ -425,7 +425,7 @@ public class Chassis extends SubsystemBase {
      * Sets up the vision listener, so that {@link #addVisionInput(Pair)} can be
      * used when vision data is received
      */
-    public void setupVisionListener() {
+    private void setupVisionListener() {
         VisionUtils.setupVisionListener(this::addVisionInput);
     }
 

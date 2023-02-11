@@ -24,7 +24,7 @@ public class VisionUtils {
      * @param listener The listener to call when a new pose is received
      */
     public static void setupVisionListener(Consumer<Pair<Pose2d, Double>> listener) {
-        NetworkTableInstance.getDefault().addListener(VisionConstants.LIMELIGHT_TABLE.getEntry("botpose"),
+        NetworkTableInstance.getDefault().addListener(VisionConstants.ROBOT_POSE_ENTRY,
                 EnumSet.of(Kind.kValueAll), (event) -> {
                     Pair<Pose2d, Double> pose = getVisionPose();
                     if (pose != null)
@@ -39,15 +39,15 @@ public class VisionUtils {
      *         the measurement, or null if no target is found
      */
     public static Pair<Pose2d, Double> getVisionPose() {
-        double hasTarget = VisionConstants.LIMELIGHT_TABLE.getEntry("tv").getDouble(0);
+        double hasTarget = VisionConstants.HAS_TARGET_ENTRY.getDouble(0);
         if (hasTarget == 0)
             return null;
 
-        double[] robotPose = VisionConstants.LIMELIGHT_TABLE.getEntry("botpose").getDoubleArray(new double[0]);
+        double[] robotPose = VisionConstants.ROBOT_POSE_ENTRY.getDoubleArray(new double[0]);
         if (robotPose.length != 6)
             return null;
 
-        double latency = VisionConstants.LIMELIGHT_TABLE.getEntry("tl").getDouble(0);
+        double latency = VisionConstants.LIMELIGHT_LATENCY_ENTRY.getDouble(0);
         robotPose[0] = Constants.FIELD_WIDTH / 2 + robotPose[0];
         robotPose[1] = robotPose[1] + Constants.FIELD_HEIGHT / 2;
 
