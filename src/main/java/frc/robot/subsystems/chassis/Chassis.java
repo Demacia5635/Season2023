@@ -183,9 +183,7 @@ public class Chassis extends SubsystemBase {
      */
     public void swapNeutralMode() {
         isBreak = !isBreak;
-        for (var module : modules) {
-            module.setNeutralMode(isBreak);
-        }
+        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
     }
 
     /**
@@ -365,7 +363,7 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(arr[0]);
         else
             sign = Math.signum(arr[1]);
-        return sign * Math.sqrt(arr[0] * arr[0] + arr[1] * arr[1]);
+        return sign * Math.hypot(arr[1], arr[0]);
     }
 
     /**
