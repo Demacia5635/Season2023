@@ -182,16 +182,7 @@ public final class Utils {
      * @return true if red, false if blue
      */
     public static boolean isRedAlliance() {
-        return getAlliance() == Alliance.Red;
-    }
-
-    /**
-     * The alliance the robot is on
-     * 
-     * @return The alliance the robot is on
-     */
-    public static Alliance getAlliance() {
-        return DriverStation.getAlliance();
+        return DriverStation.getAlliance() == Alliance.Red;
     }
 
     /**
