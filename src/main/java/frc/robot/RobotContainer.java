@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.Drive;
 import frc.robot.commands.GoUpRamp;
@@ -18,6 +21,7 @@ import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.parallelogram.Parallelogram;
+import frc.robot.subsystems.Gripper;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -29,13 +33,11 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final XboxController controller = new XboxController(0);
-    private final JoystickButton aButton = new JoystickButton(controller, 1);
-    private final JoystickButton bButton = new JoystickButton(controller, 2);
-    private final JoystickButton xButton = new JoystickButton(controller, 3);
-    private final Chassis chassis;
+    private final CommandXboxController controller = new CommandXboxController(0);
+    // private final Chassis chassis;
     private static RobotContainer instance;
     public Parallelogram parallelogram;
+    private final Gripper gripper;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -45,7 +47,8 @@ public class RobotContainer {
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, controller));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
-
+        gripper = new Gripper(Constants.GripperConstants.MOTOR_ID);
+        SmartDashboard.putData(gripper);
         configureButtonBindings();
     }
 
@@ -68,9 +71,9 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new GotoLoadingZone(chassis, controller));
-        bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
-        xButton.onTrue(new GoUpRamp(chassis, 1.5));
+        // controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
+        // controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+        // controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**
@@ -79,6 +82,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return null;
+        RepeatCommand test = new RepeatCommand(gripper.getCloseCommand().andThen(gripper.getOpenCommand()));
+        return test;
     }
 }
