@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenixpro.configs.MotionMagicConfigs;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
@@ -23,7 +25,6 @@ import frc.robot.commands.parallelogram.GoToHeight;
 public class Parallelogram extends SubsystemBase {
 
     private TalonFX motor;
-    private SimpleMotorFeedforward feedForwardVelocity;
     private ArmFeedforward armFeedForward;
     private DigitalInput magneticDigitalInput;
     private boolean isBrake;
@@ -36,7 +37,6 @@ public class Parallelogram extends SubsystemBase {
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
-        feedForwardVelocity = new SimpleMotorFeedforward(ParallelConstants.KS_VELOCITY, ParallelConstants.KV_VELOCITY);
         armFeedForward = new ArmFeedforward(ParallelConstants.ARM_FEED_FORWARD_KS,
                 ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
@@ -46,25 +46,37 @@ public class Parallelogram extends SubsystemBase {
         motor.config_kI(0, ParallelConstants.KI_POSITION);
         motor.config_kD(0, ParallelConstants.KD_POSITION);
 
+        motor.configMotionCruiseVelocity(ParallelConstants.CRUISE_VELOCITY_SU);
+        motor.configMotionAcceleration(ParallelConstants.MAX_ACCELERATION_SU);
+
         isBrake = false;
 
         resetPosition(90);
 
+        SmartDashboard.putNumber("wanted angle", 0);
+        SmartDashboard.putNumber("wanted power", 0);
+
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
-        // SmartDashboard.putData("set angle", new InstantCommand(() -> {
-        //     setAngle(SmartDashboard.getNumber("wanted angle", 0));
-        // }));
-        SmartDashboard.putData("Go to 90", 
-        new GoToAngle(this, 90));
+
+        SmartDashboard.putData("Go to ", 
+        new GoToAngle(this, 35));
+
+        SmartDashboard.putData("go to angle",
+        new InstantCommand(()-> setAngle(SmartDashboard.getNumber("wanted angle", 0))));
+
+        SmartDashboard.putData("find ff",
+        new InstantCommand(()-> setPower(-0.7))
+        .andThen(new WaitCommand(1))
+        .andThen(new InstantCommand(()-> {setPower(0); SmartDashboard.putNumber("angular velocity", getVelocity());
+        SmartDashboard.putNumber("angle ff", getAngle());})));
 
         SmartDashboard.putData("Go to end", 
-        new GoToAngle(this, 119.17));
-
-        // SmartDashboard.putData("reset 90",
-        // new InstantCommand(()-> resetPosition(90)));
+        new GoToAngle(this, ParallelConstants.DIGITAL_INPUT_ANGLE));
 
         SmartDashboard.putData("go to height", 
-        new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
+        new GoToHeight(this, 0.95, true));
+
+        //ParallelConstants.PARALLEL_LENGTH+ParallelConstants.ROBOT_HEIGHT
     }
 
     /**
@@ -79,33 +91,42 @@ public class Parallelogram extends SubsystemBase {
     /**
      * Sets velocity to parallelogram's motor
      * 
-     * @param velocity the velocity we want the motor have.
+     * @param velocity the velocity we want the motor have in degrees per second.
      */
     public void setVelocity(double velocity) {
-        motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_METER,
-                DemandType.ArbitraryFeedForward, feedForwardVelocity.calculate(velocity));
+        motor.set(ControlMode.Velocity, velocity /10 * ParallelConstants.PULSE_PER_ANGLE);
     }
 
     /**
      * Gets the velocity.
      * 
-     * @return the velocity.
+     * @return the velocity in degrees per second.
      */
     public double getVelocity() {
-        return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_METER;
+        return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_ANGLE;
+    }
+    /**
+     * Calculates arm feed forward
+     * @param angle the desired angle in degrees
+     * @param velocity the desired radial velocity
+     * @return feed forward
+     */
+    public double calculateFF(double angle, double velocity) {
+        velocity=velocity*10/ParallelConstants.PULSE_PER_ANGLE;
+        return ParallelConstants.KS_MM*Math.signum(velocity) +
+        ParallelConstants.KG_MM*Math.cos(Utils.toRads(angle))*Math.signum(-velocity) +
+        ParallelConstants.KV_MM*velocity;
     }
 
     /**
      * Sets the position of the arm.
      * 
-     * @param angle is where we want the parallelogram to be.
+     * @param angle the parallelogram angle.
      */
     public void setAngle(double angle) {
-        motor.set(ControlMode.Position, angle * ParallelConstants.PULSE_PER_ANGLE, DemandType.ArbitraryFeedForward,
-                armFeedForward.calculate(Utils.toRads(angle), 0));
+        motor.set(ControlMode.MotionMagic, angle,
+        DemandType.ArbitraryFeedForward, calculateFF(angle, motor.getActiveTrajectoryVelocity()));
     }
-
-    //TODO: Upon seeing the ArmFeedForward, I think we should try no feed forward first! ~ Noya
 
     /**
      * Gets current angle of the arm.
@@ -179,6 +200,10 @@ public class Parallelogram extends SubsystemBase {
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
         SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
+
+        // SmartDashboard.putNumber("arm velocity su", motor.getSelectedSensorVelocity());
+
+        // SmartDashboard.putNumber("closed-loop error", motor.getClosedLoopError());
     }
 
 }
