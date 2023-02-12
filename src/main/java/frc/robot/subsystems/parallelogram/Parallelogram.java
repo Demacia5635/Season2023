@@ -76,7 +76,6 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putData("go to height", 
         new GoToHeight(this, 0.95, true));
 
-        //ParallelConstants.PARALLEL_LENGTH+ParallelConstants.ROBOT_HEIGHT
     }
 
     /**
@@ -105,6 +104,7 @@ public class Parallelogram extends SubsystemBase {
     public double getVelocity() {
         return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_ANGLE;
     }
+
     /**
      * Calculates arm feed forward
      * @param angle the desired angle in degrees

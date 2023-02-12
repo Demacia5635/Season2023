@@ -21,8 +21,9 @@ import frc.robot.commands.GoUpRamp;
 import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
+import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
-import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.subsystems.Gripper;
 
@@ -58,6 +59,8 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
+
+
     /**
      * Returns the instance of the RobotContainer class.
      * 
@@ -77,9 +80,12 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
-        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
-        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
+        controller.a().onTrue(gripper.getOpenCommand());
+        controller.b().onTrue(gripper.getCloseCommand());
+        controller.x().onTrue(new GoToAngle(parallelogram, 53));
+        controller.y().onTrue(new GoToAngle(parallelogram, 40));
+        controller.leftBumper().onTrue(new GoToAngle(parallelogram, ParallelConstants.DIGITAL_INPUT_ANGLE));
+        controller.rightBumper().onTrue(new GoToAngle(parallelogram, 35));
         // controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
         // controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
         // controller.x().onTrue(new GoUpRamp(chassis, 1.5));
