@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Chassis;
-import frc.robot.utils.TrajectoryGenerator;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.Utils;
-import frc.robot.utils.Utils.Zone;
 
 /**
  * Drives the robot semi autonomously to the loading zone.

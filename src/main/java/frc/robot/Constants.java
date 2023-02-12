@@ -4,12 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.PathConstraints;
-
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.utils.Rectangle;
 
@@ -43,88 +39,25 @@ public final class Constants {
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
     /**
-     * The Swerve Modules constants.
-     */
-    public static class SwerveModuleConstants {
-        public final double angleOffset;
-        public final int moveMotorID;
-        public final int angleMotorID;
-        public final int absoluteEncoderID;
-
-        public static final double VELOCITY_KP = 0.1;
-        public static final double VELOCITY_KS = 0.0479;
-        public static final double VELOCITY_KV = 0.22185;
-        public static final SimpleMotorFeedforward VELOCITY_FF = new SimpleMotorFeedforward(VELOCITY_KS, VELOCITY_KV);
-        public static final double ANGLE_KP = 0.2;
-        public static final double ANGLE_KI = 0.0013;
-
-        public static final double PPR_FALCON = 2048;
-        public static final double WHEEL_PERIMITER = 0.1016 * Math.PI; // meters
-        public static final double GEAR_RATIO_VEL = 8.14;
-        public static final double PULSE_PER_METER = PPR_FALCON * GEAR_RATIO_VEL / WHEEL_PERIMITER;
-
-        public static final double GEAR_RATIO_ANGLE = 12.8;
-        public static final double PULSE_PER_DEGREE = PPR_FALCON * GEAR_RATIO_ANGLE / 360;
-
-        /**
-         * Creates a new SwerveModuleConstants.
-         * 
-         * @param angleOffset       The offset of the absolute encoder from the module
-         * @param moveMotorID       The CAN ID of the drive motor
-         * @param angleMotorID      The CAN ID of the angle motor
-         * @param absoluteEncoderID The CAN ID of the absolute encoder
-         */
-        private SwerveModuleConstants(double angleOffset, int moveMotorID, int angleMotorID, int absoluteEncoderID) {
-            this.angleOffset = angleOffset;
-            this.moveMotorID = moveMotorID;
-            this.angleMotorID = angleMotorID;
-            this.absoluteEncoderID = absoluteEncoderID;
-        }
-
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(0.703125, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(303.134765625, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(224.736328125, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(109.423828125, 3, 4, 12);
-    }
-
-    /**
-     * The Swerve Drive constants.
-     */
-    public static final class SwerveConstants {
-        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-                new Translation2d(0.26515, 0.2215), // front left
-                new Translation2d(0.26515, -0.2215), // front right
-                new Translation2d(-0.26515, 0.2215), // back left
-                new Translation2d(-0.26515, -0.2215) // back right
-        );
-
-        public static final int GYRO_ID = 14;
-
-        public static final double MAX_SPEED = (1 - SwerveModuleConstants.VELOCITY_KS)
-                / SwerveModuleConstants.VELOCITY_KV; // meters per second
-        public static final double MAX_ACCELERATION = 3; // meters per second squared
-        public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_SPEED, MAX_ACCELERATION);
-        public static final double MAX_DRIVE_SPEED = 3.5;
-        public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
-
-        public static final double AUTO_TRANSLATION_KP = 1;
-        public static final double AUTO_TRANSLATION_KI = 0;
-        public static final double AUTO_ROTATION_KP = 1;
-        public static final double AUTO_ROTATION_KI = 0;
-
-        public static final double TELEOP_ROTATION_KP = 4;
-        public static final double TELEOP_ROTATION_KI = 0.3;
-
-        public static final double ANGLE_TOLERANCE = Math.PI / 120;
-    }
-
-    /**
      * The Vision constants.
      */
     public static final class VisionConstants {
         public static final NetworkTable LIMELIGHT_TABLE = NetworkTableInstance.getDefault().getTable("limelight");
+
+        public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE.getEntry("tv"); // double not boolean
+        
+        /**
+         * An array of doubles with the following values:
+         * [0] - meters from the middle of the field in the x axis
+         * [1] - meters from the middle of the field in the y axis
+         * [2] - meters from the the field carpet in the z axis
+         * [3] - roll in degrees
+         * [4] - pitch in degrees
+         * [5] - yaw in degrees
+         */
+        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
+        public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
         public static final double CAPTURE_LATENCY = 11; // ms
-        public static final Translation2d CAMERA_OFFSET = new Translation2d(0.3, 0.0); // in meters
     }
 
     public static final class GripperConstants {
