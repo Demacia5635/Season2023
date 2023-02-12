@@ -59,4 +59,10 @@ public final class Constants {
         public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
         public static final double CAPTURE_LATENCY = 11; // ms
     }
+
+    public static final class GripperConstants {
+        public static final double CLOSE_POWER = -1;
+        public static final double OPEN_POWER = 1;
+        public static final int MOTOR_ID = 20;
+    }
 }
