@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.gripper;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
@@ -49,11 +49,11 @@ public class Gripper extends SubsystemBase {
   }
 
   public void open(){
-    motor.set(ControlMode.PercentOutput, Constants.GripperConstants.OPEN_POWER);
+    motor.set(ControlMode.PercentOutput, GripperConstants.OPEN_POWER);
   }
 
   public void close(){
-    motor.set(ControlMode.PercentOutput, Constants.GripperConstants.CLOSE_POWER);
+    motor.set(ControlMode.PercentOutput, GripperConstants.CLOSE_POWER);
   }
   
   public void initSendable(SendableBuilder builder) {
