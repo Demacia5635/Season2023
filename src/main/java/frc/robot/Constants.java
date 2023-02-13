@@ -47,12 +47,12 @@ public final class Constants {
         public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE.getEntry("tv"); // double not boolean
         
         /**
-         * An array of doubles with the following values:
-         * [0] - meters from the middle of the field in the x axis
-         * [1] - meters from the middle of the field in the y axis
-         * [2] - meters from the the field carpet in the z axis
-         * [3] - roll in degrees
-         * [4] - pitch in degrees
+         * An array of doubles with the following values:<p>
+         * [0] - meters from the middle of the field in the x axis<p>
+         * [1] - meters from the middle of the field in the y axis<p>
+         * [2] - meters from the the field carpet in the z axis<p>
+         * [3] - roll in degrees<p>
+         * [4] - pitch in degrees<p>
          * [5] - yaw in degrees
          */
         public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
