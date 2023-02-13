@@ -20,7 +20,8 @@ import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
 import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.Gripper;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -41,10 +42,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
-        // chassis = new Chassis();
-        // chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
-        // SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
-         gripper = new Gripper(Constants.GripperConstants.MOTOR_ID);
+        gripper = new Gripper(GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
     }
@@ -68,9 +66,6 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        // controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
-        // controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
-        // controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**
