@@ -26,14 +26,8 @@ public final class Utils {
      * @return The difference between the two angles, between -180 and 180 degrees
      */
     public static double getAngleDifference(double current, double target) {
-        double difference = target - current;
-        difference %= 360;
-        if (difference > 180) {
-            difference -= 360;
-        } else if (difference < -180) {
-            difference += 360;
-        }
-        return difference;
+        double difference = (target - current) % 360;
+        return difference - ((int)difference / 180) * 360;
     }
 
     /**
