@@ -12,6 +12,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -51,15 +52,20 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        resetPosition(90);
+        resetPosition(ParallelConstants.DIGITAL_INPUT_ANGLE);
 
         SmartDashboard.putNumber("wanted angle", 0);
         SmartDashboard.putNumber("wanted power", 0);
 
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
 
-        SmartDashboard.putData("Go to ", 
-        new GoToAngle(this, 35));
+        SmartDashboard.putData("Go to 55", 
+        new GoToAngle(this, 55));
+
+        SmartDashboard.putData("Go to 90", 
+        new GoToAngle(this, 90));
+
+        SmartDashboard.putData("all", new GoToAngle(this, 0));
 
         SmartDashboard.putData("go to angle",
         new InstantCommand(()-> setAngle(SmartDashboard.getNumber("wanted angle", 0))));
@@ -67,14 +73,20 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putData("find ff",
         new InstantCommand(()-> setPower(-0.7))
         .andThen(new WaitCommand(1))
-        .andThen(new InstantCommand(()-> {setPower(0); SmartDashboard.putNumber("angular velocity", getVelocity());
+        .andThen(new InstantCommand(()-> {setPower(0);
+        SmartDashboard.putNumber("angular velocity", getVelocity());
         SmartDashboard.putNumber("angle ff", getAngle());})));
 
         SmartDashboard.putData("Go to end", 
         new GoToAngle(this, ParallelConstants.DIGITAL_INPUT_ANGLE));
 
-        SmartDashboard.putData("go to height", 
-        new GoToHeight(this, 0.95, true));
+        // SmartDashboard.putData("go to height", 
+        // new GoToHeight(this, 0.95, true));
+
+        SmartDashboard.putData("find ppa", new RunCommand(()->
+        setPosition(motor.getSelectedSensorPosition() - 10000)).andThen(new InstantCommand(()-> setPower(0))));
+
+        SmartDashboard.putData("reset", new InstantCommand(()-> motor.setSelectedSensorPosition(80919)));
 
     }
 
@@ -126,6 +138,10 @@ public class Parallelogram extends SubsystemBase {
     public void setAngle(double angle) {
         motor.set(ControlMode.MotionMagic, angle,
         DemandType.ArbitraryFeedForward, calculateFF(angle, motor.getActiveTrajectoryVelocity()));
+    }
+
+    public void setPosition(double pulse) {
+        motor.set(ControlMode.Position, pulse);
     }
 
     /**
@@ -200,6 +216,8 @@ public class Parallelogram extends SubsystemBase {
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
         SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
+
+        SmartDashboard.putNumber("sensor pose", motor.getSelectedSensorPosition());
 
         // SmartDashboard.putNumber("arm velocity su", motor.getSelectedSensorVelocity());
 
