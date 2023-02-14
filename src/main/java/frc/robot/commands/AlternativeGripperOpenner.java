@@ -28,7 +28,15 @@ public class AlternativeGripperOpenner extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    boolean isOpen = alternativeGripper.isOpen();
+    boolean isClose = alternativeGripper.isClosed();
     double power = controller.getLeftY();
+    if(isOpen && power > 0){
+      power = 0;
+    }
+    if(isClose && power < 0){
+      power = 0;
+    }
     if(power < 0.1 || power > 0.1 || Math.abs(power) > Constants.AlternativeGripper.MAX_SPEED_GRIPPER_OPENNER){
       alternativeGripper.setPowerToGripper(0);
     } else {
@@ -39,11 +47,13 @@ public class AlternativeGripperOpenner extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    
     return false;
   }
 }
