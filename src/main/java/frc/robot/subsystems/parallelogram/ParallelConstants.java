@@ -13,7 +13,7 @@ public final class ParallelConstants {
     public static final double GEAR_RATIO = 240;
     public static final double PULSE_PER_ROTATION_PULI = GEAR_RATIO * PULSE_PER_ROTATION_MOTOR;
     //public static final double PULSE_PER_ANGLE = PULSE_PER_ROTATION_PULI / 360;
-    public static final double PULSE_PER_ANGLE = 1000;
+    public static final double PULSE_PER_ANGLE = 860;
 
     public static final double PULI_RADIUS = 1;
     public static final double PULI_PERIMETER = 2 * PULI_RADIUS * Math.PI;
@@ -31,7 +31,7 @@ public final class ParallelConstants {
     public static final double KG_MM = 0.152357296348652;
     public static final double KV_MM = 0.00906571859383147;
 
-    public static final double DIGITAL_INPUT_ANGLE = 132;
+    public static final double DIGITAL_INPUT_ANGLE = 130;
     public static final int PORT_DIGITAL_INPUT = 0;
 
     public static final double KP_POSITION = 0;
@@ -43,9 +43,9 @@ public final class ParallelConstants {
     public static final double KI_VELOCITY = 0;
     public static final double KD_VELOCITY = 0;
     
-    public static final double CALIBRATION_POWER = 0.3;
+    public static final double CALIBRATION_POWER = 0.25;
 
-    public static final double ARM_FEED_FORWARD_KS = 0;
+    public static final double ARM_FEED_FORWARD_KS = 0.05;
     public static final double ARM_FEED_FORWARD_KG = 0;
     public static final double ARM_FEED_FORWARD_KV = 0;
 

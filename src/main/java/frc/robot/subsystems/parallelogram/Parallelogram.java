@@ -51,18 +51,23 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        resetPosition(90);
+        resetPosition(ParallelConstants.DIGITAL_INPUT_ANGLE);
 
         SmartDashboard.putNumber("wanted angle", 0);
         SmartDashboard.putNumber("wanted power", 0);
 
         SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
 
-        SmartDashboard.putData("Go to ", 
-        new GoToAngle(this, 35));
+        SmartDashboard.putData("Go to 55", 
+        new GoToAngle(this, 55));
 
-        SmartDashboard.putData("go to angle",
-        new InstantCommand(()-> setAngle(SmartDashboard.getNumber("wanted angle", 0))));
+        SmartDashboard.putData("Go to 90", 
+        new GoToAngle(this, 90));
+
+        SmartDashboard.putData("all", new GoToAngle(this, 0));
+
+        // SmartDashboard.putData("go to angle",
+        // new InstantCommand(()-> setAngle(SmartDashboard.getNumber("wanted angle", 0))));
 
         SmartDashboard.putData("find ff",
         new InstantCommand(()-> setPower(-0.7))
@@ -177,6 +182,13 @@ public class Parallelogram extends SubsystemBase {
     public void resetPosition(double angle) {
         motor.setSelectedSensorPosition(angle * ParallelConstants.PULSE_PER_ANGLE);
     }
+    /**
+     * Sets motor position
+     * @param pulse position in sensor units
+     */
+    public void setPosition(double pulse) {
+        motor.set(ControlMode.Position, pulse);
+    }
 
     /**
      * checks if the motor's neutral mode is set on brake or coast.
@@ -204,6 +216,8 @@ public class Parallelogram extends SubsystemBase {
         // SmartDashboard.putNumber("arm velocity su", motor.getSelectedSensorVelocity());
 
         // SmartDashboard.putNumber("closed-loop error", motor.getClosedLoopError());
+
+        SmartDashboard.putNumber("sensor pose", motor.getSelectedSensorPosition());
     }
 
 }
