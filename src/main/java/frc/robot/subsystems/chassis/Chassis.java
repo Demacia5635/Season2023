@@ -331,6 +331,20 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
+     * Creates a path following command
+     * 
+     * @param keepPosition Whether to keep the position of the robot at the end of the command
+     * @param points The points to follow (including the current position)
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, keepPosition);
+    }
+
+    /**
      * Adds a vision input to the estimated pose of the robot
      * 
      * @param visionInput The estimated pose of the robot by vision and the time of

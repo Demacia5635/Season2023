@@ -62,7 +62,7 @@ public class GotoCommunity extends CommandBase {
                     Rotation2d.fromDegrees(180));
         }
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
 
         command.schedule();
     }
