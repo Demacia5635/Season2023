@@ -30,6 +30,10 @@ public class KeepPosition extends CommandBase {
         rotationPIDController = new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0);
         rotationPIDController.enableContinuousInput(0, 2 * Math.PI);
 
+        xPIDController.setTolerance(ChassisConstants.AUTO_TRANSLATION_TOLERANCE);
+        yPIDController.setTolerance(ChassisConstants.AUTO_TRANSLATION_TOLERANCE);
+        rotationPIDController.setTolerance(ChassisConstants.AUTO_ANGLE_TOLERANCE);
+
         addRequirements(chassis);
     }
 

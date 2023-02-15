@@ -80,5 +80,8 @@ public class ChassisConstants {
     public static final double TELEOP_ROTATION_KP = 4;
     public static final double TELEOP_ROTATION_KI = 0.3;
 
-    public static final double ANGLE_TOLERANCE = Math.PI / 120;
+    public static final double TELEOP_ANGLE_TOLERANCE = Math.PI / 120;
+
+    public static final double AUTO_ANGLE_TOLERANCE = Math.PI / 360;
+    public static final double AUTO_TRANSLATION_TOLERANCE = 0.01;
 }
