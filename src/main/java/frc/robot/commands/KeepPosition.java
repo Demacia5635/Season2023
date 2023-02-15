@@ -8,11 +8,20 @@ import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.utils.Utils;
 
+/**
+ * A command that keeps the robot at a certain position on the field.
+ */
 public class KeepPosition extends CommandBase {
     private final Chassis chassis;
     private final Pose2d position;
     private final PIDController xPIDController, yPIDController, rotationPIDController;
 
+    /**
+     * Creates a new KeepPosition command.
+     * 
+     * @param chassis The chassis subsystem
+     * @param position The position to keep
+     */
     public KeepPosition(Chassis chassis, Pose2d position) {
         this.chassis = chassis;
         this.position = position;
