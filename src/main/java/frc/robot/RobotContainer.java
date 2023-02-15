@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -34,7 +36,7 @@ import frc.robot.subsystems.gripper.GripperConstants;
  */
 public class RobotContainer {
     private final CommandXboxController controller = new CommandXboxController(0);
-    // private final Chassis chassis;
+    private final Chassis chassis;
     private static RobotContainer instance;
     private final Gripper gripper;
 
@@ -42,6 +44,9 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
+        chassis = new Chassis();
+        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
+        SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
@@ -66,6 +71,9 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+        controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
+        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
     /**
@@ -74,7 +82,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        RepeatCommand test = new RepeatCommand(gripper.getCloseCommand().andThen(gripper.getOpenCommand()));
-        return test;
+        return null;
     }
 }
