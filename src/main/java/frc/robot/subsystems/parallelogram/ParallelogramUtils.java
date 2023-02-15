@@ -3,7 +3,7 @@ package frc.robot.subsystems.parallelogram;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 
-public class Utils {
+public class ParallelogramUtils {
 
     /**
      * Calculates the wanted parallelogram angle using the desired height.

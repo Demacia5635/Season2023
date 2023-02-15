@@ -18,7 +18,7 @@ import frc.robot.Constants;
 /**
  * Contains general utility methods
  */
-public final class Utils {
+public final class UtilsGeneral {
     /**
      * Gets the difference between two angles, accounting for wrapping around 360
      * degrees

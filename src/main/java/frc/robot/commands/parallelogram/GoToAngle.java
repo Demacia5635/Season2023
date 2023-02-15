@@ -21,6 +21,7 @@ public class GoToAngle extends CommandBase{
     @Override
     public void initialize() {
         parallelogram.setBrake();
+        this.desiredAngle = SmartDashboard.getNumber("wanted angle", 0);
     }
 
 

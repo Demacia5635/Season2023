@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,18 +11,22 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.Drive;
-import frc.robot.commands.GoUpRamp;
-import frc.robot.commands.GotoCommunity;
-import frc.robot.commands.GotoLoadingZone;
-import frc.robot.commands.GotoNodes;
+import frc.robot.commands.chassis.Drive;
+import frc.robot.commands.chassis.GoUpRamp;
+import frc.robot.commands.chassis.GotoCommunity;
+import frc.robot.commands.chassis.GotoLoadingZone;
+import frc.robot.commands.chassis.GotoNodes;
+import frc.robot.commands.gripper.Grip;
+import frc.robot.commands.parallelogram.GoToAngle;
+import frc.robot.commands.parallelogram.GoToBack;
+import frc.robot.commands.parallelogram.PickUp;
+import frc.robot.commands.parallelogram.PutGamepiece;
 import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
+import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,13 +44,16 @@ public class RobotContainer {
     public Parallelogram parallelogram;
     private final Gripper gripper;
 
+    public final class RobotFinalCommands {
+        
+    }
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
         chassis = new Chassis();
         parallelogram = new Parallelogram();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
         chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);
@@ -75,9 +80,27 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
-        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+
+        Command load = new GotoLoadingZone(chassis, controller.getHID())
+        .andThen(new PickUp(parallelogram), new Grip(gripper), new GoToBack(parallelogram));
+
+        Command unload = new GotoNodes(chassis, controller.getHID())
+        .andThen(new PutGamepiece(parallelogram), new Grip(gripper), new GoToBack(parallelogram));
+
+        Command loadIfInPlace = new PickUp(parallelogram)
+        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+
+        Command unloadIfInPlace = new PutGamepiece(parallelogram)
+        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+
+        controller.a().onTrue(load);
+        controller.b().onTrue(unload);
+        controller.y().onTrue(new GotoCommunity(chassis, controller.getHID()));
         controller.x().onTrue(new GoUpRamp(chassis, 1.5));
+
+        controller.leftBumper().onTrue(loadIfInPlace);
+        controller.rightBumper().onTrue(unloadIfInPlace);
+
     }
 
     /**

@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.utils.SwerveModule;
-import frc.robot.utils.Utils;
+import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.VisionUtils;
 
 /**
@@ -83,7 +83,7 @@ public class Chassis extends SubsystemBase {
      * @return The angle of the robot, between 0 and 360 degrees
      */
     public double getAngle() {
-        return Utils.normalizeDegrees(gyro.getFusedHeading());
+        return UtilsGeneral.normalizeDegrees(gyro.getFusedHeading());
     }
 
     /**
@@ -120,10 +120,10 @@ public class Chassis extends SubsystemBase {
      * @param angle The angle of the robot, in radians
      */
     public void setAngleAndVelocity(double vx, double vy, double angle) {
-        angleController.setSetpoint(Utils.normalizeRadians(angle));
+        angleController.setSetpoint(UtilsGeneral.normalizeRadians(angle));
         double omega = 0;
         if (!angleController.atSetpoint())
-            omega = angleController.calculate(Utils.normalizeRadians(getRotation().getRadians()));
+            omega = angleController.calculate(UtilsGeneral.normalizeRadians(getRotation().getRadians()));
         setVelocities(vx, vy, omega);
     }
 
@@ -385,14 +385,14 @@ public class Chassis extends SubsystemBase {
 
         builder.addDoubleProperty("Angle", this::getAngle, null);
 
-        Utils.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
-        Utils.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
+        UtilsGeneral.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
+        UtilsGeneral.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
 
-        Utils.putData("Change Neutral", "Change", new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+        UtilsGeneral.putData("Change Neutral", "Change", new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
 
-        Utils.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
+        UtilsGeneral.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
 
-        Utils.putData("Calibrate Offsets", "Calibrate", new InstantCommand(() -> {
+        UtilsGeneral.putData("Calibrate Offsets", "Calibrate", new InstantCommand(() -> {
             for (var module : modules) {
                 module.calibrateOffset();
             }

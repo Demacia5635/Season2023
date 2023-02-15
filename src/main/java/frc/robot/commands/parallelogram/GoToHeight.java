@@ -1,15 +1,13 @@
 package frc.robot.commands.parallelogram;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
-import frc.robot.subsystems.parallelogram.Utils;
+import frc.robot.subsystems.parallelogram.ParallelogramUtils;
 
 public class GoToHeight extends CommandBase{
     private Parallelogram parallelogram;
     private double desiredAngle;
-    private boolean isFront;
 
     /**
      * Command's constructor.
@@ -17,13 +15,11 @@ public class GoToHeight extends CommandBase{
      */
     public GoToHeight(Parallelogram parallelogram, double desiredHeight, boolean isFront) {
         this.parallelogram = parallelogram;
-        this.desiredAngle = Utils.calculateAngle(desiredHeight, isFront);
-        this.isFront = isFront;
+        this.desiredAngle = ParallelogramUtils.calculateAngle(desiredHeight, isFront);
     }
 
     @Override
     public void initialize() {
-        SmartDashboard.putNumber("calculated angle", desiredAngle);
         parallelogram.setBrake();
     }
 
@@ -41,11 +37,6 @@ public class GoToHeight extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putNumber("check current", parallelogram.getAngle());
-        SmartDashboard.putNumber("check desired", desiredAngle);
-        SmartDashboard.putNumber("DIFFERENCE", Math.abs(parallelogram.getAngle()-desiredAngle));
-        SmartDashboard.putBoolean("isfinished", 
-        Math.abs(parallelogram.getAngle()-desiredAngle)<ParallelConstants.TOLERANCE_DEGREES);
         return Math.abs(parallelogram.getAngle()-desiredAngle)<ParallelConstants.TOLERANCE_DEGREES;
     }
 
