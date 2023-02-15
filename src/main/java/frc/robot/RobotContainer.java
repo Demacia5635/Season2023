@@ -22,6 +22,7 @@ import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
 
@@ -38,6 +39,7 @@ public class RobotContainer {
     private final CommandXboxController controller = new CommandXboxController(0);
     private final Chassis chassis;
     private static RobotContainer instance;
+    public Parallelogram parallelogram;
     private final Gripper gripper;
 
     /**
@@ -45,6 +47,8 @@ public class RobotContainer {
      */
     private RobotContainer() {
         chassis = new Chassis();
+        parallelogram = new Parallelogram();
+        chassis.setDefaultCommand(new Drive(chassis, controller));
         chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);
