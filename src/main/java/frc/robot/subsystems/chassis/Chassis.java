@@ -11,7 +11,6 @@ import java.util.Map;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -34,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
 import frc.robot.utils.Utils;
@@ -259,19 +259,7 @@ public class Chassis extends SubsystemBase {
                                 0),
                         new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
-                        this) {
-                    @Override
-                    public boolean isFinished() {
-                        if (keepPosition) {
-                            PathPlannerState endState = trajectory.getEndState();
-                            double locationError = endState.poseMeters.getTranslation().getDistance(getPose().getTranslation());
-                            double rotationError = endState.holonomicRotation.minus(getRotation()).getDegrees();
-                            return Math.abs(locationError) <= 0.01
-                                    && Math.abs(rotationError) <= 0.5;
-                        }
-                        return super.isFinished();
-                    }
-                });
+                        this).andThen(new KeepPosition(this, new Pose2d(trajectory.getEndState().poseMeters.getTranslation(), trajectory.getEndState().holonomicRotation))));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
     }

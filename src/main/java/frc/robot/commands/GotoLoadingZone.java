@@ -55,11 +55,11 @@ public class GotoLoadingZone extends CommandBase {
                     generator.add(new Pose2d(new Translation2d(5.57, 4.9), new Rotation2d()),
                             new Rotation2d());
                 case OPEN_AREA:
-                    generator.add(new Pose2d(new Translation2d(11.11, 7.34), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(11.11, 6.34), new Rotation2d()),
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.46, 7.34), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.06, 6.34), new Rotation2d()),
                             new Rotation2d());
             }
         }

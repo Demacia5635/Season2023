@@ -53,6 +53,9 @@ public class SwerveModule implements Sendable {
 
         angleMotor.config_kP(0, SwerveModuleConstants.ANGLE_KP);
         angleMotor.config_kI(0, SwerveModuleConstants.ANGLE_KI);
+        angleMotor.config_kD(0, SwerveModuleConstants.ANGLE_KD);
+        angleMotor.configMaxIntegralAccumulator(0, SwerveModuleConstants.MAX_ACCUM_INTEGRAL);
+
         angleMotor.setNeutralMode(NeutralMode.Brake);
         moveMotor.setNeutralMode(NeutralMode.Brake);
     }
