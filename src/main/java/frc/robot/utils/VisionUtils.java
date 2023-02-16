@@ -54,6 +54,11 @@ public class VisionUtils {
         Rotation2d robotRotation = Rotation2d.fromDegrees(robotPose[5]);
         Translation2d robotTranslation = new Translation2d(robotPose[0], robotPose[1]);
 
+        double[] camTran = VisionConstants.CAMERA_TRANSLATION_ENTRY.getDoubleArray(new double[0]);
+        double distance = Math.hypot(camTran[0], camTran[2]);
+        if (distance > 2.5)
+            return null;
+
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
                 Timer.getFPGATimestamp() - ((latency + VisionConstants.CAPTURE_LATENCY) / 1000));

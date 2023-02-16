@@ -57,6 +57,17 @@ public final class Constants {
          */
         public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
         public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
+
+        /**
+         * An array of doubles with the following values:<p>
+         * [0] - meters from the limelight to the april tag in the right direction<p>
+         * [1] - meters from the limelight to the april tag in the down direction<p>
+         * [2] - meters from the limelight to the april tag in the forward direction<p>
+         * [3] - pitch from the camera to the april tag in degrees<p>
+         * [4] - yaw from the camera to the april tag in degrees<p>
+         * [5] - roll from the camera to the april tag in degrees
+         */
+        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("camtran");
         public static final double CAPTURE_LATENCY = 11; // ms
     }
 }
