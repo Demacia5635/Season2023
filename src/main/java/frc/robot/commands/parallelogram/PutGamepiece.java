@@ -1,6 +1,7 @@
 package frc.robot.commands.parallelogram;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -11,7 +12,7 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
  */
 public class PutGamepiece extends CommandBase{
 
-    private double height;
+    private double angle;
     private Command goToHeight;
     private Parallelogram parallelogram;
 
@@ -37,7 +38,7 @@ public class PutGamepiece extends CommandBase{
      */
     public PutGamepiece(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
-        gamePieceChooser = new SendableChooser<>();
+        gamepieceChooser = new SendableChooser<>();
         innitChooser();
         
     }
@@ -45,24 +46,25 @@ public class PutGamepiece extends CommandBase{
      * Initializes gamepiece chooser.
      */
     private void innitChooser() {
-        gamePieceChooser.setDefaultOption("Cone", GamePiece.CONE);
-        gamePieceChooser.addOption("Cube", GamePiece.CUBE);
+        gamepieceChooser.setDefaultOption("Cone", GamePiece.CONE);
+        gamepieceChooser.addOption("Cube", GamePiece.CUBE);
+        SmartDashboard.putData("Gamepiece Chooser", gamepieceChooser);
 
     }
 
     @Override
     public void initialize() {
 
-        gamePiece = gamePieceChooser.getSelected();
+        gamepiece = gamepieceChooser.getSelected();
 
-        if (gamePiece.getValue()==1) {
-            this.height = Constants.CONE_HEIGHT;
+        if (gamepiece.getValue()==1) {
+            this.angle = Constants.CONE_ANGLE;
         }
         else {
-            this.height = Constants.CUBE_HEIGHT;
+            this.angle = Constants.CUBE_ANGLE;
         }
 
-        goToHeight = new GoToHeight(parallelogram, height, true);
+        goToHeight = new GoToAngle(parallelogram, angle);
         goToHeight.schedule();
     }
     
