@@ -66,7 +66,7 @@ public class Chassis extends SubsystemBase {
         angleController = new PIDController(ChassisConstants.TELEOP_ROTATION_KP,
                 ChassisConstants.TELEOP_ROTATION_KI, 0);
         angleController.enableContinuousInput(0, 2 * Math.PI);
-        angleController.setTolerance(ChassisConstants.ANGLE_TOLERANCE);
+        angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
         isBreak = true;
@@ -328,6 +328,20 @@ public class Chassis extends SubsystemBase {
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, new HashMap<>(), false, true);
+    }
+
+    /**
+     * Creates a path following command
+     * 
+     * @param keepPosition Whether to keep the position of the robot at the end of the command
+     * @param points The points to follow (including the current position)
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, keepPosition);
     }
 
     /**
