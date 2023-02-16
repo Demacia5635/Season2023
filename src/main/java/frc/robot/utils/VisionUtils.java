@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 
@@ -56,6 +57,10 @@ public class VisionUtils {
 
         double[] camTran = VisionConstants.CAMERA_TRANSLATION_ENTRY.getDoubleArray(new double[0]);
         double distance = Math.hypot(camTran[0], camTran[2]);
+        SmartDashboard.putNumber("OurLimeLight/Distance", distance);
+        SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
+        SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
+        SmartDashboard.putNumber("OurLimeLight/Angle", robotRotation.getDegrees());
         if (distance > 2.5)
             return null;
 
