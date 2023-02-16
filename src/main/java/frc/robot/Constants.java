@@ -128,12 +128,12 @@ public final class Constants {
     }
 
     public static final class AlternativeGripper{
-        public static final int GRIPPER_OPENNER_ID = 20;
+        public static final int GRIPPER_OPENNER_ID = -1;
         public static final int CONTROLLER_ID = 1;
         public static final int CLOSE_LIMIT_SWITCH = -1;
         public static final int OPEN_LIMIT_SWITCH = -1;
 
-        public static final double MAX_SPEED_GRIPPER_OPENNER = 0.5;
+        public static final double MAX_SPEED_GRIPPER_OPENNER = 0.5; // change to whatever you want
 
         public static final double PULSE_PER_METER = -1; // TODO find the pulses per meter
 

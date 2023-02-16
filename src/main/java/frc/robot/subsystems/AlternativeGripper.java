@@ -17,6 +17,7 @@ public class AlternativeGripper extends SubsystemBase {
   private final WPI_TalonSRX gripperOpenner;
   private final DigitalInput closeLimitSwitch;
   private final DigitalInput openLimitSwitch;
+
   public AlternativeGripper() {
     this.closeLimitSwitch = new DigitalInput(Constants.AlternativeGripper.CLOSE_LIMIT_SWITCH);
     this.openLimitSwitch = new DigitalInput(Constants.AlternativeGripper.OPEN_LIMIT_SWITCH);
@@ -25,11 +26,11 @@ public class AlternativeGripper extends SubsystemBase {
 
   /**
    * 
-   * @param power power from -1 to 1 
+   * @param power power from -1 to 1
    * @return set the power of the motor to the power that he gets * a constants
    */
-  public void setPowerToGripper(double power){
-    gripperOpenner.set(power*Constants.AlternativeGripper.MAX_SPEED_GRIPPER_OPENNER);
+  public void setPowerToGripper(double power) { // TODO feel free to change the name 
+    gripperOpenner.set(power * Constants.AlternativeGripper.MAX_SPEED_GRIPPER_OPENNER);
 
   }
 
@@ -37,18 +38,18 @@ public class AlternativeGripper extends SubsystemBase {
    * 
    * @return get the location in pulses
    */
-  
-  public double getLocation(){
+
+  public double getLocation() {
     return gripperOpenner.getSelectedSensorPosition();
   }
 
   /**
    * 
-   * @return reset the pulses of the motor 
+   * @return reset the pulses of the motor
    */
 
-  public void resetLocation(){
-      gripperOpenner.setSelectedSensorPosition(0);// TODO finds the amount of pulses per meter
+  public void resetLocation() {
+    gripperOpenner.setSelectedSensorPosition(0);// TODO finds the amount of pulses per meter
   }
 
   /**
@@ -56,7 +57,7 @@ public class AlternativeGripper extends SubsystemBase {
    * @return true if the gripper is open else it returns false
    */
 
-  public boolean isOpen(){
+  public boolean isOpen() {
     return openLimitSwitch.get();
   }
 
@@ -65,7 +66,7 @@ public class AlternativeGripper extends SubsystemBase {
    * @return true if the gripper is close else it returns false
    */
 
-  public boolean isClosed(){
+  public boolean isClosed() {
     return closeLimitSwitch.get();
   }
 
@@ -75,14 +76,12 @@ public class AlternativeGripper extends SubsystemBase {
     SmartDashboard.putBoolean("is open", isOpen());
 
     SmartDashboard.putNumber("target power", 0);
-    SmartDashboard.putData("set power", new RunCommand(()->
-        setPowerToGripper(SmartDashboard.getNumber("target power", 0)), this));
-        
-    SmartDashboard.putNumber("Location in pulses", getLocation()); // TODO find the number of pulses from one end to other end
+    SmartDashboard.putData("set power",
+        new RunCommand(() -> setPowerToGripper(SmartDashboard.getNumber("target power", 0)), this));
 
-    SmartDashboard.putData("reset location", new InstantCommand(()->
-    resetLocation(), this)); // TODO make it a button moya says its already a button 
+    SmartDashboard.putNumber("Location in pulses", getLocation()); // TODO find the number of pulses per meter
 
+    SmartDashboard.putData("reset location", new InstantCommand(() -> resetLocation(), this));
 
   }
 }

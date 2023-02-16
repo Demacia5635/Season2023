@@ -13,6 +13,7 @@ public class AlternativeGripperOpenner extends CommandBase {
   /** Creates a new AlternativeGripper. */
   private final AlternativeGripper alternativeGripper;
   private final XboxController controller;
+
   public AlternativeGripperOpenner(XboxController controller, AlternativeGripper alternativeGripper) {
     this.alternativeGripper = alternativeGripper;
     this.controller = controller;
@@ -23,25 +24,22 @@ public class AlternativeGripperOpenner extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     boolean isOpen = alternativeGripper.isOpen();
     boolean isClose = alternativeGripper.isClosed();
     double power = controller.getLeftY();
-    if(isOpen && power > 0){
+    
+    if (((isOpen || isClose) && Math.abs(power) > 0) || (Math.abs(power) < 0.1)) {
       power = 0;
-    }
-    if(isClose && power < 0){
-      power = 0;
-    }
-    if(power < 0.1 || power > 0.1 || Math.abs(power) > Constants.AlternativeGripper.MAX_SPEED_GRIPPER_OPENNER){
-      alternativeGripper.setPowerToGripper(0);
-    } else {
+    } 
+
       alternativeGripper.setPowerToGripper(power);
-    }
 
   }
 
@@ -53,7 +51,7 @@ public class AlternativeGripperOpenner extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
+
     return false;
   }
 }
