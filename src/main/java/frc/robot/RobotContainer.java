@@ -48,7 +48,7 @@ public class RobotContainer {
     private RobotContainer() {
         chassis = new Chassis();
         parallelogram = new Parallelogram();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
+        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);

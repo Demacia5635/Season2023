@@ -41,10 +41,10 @@ public class GoToHeight extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        SmartDashboard.putNumber("check current", parallelogram.getAngle());
-        SmartDashboard.putNumber("check desired", desiredAngle);
-        SmartDashboard.putNumber("DIFFERENCE", Math.abs(parallelogram.getAngle()-desiredAngle));
-        SmartDashboard.putBoolean("isfinished", 
+        SmartDashboard.putNumber("Parallelogram/Check current", parallelogram.getAngle());
+        SmartDashboard.putNumber("Parallelogram/Check desired", desiredAngle);
+        SmartDashboard.putNumber("Parallelogram/DIFFERENCE", Math.abs(parallelogram.getAngle()-desiredAngle));
+        SmartDashboard.putBoolean("Parallelogram/isFinished", 
         Math.abs(parallelogram.getAngle()-desiredAngle)<ParallelConstants.TOLERANCE_DEGREES);
         return Math.abs(parallelogram.getAngle()-desiredAngle)<ParallelConstants.TOLERANCE_DEGREES;
     }
