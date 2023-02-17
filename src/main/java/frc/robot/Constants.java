@@ -69,6 +69,5 @@ public final class Constants {
          * [5] - roll from the camera to the april tag in degrees
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("camtran");
-        public static final double CAPTURE_LATENCY = 11; // ms
     }
 }
