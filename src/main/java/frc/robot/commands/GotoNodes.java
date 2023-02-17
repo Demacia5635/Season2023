@@ -132,9 +132,8 @@ public class GotoNodes extends CommandBase {
         gridPosition = gridPositionChooser.getSelected();
         nodePosition = nodePositionChooser.getSelected();
 
-        if (command.isScheduled()) {
+        if (CommandScheduler.getInstance().requiring(chassis) == command)
             command.cancel();
-        }
         initCommand();
         if (isScheduled)
             command.schedule();
