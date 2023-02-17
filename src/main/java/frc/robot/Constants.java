@@ -56,7 +56,7 @@ public final class Constants {
          * [5] - yaw in degrees
          */
         public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
+        public static final NetworkTableEntry LIMELIGHT_CAPTURE_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("cl"); // in ms
         public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
-        public static final double CAPTURE_LATENCY = 11; // ms
     }
 }

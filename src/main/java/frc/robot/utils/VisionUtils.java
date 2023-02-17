@@ -47,7 +47,7 @@ public class VisionUtils {
         if (robotPose.length != 6)
             return null;
 
-        double latency = VisionConstants.LIMELIGHT_LATENCY_ENTRY.getDouble(0);
+        double latency = VisionConstants.LIMELIGHT_LATENCY_ENTRY.getDouble(0) + VisionConstants.LIMELIGHT_CAPTURE_LATENCY_ENTRY.getDouble(0);
         robotPose[0] = Constants.FIELD_WIDTH / 2 + robotPose[0];
         robotPose[1] = robotPose[1] + Constants.FIELD_HEIGHT / 2;
 
@@ -56,6 +56,6 @@ public class VisionUtils {
 
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
-                Timer.getFPGATimestamp() - ((latency + VisionConstants.CAPTURE_LATENCY) / 1000));
+                Timer.getFPGATimestamp() - (latency / 1000));
     }
 }
