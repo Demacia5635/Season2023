@@ -29,14 +29,12 @@ public class Parallelogram extends SubsystemBase {
     private ArmFeedforward armFeedForward;
     private DigitalInput magneticDigitalInput;
     private boolean isBrake;
-    private PigeonIMU gyro;
-    private double offset;
 
     /**
      * constructs a new parallelogram
      */
     public Parallelogram() {
-        SmartDashboard.putNumber("wangle", 90);
+        SmartDashboard.putNumber("desired angle", 0);
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
@@ -45,7 +43,6 @@ public class Parallelogram extends SubsystemBase {
                 ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
         motor.setInverted(ParallelConstants.MOTOR_INVERT_TYPE);
-        gyro = new PigeonIMU(ParallelConstants.GYRO_PORT_NUMBER);
 
         motor.config_kP(0, ParallelConstants.KP_POSITION);
         motor.config_kI(0, ParallelConstants.KI_POSITION);
@@ -53,18 +50,16 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        resetPosition(90);
-
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                new CalibrateParallelogram(this).andThen(new ResetCalibrate(this)));
+                new CalibrateParallelogram(this));
         // SmartDashboard.putData("set angle", new InstantCommand(() -> {
         // setAngle(SmartDashboard.getNumber("wanted angle", 0));
         // }));
-        SmartDashboard.putData("Parallelogram/Go to 90",
+        SmartDashboard.putData("Parallelogram/Go to angle",
                 new GoToAngle(this, 90));
 
-        SmartDashboard.putData("Parallelogram/Go to end",
-                new GoToAngle(this, 119.17));
+        // SmartDashboard.putData("Parallelogram/Go to end",
+        //         new GoToAngle(this, 119.17));
 
         // SmartDashboard.putData("reset 90",
         // new InstantCommand(()-> resetPosition(90)));
@@ -116,16 +111,16 @@ public class Parallelogram extends SubsystemBase {
                 armFeedForward.calculate(Utils.toRads(angle), 0));
     }
 
-    // TODO: Upon seeing the ArmFeedForward, I think we should try no feed forward
-    // first! ~ Noya
-
     /**
      * Gets the angle of the arm.
      * 
      * @return the arm's angle (after calculating with offset).
      */
     public double getAngle() {
-        return gyro.getPitch() - this.offset;
+        if (getDigitalInput()) {
+            resetPosition();
+        }
+        return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
 
     // public double getOffset(){
@@ -135,9 +130,7 @@ public class Parallelogram extends SubsystemBase {
     /*
      * Resets the offset for the gyro.
      */
-    public void resetPositionWithOffset() {
-        this.offset = gyro.getPitch() - ParallelConstants.DIGITAL_INPUT_ANGLE;
-    }
+
 
     /**
      * Sets motor neutral mode to brake.
@@ -196,7 +189,7 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putBoolean("parallelogram/is Brake", isBrake);
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
-        SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
+        SmartDashboard.putNumber("parallelogram/arm velocity", getVelocity());
 
     }
 
