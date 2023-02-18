@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Chassis;
-import frc.robot.utils.TrajectoryGenerator;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.Utils;
 
 /**
@@ -98,8 +98,6 @@ public class GotoNodes extends CommandBase {
 
         gridPosition = Position.BOTTOM;
         nodePosition = Position.BOTTOM;
-
-        Utils.putData("Choose Node", "Choose", new InstantCommand(this::changeTarget).ignoringDisable(true));
     }
 
     /**
@@ -134,12 +132,17 @@ public class GotoNodes extends CommandBase {
         gridPosition = gridPositionChooser.getSelected();
         nodePosition = nodePositionChooser.getSelected();
 
-        if (command.isScheduled()) {
+        if (CommandScheduler.getInstance().requiring(chassis) == command)
             command.cancel();
-        }
         initCommand();
         if (isScheduled)
             command.schedule();
+    }
+
+    @Override
+    public void execute() {
+        if (nodePosition != nodePositionChooser.getSelected() || gridPosition != gridPositionChooser.getSelected())
+            changeTarget();
     }
 
     @Override

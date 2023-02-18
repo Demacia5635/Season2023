@@ -21,7 +21,7 @@ import frc.robot.commands.GoUpRamp;
 import frc.robot.commands.GotoCommunity;
 import frc.robot.commands.GotoLoadingZone;
 import frc.robot.commands.GotoNodes;
-import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
 

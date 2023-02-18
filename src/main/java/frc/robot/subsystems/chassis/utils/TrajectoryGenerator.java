@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.subsystems.chassis.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,10 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
+
 
 /**
  * Utility class for generating trajectories
@@ -86,7 +88,7 @@ public class TrajectoryGenerator {
      * @return The generated trajectory
      */
     public PathPoint[] generate(Pose2d startPosition) {
-        if (alliance != Utils.getAlliance())
+        if (alliance != DriverStation.getAlliance())
             startPosition = new Pose2d(
                     new Translation2d(Constants.FIELD_WIDTH - startPosition.getX(), startPosition.getY()),
                     startPosition.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
@@ -110,7 +112,7 @@ public class TrajectoryGenerator {
             double velocity = velocities.get(i);
             if (heading == null)
                 heading = calculateHeading(i);
-            path[i] = Utils.createAllianceRelativePathPoint(position.getTranslation(), heading,
+            path[i] = ChassisUtils.createAllianceRelativePathPoint(position.getTranslation(), heading,
                     position.getRotation(), velocity, alliance);
         }
 
