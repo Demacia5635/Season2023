@@ -38,7 +38,7 @@ public final class ParallelConstants {
     public static final double ARM_FEED_FORWARD_KG = 0;
     public static final double ARM_FEED_FORWARD_KV = 0;
 
-    public static final double GOTOANGLE_MOTOR_POWER = 0.3;
+    public static final double GOTOANGLE_MOTOR_POWER = 0.5;
 
     public static final double TOLERANCE_DEGREES = 0.5;
 }

@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Chassis;
 import frc.robot.utils.TrajectoryGenerator;
-import frc.robot.utils.Utils;
-import frc.robot.utils.Utils.Zone;
+import frc.robot.utils.UtilsGeneral;
+import frc.robot.utils.UtilsGeneral.Zone;
 
 /**
  * Drives the robot semi autonomously to the community zone.
@@ -69,7 +69,7 @@ public class GotoCommunity extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !command.isScheduled() || Utils.hasInput(controller);
+        return !command.isScheduled() || UtilsGeneral.hasInput(controller);
     }
 
     @Override
