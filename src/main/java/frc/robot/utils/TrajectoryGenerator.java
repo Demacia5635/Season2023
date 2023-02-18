@@ -86,7 +86,7 @@ public class TrajectoryGenerator {
      * @return The generated trajectory
      */
     public PathPoint[] generate(Pose2d startPosition) {
-        if (alliance != Utils.getAlliance())
+        if (alliance != UtilsGeneral.getAlliance())
             startPosition = new Pose2d(
                     new Translation2d(Constants.FIELD_WIDTH - startPosition.getX(), startPosition.getY()),
                     startPosition.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
@@ -110,7 +110,7 @@ public class TrajectoryGenerator {
             double velocity = velocities.get(i);
             if (heading == null)
                 heading = calculateHeading(i);
-            path[i] = Utils.createAllianceRelativePathPoint(position.getTranslation(), heading,
+            path[i] = UtilsGeneral.createAllianceRelativePathPoint(position.getTranslation(), heading,
                     position.getRotation(), velocity, alliance);
         }
 
