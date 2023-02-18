@@ -20,6 +20,7 @@ import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.GoToHeight;
 import frc.robot.commands.parallelogram.ResetCalibrate;
+import frc.robot.commands.parallelogram.TrapezoidGoToAngle;
 
 /**
  * Paralellogram subsystem.
@@ -57,6 +58,8 @@ public class Parallelogram extends SubsystemBase {
                 new CalibrateParallelogram(this));
         SmartDashboard.putData("Parallelogram/Go to angle",
                 new GoToAngle(this, 90));
+        SmartDashboard.putData("Parallelogram/trapezoid",
+                new TrapezoidGoToAngle(this, 90));
 
         SmartDashboard.putData("Parallelogram/Go to height",
                 new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
@@ -81,6 +84,7 @@ public class Parallelogram extends SubsystemBase {
     public void setVelocity(double velocity) {
         motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_ANGLE,
                 DemandType.ArbitraryFeedForward, feedForwardVelocity.calculate(velocity));
+                //TODO: not sure if arm ff or simple motor ~ Noya
     }
 
     /**
