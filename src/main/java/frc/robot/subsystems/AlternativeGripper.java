@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -24,6 +25,14 @@ public class AlternativeGripper extends SubsystemBase {
     this.gripperOpenner = new WPI_TalonSRX(Constants.AlternativeGripper.GRIPPER_OPENNER_ID);
   }
 
+  public void setBreakMode(){
+    gripperOpenner.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public void setCoastMode(){
+    gripperOpenner.setNeutralMode(NeutralMode.Coast);
+  }
+
   /**
    * 
    * @param power power from -1 to 1
@@ -41,6 +50,9 @@ public class AlternativeGripper extends SubsystemBase {
 
   public double getLocation() {
     return gripperOpenner.getSelectedSensorPosition();
+  }
+  public double getCurrent(){
+    return gripperOpenner.getSupplyCurrent();
   }
 
   /**
@@ -74,7 +86,7 @@ public class AlternativeGripper extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putBoolean("is close", isClosed());
     SmartDashboard.putBoolean("is open", isOpen());
-
+    SmartDashboard.putNumber("Current Current",getCurrent());
     SmartDashboard.putNumber("target power", 0);
     SmartDashboard.putData("set power",
         new RunCommand(() -> setPowerToGripper(SmartDashboard.getNumber("target power", 0)), this));
