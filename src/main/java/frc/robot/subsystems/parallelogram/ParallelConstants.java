@@ -1,5 +1,7 @@
 package frc.robot.subsystems.parallelogram;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 /**
  * Parallelogram constants.
  */
@@ -12,7 +14,9 @@ public final class ParallelConstants {
     public static final int GYRO_PORT_NUMBER = -4;
     public static final double GYRO_OFFSET = 0;
 
-    public static final double PULSE_PER_ANGLE = 865;
+    public static final double PULSE_PER_ROTATION = 2048;
+    public static final double GEAR_RATIO = 180;
+    public static final double PULSE_PER_ANGLE = PULSE_PER_ROTATION*GEAR_RATIO/360;
 
     public static final double PULI_RADIUS = 1;
     public static final double PULI_PERIMETER = 2 * PULI_RADIUS * Math.PI;
@@ -20,7 +24,7 @@ public final class ParallelConstants {
     public static final double KS_VELOCITY = 0;
     public static final double KV_VELOCITY = 0;
 
-    public static final double DIGITAL_INPUT_ANGLE = 130;
+    public static final double DIGITAL_INPUT_ANGLE = 125.76;
     public static final int PORT_DIGITAL_INPUT = 0;
 
     public static final double KP_POSITION = 0.043;
@@ -38,7 +42,17 @@ public final class ParallelConstants {
     public static final double ARM_FEED_FORWARD_KG = 0;
     public static final double ARM_FEED_FORWARD_KV = 0;
 
-    public static final double GOTOANGLE_MOTOR_POWER = 0.3;
+    public static final double GOTOANGLE_MOTOR_POWER = 0.4;
 
-    public static final double TOLERANCE_DEGREES = 0.5;
+    public static final double TOLERANCE_DEGREES = 1;
+
+    public static final double MAX_VELOCITY = -1;
+    public static final double MAX_ACCELERATION = -1;
+    // public static final TrapezoidProfile.State ZERO_STATE = new TrapezoidProfile.State(0, 0);
+    // public static final TrapezoidProfile.State END_STATE = new TrapezoidProfile.State(0, 0);
+    public static final TrapezoidProfile.Constraints CONSTRAINTS =
+    new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION);
+
+
+
 }

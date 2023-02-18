@@ -8,6 +8,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +36,8 @@ public class Parallelogram extends SubsystemBase {
      * constructs a new parallelogram
      */
     public Parallelogram() {
+
+        SmartDashboard.putNumber("desired angle", 0);
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
@@ -177,6 +181,8 @@ public class Parallelogram extends SubsystemBase {
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
         SmartDashboard.putNumber("parallelogram/arm velocity", getVelocity());
+
+        SmartDashboard.putNumber("parallelogram/sensot position", motor.getSelectedSensorPosition());
 
     }
 
