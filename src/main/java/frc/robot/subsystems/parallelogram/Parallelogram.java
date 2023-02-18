@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.GoToHeight;
+import frc.robot.commands.parallelogram.ResetCalibrate;
 
 /**
  * Paralellogram subsystem.
@@ -46,14 +48,10 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        resetPosition(90);
-
-        SmartDashboard.putData("Calibrate Parallelogram", new CalibrateParallelogram(this));
-        SmartDashboard.putData("Go to angle", 
-        new GoToAngle(this, 0));
-
-        SmartDashboard.putData("go to height", 
-        new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
+        SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
+                new CalibrateParallelogram(this));
+        SmartDashboard.putData("Parallelogram/Go to angle",
+                new GoToAngle(this, 90));
     }
 
     /**
@@ -67,7 +65,6 @@ public class Parallelogram extends SubsystemBase {
 
     /**
      * Sets velocity to parallelogram's motor
-     * 
      * @param velocity the velocity we want the motor have in degrees per second.
      */
     public void setVelocity(double velocity) {
@@ -95,10 +92,9 @@ public class Parallelogram extends SubsystemBase {
     }
 
     /**
-     * Gets current angle of the arm.
+     * Gets the angle of the arm.
      * 
-     * @param height is the height measured from the robot to the wanted node height
-     * @return current angle
+     * @return the arm's angle (after calculating with offset).
      */
     public double getAngle() {
         if (getDigitalInput()) {
@@ -106,6 +102,15 @@ public class Parallelogram extends SubsystemBase {
         }
         return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
+
+    // public double getOffset(){
+    // return gyro.getPitch() - 90 ;
+    // }
+
+    /*
+     * Resets the offset for the gyro.
+     */
+
 
     /**
      * Sets motor neutral mode to brake.
@@ -155,9 +160,8 @@ public class Parallelogram extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        
+        builder.addDoubleProperty("encoder", motor::getSelectedSensorPosition, null);
     }
-
 
     @Override
     public void periodic() {
@@ -165,7 +169,8 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putBoolean("parallelogram/is Brake", isBrake);
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
-        SmartDashboard.putNumber("parallelogram/pulli velocity", getVelocity());
+        SmartDashboard.putNumber("parallelogram/arm velocity", getVelocity());
+
     }
 
 }

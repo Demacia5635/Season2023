@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
-public class GoToAngle extends CommandBase{
+public class GoToAngle extends CommandBase {
     private Parallelogram parallelogram;
     private double desiredAngle;
 
     /**
      * Command's constructor.
+     * 
      * @param parallelogram
      */
     public GoToAngle(Parallelogram parallelogram, double desiredAngle) {
@@ -21,28 +22,25 @@ public class GoToAngle extends CommandBase{
     @Override
     public void initialize() {
         parallelogram.setBrake();
-        this.desiredAngle = SmartDashboard.getNumber("wanted angle", 0);
     }
-
 
     @Override
     public void execute() {
-        if(parallelogram.getAngle()-desiredAngle>0) {
+        if (parallelogram.getAngle() - desiredAngle > 0) {
             parallelogram.setPower(-ParallelConstants.GOTOANGLE_MOTOR_POWER);
-        }
-        else {
+        } else {
             parallelogram.setPower(ParallelConstants.GOTOANGLE_MOTOR_POWER);
         }
-       
+
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(parallelogram.getAngle()-desiredAngle)<ParallelConstants.TOLERANCE_DEGREES;
+        return Math.abs(parallelogram.getAngle() - desiredAngle) < ParallelConstants.TOLERANCE_DEGREES;
     }
 
     public void end(boolean interrupted) {
         parallelogram.setPower(0);
     }
-    
+
 }

@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
-public class CalibrateParallelogram extends CommandBase {
+public class ResetCalibrate extends CommandBase {
     private Parallelogram parallelogram;
 
     /**
      * Command's constructor.
      * @param parallelogram
      */
-    public CalibrateParallelogram(Parallelogram parallelogram) {
+    public ResetCalibrate(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
         parallelogram.resetPosition();
     }
@@ -25,19 +25,17 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public void execute() {
-        parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
+        parallelogram.setPower(ParallelConstants.BACKWARDS_CALIBRATION_POWER);
     }
-
 
     @Override
     public boolean isFinished() {
-        return parallelogram.getDigitalInput();
+        return !parallelogram.getDigitalInput();
     }
 
     @Override
     public void end(boolean interrupted) {
         parallelogram.resetPosition();
-        new ResetCalibrate(parallelogram).schedule();
         parallelogram.setPower(0);
     }
 }
