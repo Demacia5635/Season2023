@@ -34,7 +34,6 @@ public class Parallelogram extends SubsystemBase {
      * constructs a new parallelogram
      */
     public Parallelogram() {
-        SmartDashboard.putNumber("desired angle", 0);
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
@@ -52,24 +51,12 @@ public class Parallelogram extends SubsystemBase {
 
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
                 new CalibrateParallelogram(this));
-        // SmartDashboard.putData("set angle", new InstantCommand(() -> {
-        // setAngle(SmartDashboard.getNumber("wanted angle", 0));
-        // }));
         SmartDashboard.putData("Parallelogram/Go to angle",
                 new GoToAngle(this, 90));
-
-        // SmartDashboard.putData("Parallelogram/Go to end",
-        //         new GoToAngle(this, 119.17));
-
-        // SmartDashboard.putData("reset 90",
-        // new InstantCommand(()-> resetPosition(90)));
 
         SmartDashboard.putData("Parallelogram/Go to height",
                 new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
 
-        // SmartDashboard.putData("Parallelogram/Go to 90", new InstantCommand(() -> {
-
-        // }));
         SmartDashboard.putData(this);
     }
 
@@ -85,20 +72,20 @@ public class Parallelogram extends SubsystemBase {
     /**
      * Sets velocity to parallelogram's motor
      * 
-     * @param velocity the velocity we want the motor have.
+     * @param velocity the velocity we want the motor have in degrees per seconds.
      */
     public void setVelocity(double velocity) {
-        motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_METER,
+        motor.set(ControlMode.Velocity, velocity / 10 * ParallelConstants.PULSE_PER_ANGLE,
                 DemandType.ArbitraryFeedForward, feedForwardVelocity.calculate(velocity));
     }
 
     /**
      * Gets the velocity.
      * 
-     * @return the velocity.
+     * @return the velocity in degrees per second.
      */
     public double getVelocity() {
-        return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_METER;
+        return motor.getSelectedSensorVelocity() * 10 / ParallelConstants.PULSE_PER_ANGLE;
     }
 
     /**
