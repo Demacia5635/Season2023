@@ -12,7 +12,7 @@ public final class ParallelConstants {
     public static final int GYRO_PORT_NUMBER = -4;
     public static final double GYRO_OFFSET = 0;
 
-    public static final double PULSE_PER_ANGLE = 865;
+    public static final double PULSE_PER_ANGLE = 1024;
 
     public static final double PULI_RADIUS = 1;
     public static final double PULI_PERIMETER = 2 * PULI_RADIUS * Math.PI;
