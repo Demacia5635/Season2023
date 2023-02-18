@@ -72,7 +72,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         controller.a().onTrue(new GotoLoadingZone(chassis, controller.getHID()));
-        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller.getHID())));
+        controller.b().onTrue(new GotoCommunity(chassis, controller.getHID()).andThen(new GotoNodes(chassis, controller)));
         controller.x().onTrue(new GoUpRamp(chassis, 1.5));
     }
 
