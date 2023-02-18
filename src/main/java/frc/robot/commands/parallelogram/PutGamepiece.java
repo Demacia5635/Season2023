@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
@@ -32,12 +33,14 @@ public class PutGamepiece extends CommandBase{
 
     private final SendableChooser<GamePiece> gamepieceChooser;
     private GamePiece gamepiece;
+    private Chassis chassis;
     /**
      * Constructs the PutGamePiece command.
      * @param parallelogram
      */
-    public PutGamepiece(Parallelogram parallelogram) {
+    public PutGamepiece(Parallelogram parallelogram, Chassis chassis) {
         this.parallelogram = parallelogram;
+        this.chassis = chassis;
         gamepieceChooser = new SendableChooser<>();
         innitChooser();
         
@@ -65,6 +68,17 @@ public class PutGamepiece extends CommandBase{
         }
 
         goToHeight = new GoToAngle(parallelogram, angle);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return Constants.COMMUNITY_BOTTOM.isInside(chassis.getPose().getTranslation()) || 
+        Constants.COMMUNITY_TOP.isInside(chassis.getPose().getTranslation()) ||
+        Constants.COMMUNITY_MIDDLE.isInside(chassis.getPose().getTranslation());
+    }
+
+    @Override
+    public void end(boolean interrupted) {
         goToHeight.schedule();
     }
     

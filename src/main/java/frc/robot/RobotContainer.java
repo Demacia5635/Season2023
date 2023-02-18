@@ -82,15 +82,17 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         Command load = new GotoLoadingZone(chassis, controller.getHID())
-        .andThen(new PickUp(parallelogram), new Grip(gripper), new GoToBack(parallelogram));
-
-        Command unload = new GotoNodes(chassis, controller.getHID())
-        .andThen(new PutGamepiece(parallelogram), new Grip(gripper), new GoToBack(parallelogram));
-
-        Command loadIfInPlace = new PickUp(parallelogram)
+        .alongWith(new PickUp(parallelogram, chassis))
         .andThen(new Grip(gripper), new GoToBack(parallelogram));
 
-        Command unloadIfInPlace = new PutGamepiece(parallelogram)
+        Command unload = new GotoNodes(chassis, controller.getHID())
+        .alongWith(new PutGamepiece(parallelogram, chassis))
+        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+
+        Command loadIfInPlace = new PickUp(parallelogram, chassis)
+        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+
+        Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
         .andThen(new Grip(gripper), new GoToBack(parallelogram));
 
         controller.a().onTrue(load);
