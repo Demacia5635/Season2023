@@ -41,7 +41,7 @@ public class Gripper extends SubsystemBase {
    * @return Lim switch state
    */
   private boolean getLimSwitchClose(){
-    return(motor.isRevLimitSwitchClosed() == 1);
+    return motor.isRevLimitSwitchClosed() == 1;
   }
 
   /**
