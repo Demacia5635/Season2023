@@ -167,13 +167,13 @@ public class GotoNodes extends CommandBase {
         builder.addStringProperty("Grid selected pos", ()->{
             switch (gridPosition) {
                 case BOTTOM:
-                    return "Right Grid";
+                    return "3";
                     
                 case MIDDLE:
-                    return "Middle Grid";
+                    return "2";
                 
                 case TOP:
-                    return "Left Grid";
+                    return "1";
             
                 default:
                     return "NON SELECTED";
@@ -183,13 +183,13 @@ public class GotoNodes extends CommandBase {
         builder.addStringProperty("Node selected pos", ()->{
             switch (nodePosition) {
                 case BOTTOM:
-                    return "Right Node";
+                    return "C";
                     
                 case MIDDLE:
-                    return "Middle Node";
+                    return "B";
                 
                 case TOP:
-                    return "Left Node";
+                    return "A";
             
                 default:
                     return "NON SELECTED";
