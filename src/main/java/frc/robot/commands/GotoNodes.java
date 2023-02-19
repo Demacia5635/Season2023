@@ -88,13 +88,13 @@ public class GotoNodes extends CommandBase {
     public GotoNodes(Chassis chassis, CommandXboxController controller) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
-        controller.x().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
-        controller.x().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
-        controller.x().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
-        controller.y().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
+        controller.x().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
+        controller.x().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
+        controller.x().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
+        controller.y().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
         controller.y().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.MIDDLE)).ignoringDisable(true));
-        controller.y().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
-        controller.b().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
+        controller.y().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
+        controller.b().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         controller.b().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
         controller.b().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         
