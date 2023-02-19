@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -61,22 +62,17 @@ public class Gripper extends SubsystemBase {
   /**
    * Opens the gripper when called.
    */
-  public void open(){
+  private void open(){
     motor.set(ControlMode.PercentOutput, GripperConstants.OPEN_POWER);
   }
 
   /** 
    * Closes the gripper when called.
    */
-  public void close(){
+  private void close(){
     motor.set(ControlMode.PercentOutput, GripperConstants.CLOSE_POWER);
   }
   
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    builder.addBooleanProperty("limSwitch close", this::getLimSwitchClose, null);
-    builder.addBooleanProperty("limSwitch open", this::getLimSwitchOpen, null);
-  }
 
   /**
    * Creates a new StartEndCommand to open the gripper with the end condition of the limit switch being pressed
@@ -94,4 +90,11 @@ public class Gripper extends SubsystemBase {
     return new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::getLimSwitchClose);
   }
 
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.addBooleanProperty("limSwitch close", this::getLimSwitchClose, null);
+    builder.addBooleanProperty("limSwitch open", this::getLimSwitchOpen, null);
+    SmartDashboard.putData("open gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::getLimSwitchOpen));
+    SmartDashboard.putData("Close gripper",  new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::getLimSwitchClose));
+  }
 }
