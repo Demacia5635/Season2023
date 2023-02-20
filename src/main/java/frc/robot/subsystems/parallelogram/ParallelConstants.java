@@ -7,7 +7,7 @@ public final class ParallelConstants {
     public static final int PORT_NUMBER_PARALLEL_MOTOR = 30;
     public static final boolean MOTOR_INVERT_TYPE = true;
     public static final double PARALLEL_LENGTH = 0.7; // In meters
-    public static final double ROBOT_HEIGHT = 0.61; // 0.58
+    public static final double ROBOT_HEIGHT = 0.58;
 
     public static final int GYRO_PORT_NUMBER = -4;
     public static final double GYRO_OFFSET = 0;
@@ -40,7 +40,7 @@ public final class ParallelConstants {
     public static final double ARM_FEED_FORWARD_KG = 0;
     public static final double ARM_FEED_FORWARD_KV = 0;
 
-    public static final double GOTOANGLE_MOTOR_POWER = 0.4;
+    public static final double GOTOANGLE_MOTOR_POWER = 0.45;
 
     public static final double TOLERANCE_DEGREES = 1;
 }
