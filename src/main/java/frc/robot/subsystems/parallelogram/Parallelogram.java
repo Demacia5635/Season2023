@@ -34,6 +34,9 @@ public class Parallelogram extends SubsystemBase {
     public Parallelogram() {
         SmartDashboard.putNumber("wanted angle", 0);
 
+        SmartDashboard.putNumber("desired angle", 90.0);
+        SmartDashboard.putNumber("Height", 1.0);
+
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
         feedForwardVelocity = new SimpleMotorFeedforward(ParallelConstants.KS_VELOCITY, ParallelConstants.KV_VELOCITY);
