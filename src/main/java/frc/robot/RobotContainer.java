@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
@@ -17,7 +18,6 @@ import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
-import frc.robot.commands.gripper.Grip;
 import frc.robot.commands.parallelogram.GoToBack;
 import frc.robot.commands.parallelogram.PickUp;
 import frc.robot.commands.parallelogram.PutGamepiece;
@@ -57,6 +57,8 @@ public class RobotContainer {
         gripper = new Gripper(GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
+
+        SmartDashboard.putData("pickup", new PickUp(parallelogram, chassis));
     }
 
     /**
@@ -79,19 +81,22 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
+        Command open = gripper.getOpenCommand();
+        Command close = gripper.getCloseCommand();
+
         Command load = new GotoLoadingZone(chassis, controller.getHID())
         .alongWith(new PickUp(parallelogram, chassis))
-        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+        .andThen(open, close, new GoToBack(parallelogram));
 
         Command unload = new GotoNodes(chassis, controller.getHID())
         .alongWith(new PutGamepiece(parallelogram, chassis))
-        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+        .andThen(open, close, new GoToBack(parallelogram));
 
         Command loadIfInPlace = new PickUp(parallelogram, chassis)
-        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+        .andThen(open, close, new GoToBack(parallelogram));
 
         Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
-        .andThen(new Grip(gripper), new GoToBack(parallelogram));
+        .andThen(open, close, new GoToBack(parallelogram));
 
         controller.a().onTrue(load);
         controller.b().onTrue(unload);

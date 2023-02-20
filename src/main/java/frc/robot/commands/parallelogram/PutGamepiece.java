@@ -8,6 +8,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.ChassisUtils;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
+import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
@@ -16,7 +17,7 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 public class PutGamepiece extends CommandBase{
 
     private double angle;
-    private Command goToHeight;
+    private Command goToAngle;
     private Parallelogram parallelogram;
 
     public static enum GamePiece {
@@ -69,23 +70,21 @@ public class PutGamepiece extends CommandBase{
             this.angle = Constants.CUBE_ANGLE;
         }
 
-        goToHeight = new GoToAngle(parallelogram, angle);
+        goToAngle = new GoToAngle(parallelogram, angle);
+    }
+
+    @Override
+    public void execute() {
+        if (ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_BOTTOM||
+        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_TOP||
+        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_MIDDLE) {
+            goToAngle.schedule();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_BOTTOM||
-        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_TOP||
-        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_MIDDLE;
-
-        // return Constants.COMMUNITY_BOTTOM.isInside(chassis.getPose().getTranslation()) || 
-        // Constants.COMMUNITY_TOP.isInside(chassis.getPose().getTranslation()) ||
-        // Constants.COMMUNITY_MIDDLE.isInside(chassis.getPose().getTranslation());
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        goToHeight.schedule();
+        return Math.abs(parallelogram.getAngle() - angle) < ParallelConstants.TOLERANCE_DEGREES;
     }
     
 }

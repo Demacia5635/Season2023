@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.GoToHeight;
+import frc.robot.commands.parallelogram.PickUp;
 import frc.robot.commands.parallelogram.ResetCalibrate;
 
 /**
