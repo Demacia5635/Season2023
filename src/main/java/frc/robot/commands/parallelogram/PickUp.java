@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.ChassisUtils;
+import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
@@ -29,7 +31,7 @@ public class PickUp extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Constants.LOADING_ZONE.isInside(chassis.getPose().getTranslation()); //TODO: 
+        return ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.LOADING_ZONE; 
     }
     
 }

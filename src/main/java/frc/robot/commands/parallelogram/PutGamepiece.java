@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.ChassisUtils;
+import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
@@ -72,9 +74,13 @@ public class PutGamepiece extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        return Constants.COMMUNITY_BOTTOM.isInside(chassis.getPose().getTranslation()) || 
-        Constants.COMMUNITY_TOP.isInside(chassis.getPose().getTranslation()) ||
-        Constants.COMMUNITY_MIDDLE.isInside(chassis.getPose().getTranslation());
+        return ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_BOTTOM||
+        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_TOP||
+        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_MIDDLE;
+
+        // return Constants.COMMUNITY_BOTTOM.isInside(chassis.getPose().getTranslation()) || 
+        // Constants.COMMUNITY_TOP.isInside(chassis.getPose().getTranslation()) ||
+        // Constants.COMMUNITY_MIDDLE.isInside(chassis.getPose().getTranslation());
     }
 
     @Override
