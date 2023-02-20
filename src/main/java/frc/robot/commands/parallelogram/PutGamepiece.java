@@ -6,9 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
-import frc.robot.subsystems.chassis.utils.ChassisUtils;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
-import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
 /**
@@ -22,21 +20,12 @@ public class PutGamepiece extends CommandBase{
 
     public static enum GamePiece {
         CONE, CUBE;
-        public int getValue() {
-            switch (this) {
-                case CONE:
-                    return 1;
-                case CUBE:
-                    return 0;
-                default:
-                    return -1;
-            }
-        }
     }
 
     private final SendableChooser<GamePiece> gamepieceChooser;
     private GamePiece gamepiece;
     private Chassis chassis;
+    private boolean started;
     /**
      * Constructs the PutGamePiece command.
      * @param parallelogram
@@ -60,10 +49,10 @@ public class PutGamepiece extends CommandBase{
 
     @Override
     public void initialize() {
-
+        started = false;
         gamepiece = gamepieceChooser.getSelected();
 
-        if (gamepiece.getValue()==1) {
+        if (gamepiece == GamePiece.CONE) {
             this.angle = Constants.CONE_ANGLE;
         }
         else {
@@ -75,16 +64,18 @@ public class PutGamepiece extends CommandBase{
 
     @Override
     public void execute() {
-        if (ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_BOTTOM||
-        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_TOP||
-        ChassisUtils.Zone.fromRobotLocation(chassis.getPose().getTranslation())==Zone.COMMUNITY_MIDDLE) {
+        Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
+        if (!started && zone==Zone.COMMUNITY_BOTTOM||
+                zone==Zone.COMMUNITY_TOP||
+                zone==Zone.COMMUNITY_MIDDLE) {
             goToAngle.schedule();
+            started = true;
         }
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(parallelogram.getAngle() - angle) < ParallelConstants.TOLERANCE_DEGREES;
+        return goToAngle.isFinished();
     }
     
 }

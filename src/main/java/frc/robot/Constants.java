@@ -39,8 +39,8 @@ public final class Constants {
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
     public static final double LOADING_ANGLE = -1;
-    public static final double CUBE_ANGLE = -1;
-    public static final double CONE_ANGLE = -1;
+    public static final double CUBE_ANGLE = 10;
+    public static final double CONE_ANGLE = 10;
 
     /**
      * The Vision constants.
