@@ -94,7 +94,7 @@ public class Gripper extends SubsystemBase {
   public void initSendable(SendableBuilder builder){
     builder.addBooleanProperty("limSwitch close", this::getLimSwitchClose, null);
     builder.addBooleanProperty("limSwitch open", this::getLimSwitchOpen, null);
-    SmartDashboard.putData("open gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::getLimSwitchOpen));
-    SmartDashboard.putData("Close gripper",  new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::getLimSwitchClose));
+    SmartDashboard.putData("Open Gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::getLimSwitchOpen));
+    SmartDashboard.putData("Close Gripper",  new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::getLimSwitchClose));
   }
 }
