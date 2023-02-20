@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
-package frc.robot.utils;
+package frc.robot.subsystems.chassis.utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -13,7 +13,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import frc.robot.Constants.SwerveModuleConstants;
+import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * A swerve module
@@ -52,6 +53,9 @@ public class SwerveModule implements Sendable {
 
         angleMotor.config_kP(0, SwerveModuleConstants.ANGLE_KP);
         angleMotor.config_kI(0, SwerveModuleConstants.ANGLE_KI);
+        angleMotor.config_kD(0, SwerveModuleConstants.ANGLE_KD);
+        angleMotor.configMaxIntegralAccumulator(0, SwerveModuleConstants.MAX_ACCUM_INTEGRAL);
+
         angleMotor.setNeutralMode(NeutralMode.Brake);
         moveMotor.setNeutralMode(NeutralMode.Brake);
     }
@@ -62,7 +66,7 @@ public class SwerveModule implements Sendable {
      * @return The angle of the module, between 0 and 360 degrees
      */
     public double getAngle() {
-        return Utils.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
+        return UtilsGeneral.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
     }
 
     /**
@@ -101,7 +105,7 @@ public class SwerveModule implements Sendable {
      * @return The target angle, in encoder pulses
      */
     private double calculateTarget(double targetAngle) {
-        double difference = Utils.getAngleDifference(getAngle(), targetAngle);
+        double difference = UtilsGeneral.getAngleDifference(getAngle(), targetAngle);
         return angleMotor.getSelectedSensorPosition() + (difference * SwerveModuleConstants.PULSE_PER_DEGREE);
     }
 
@@ -127,6 +131,14 @@ public class SwerveModule implements Sendable {
      */
     public void stopMoveMotor() {
         moveMotor.set(ControlMode.PercentOutput, 0);
+    }
+
+    /**
+     * Stops the module
+     */
+    public void stop() {
+        stopAngleMotor();
+        stopMoveMotor();
     }
 
     /**
@@ -194,7 +206,7 @@ public class SwerveModule implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        Utils.addDoubleProperty(builder, "Angle", this::getAngle, 2);
+        UtilsGeneral.addDoubleProperty(builder, "Angle", this::getAngle, 2);
         builder.addDoubleProperty("Velocity", this::getVelocity, null);
         builder.addDoubleProperty("Angle Offset", () -> angleOffset, null);
 

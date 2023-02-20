@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.chassis;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,10 +33,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.SwerveModuleConstants;
-import frc.robot.utils.SwerveModule;
-import frc.robot.utils.Utils;
+import frc.robot.commands.chassis.KeepPosition;
+import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
+import frc.robot.subsystems.chassis.utils.SwerveModule;
+import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.VisionUtils;
 
 /**
@@ -56,45 +56,61 @@ public class Chassis extends SubsystemBase {
      */
     public Chassis() {
         field = new Field2d();
-        gyro = new PigeonIMU(SwerveConstants.GYRO_ID);
+        gyro = new PigeonIMU(ChassisConstants.GYRO_ID);
         modules = new SwerveModule[] {
                 new SwerveModule(SwerveModuleConstants.FRONT_LEFT),
                 new SwerveModule(SwerveModuleConstants.FRONT_RIGHT),
                 new SwerveModule(SwerveModuleConstants.BACK_LEFT),
                 new SwerveModule(SwerveModuleConstants.BACK_RIGHT)
         };
-        angleController = new PIDController(SwerveConstants.TELEOP_ROTATION_KP,
-                SwerveConstants.TELEOP_ROTATION_KI, 0);
+        angleController = new PIDController(ChassisConstants.TELEOP_ROTATION_KP,
+                ChassisConstants.TELEOP_ROTATION_KI, 0);
         angleController.enableContinuousInput(0, 2 * Math.PI);
-        angleController.setTolerance(SwerveConstants.ANGLE_TOLERANCE);
-        poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.KINEMATICS, getGyroRotation(),
+        angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
+        poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
         isBreak = true;
 
-        SmartDashboard.putData(this);
-
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
+
+        setupVisionListener();
+
+        SmartDashboard.putData(this);
     }
 
     /**
-     * Gets the angle of the robot
+     * Gets the angle of the robot according to the gyro
      * 
      * @return The angle of the robot, between 0 and 360 degrees
      */
-    public double getAngle() {
-        return Utils.normalizeDegrees(gyro.getFusedHeading());
+    public double getGyroAngle() {
+        return UtilsGeneral.normalizeDegrees(gyro.getFusedHeading());
     }
 
     /**
-     * Gets the rotation of the robot
+     * Gets the rotation of the robot according to the gyro
      * 
      * @return The rotation of the robot
      */
     public Rotation2d getGyroRotation() {
-        return Rotation2d.fromDegrees(getAngle());
+        return Rotation2d.fromDegrees(getGyroAngle());
     }
 
+    /**
+     * Gets the angle of the robot according to the pose estimator
+     * 
+     * @return The angle of the robot, between 0 and 360 degrees
+     */
+    public double getAngle() {
+        return UtilsGeneral.normalizeDegrees(getRotation().getDegrees());
+    }
+
+    /**
+     * Gets the rotation of the robot according to the pose estimator
+     * 
+     * @return The rotation of the robot
+     */
     public Rotation2d getRotation() {
         return poseEstimator.getEstimatedPosition().getRotation();
     }
@@ -108,7 +124,7 @@ public class Chassis extends SubsystemBase {
      */
     public void setVelocities(double vx, double vy, double omega) {
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getRotation());
-        SwerveModuleState[] states = SwerveConstants.KINEMATICS.toSwerveModuleStates(speeds);
+        SwerveModuleState[] states = ChassisConstants.KINEMATICS.toSwerveModuleStates(speeds);
         setModuleStates(states);
     }
 
@@ -120,10 +136,10 @@ public class Chassis extends SubsystemBase {
      * @param angle The angle of the robot, in radians
      */
     public void setAngleAndVelocity(double vx, double vy, double angle) {
-        angleController.setSetpoint(Utils.normalizeRadians(angle));
+        angleController.setSetpoint(UtilsGeneral.normalizeRadians(angle));
         double omega = 0;
         if (!angleController.atSetpoint())
-            omega = angleController.calculate(Utils.normalizeRadians(getRotation().getRadians()));
+            omega = angleController.calculate(UtilsGeneral.normalizeRadians(getRotation().getRadians()));
         setVelocities(vx, vy, omega);
     }
 
@@ -134,7 +150,7 @@ public class Chassis extends SubsystemBase {
      *               back left, back right
      */
     private void setModuleStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, ChassisConstants.MAX_SPEED);
         for (int i = 0; i < 4; i++) {
             states[i] = SwerveModuleState.optimize(states[i], modules[i].getAngleRotation());
             modules[i].setState(states[i]);
@@ -148,11 +164,7 @@ public class Chassis extends SubsystemBase {
      *         left, back right
      */
     private SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        for (int i = 0; i < 4; i++) {
-            states[i] = modules[i].getState();
-        }
-        return states;
+        return Arrays.stream(modules).map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
     /**
@@ -168,10 +180,7 @@ public class Chassis extends SubsystemBase {
      * Stops all motors
      */
     public void stop() {
-        for (SwerveModule module : modules) {
-            module.stopAngleMotor();
-            module.stopMoveMotor();
-        }
+        Arrays.stream(modules).forEach(SwerveModule::stop);
     }
 
     /**
@@ -179,9 +188,7 @@ public class Chassis extends SubsystemBase {
      */
     public void swapNeutralMode() {
         isBreak = !isBreak;
-        for (var module : modules) {
-            module.setNeutralMode(isBreak);
-        }
+        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
     }
 
     /**
@@ -204,7 +211,7 @@ public class Chassis extends SubsystemBase {
      *         back left, back right
      */
     private SwerveModulePosition[] getModulePositions() {
-        return Arrays.stream(modules).map((module) -> module.getPosition()).toArray(SwerveModulePosition[]::new);
+        return Arrays.stream(modules).map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
 
     /**
@@ -222,7 +229,7 @@ public class Chassis extends SubsystemBase {
      * @return The velocity of the robot, in meters per second
      */
     public Translation2d getVelocity() {
-        ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
+        ChassisSpeeds speeds = ChassisConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
         return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
@@ -236,7 +243,7 @@ public class Chassis extends SubsystemBase {
      * @return The path following command
      */
     public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
-            boolean resetPose) {
+            boolean resetPose, boolean keepPosition) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     if (resetPose)
@@ -245,12 +252,14 @@ public class Chassis extends SubsystemBase {
                 new PPSwerveControllerCommand(
                         trajectory,
                         this::getPose,
-                        SwerveConstants.KINEMATICS,
-                        new PIDController(SwerveConstants.AUTO_TRANSLATION_KP, SwerveConstants.AUTO_TRANSLATION_KI, 0),
-                        new PIDController(SwerveConstants.AUTO_TRANSLATION_KP, SwerveConstants.AUTO_TRANSLATION_KI, 0),
-                        new PIDController(SwerveConstants.AUTO_ROTATION_KP, SwerveConstants.AUTO_ROTATION_KI, 0),
+                        ChassisConstants.KINEMATICS,
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
+                        new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
-                        this));
+                        this).andThen(new KeepPosition(this, new Pose2d(trajectory.getEndState().poseMeters.getTranslation(), trajectory.getEndState().holonomicRotation))));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
     }
@@ -263,8 +272,8 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events) {
-        var trajectory = PathPlanner.loadPath(path, SwerveConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, false);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        return createPathFollowingCommand(trajectory, events, false, true);
     }
 
     /**
@@ -277,8 +286,25 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose) {
-        var trajectory = PathPlanner.loadPath(path, SwerveConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, resetPose);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        return createPathFollowingCommand(trajectory, events, resetPose, true);
+    }
+
+    /**
+     * Creates a path following command
+     * 
+     * @param path         The path to follow
+     * @param events       The events to run on the markers in the path
+     * @param resetPose    Whether to reset the pose of the robot at the start of
+     *                     the command
+     * @param keepPosition Whether to keep the position of the robot at the end of
+     *                     the command
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose,
+            boolean keepPosition) {
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        return createPathFollowingCommand(trajectory, events, resetPose, keepPosition);
     }
 
     /**
@@ -300,19 +326,32 @@ public class Chassis extends SubsystemBase {
     public Command createPathFollowingCommand(PathPoint... points) {
         if (points.length < 2)
             return null;
-        var trajectory = PathPlanner.generatePath(SwerveConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, new HashMap<>(), false);
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, true);
+    }
+
+    /**
+     * Creates a path following command
+     * 
+     * @param keepPosition Whether to keep the position of the robot at the end of the command
+     * @param points The points to follow (including the current position)
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, keepPosition);
     }
 
     /**
      * Adds a vision input to the estimated pose of the robot
      * 
-     * @param estimatedPose     The estimated pose of the robot by vision
-     * @param timeOfMeasurement The time of the vision measurement by
-     *                          {@link Timer#getFPGATimestamp()}
+     * @param visionInput The estimated pose of the robot by vision and the time of
+     *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
-    public void addVisionInput(Pose2d estimatedPose, double timeOfMeasurement) {
-        poseEstimator.addVisionMeasurement(estimatedPose, timeOfMeasurement);
+    private void addVisionInput(Pair<Pose2d, Double> visionInput) {
+        poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
     }
 
     /**
@@ -346,7 +385,7 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(pitch);
         else
             sign = Math.signum(roll);
-        return sign * Math.sqrt(pitch * pitch + roll * roll);
+        return sign * Math.hypot(pitch, roll);
     }
 
     /**
@@ -362,16 +401,37 @@ public class Chassis extends SubsystemBase {
             sign = Math.signum(arr[0]);
         else
             sign = Math.signum(arr[1]);
-        return sign * Math.sqrt(arr[0] * arr[0] + arr[1] * arr[1]);
+        return sign * Math.hypot(arr[0], arr[1]);
+    }
+
+    /**
+     * Represents a module on the robot
+     */
+    public enum Module {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
+
+        /**
+         * Gets the index of the module
+         * 
+         * @return The index of the module
+         */
+        public int getIndex() {
+            return ordinal();
+        }
+    }
+
+    /**
+     * Sets up the vision listener, so that {@link #addVisionInput(Pair)} can be
+     * used when vision data is received
+     */
+    private void setupVisionListener() {
+        VisionUtils.setupVisionListener(this::addVisionInput);
     }
 
     @Override
     public void periodic() {
         poseEstimator.update(getGyroRotation(), getModulePositions());
         field.setRobotPose(getPose());
-        Pair<Pose2d, Double> visionInput = VisionUtils.getVisionPose();
-        if (visionInput != null)
-            addVisionInput(visionInput.getFirst(), visionInput.getSecond());
     }
 
     @Override
@@ -383,19 +443,28 @@ public class Chassis extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
 
-        builder.addDoubleProperty("Angle", this::getAngle, null);
+        UtilsGeneral.addDoubleProperty(builder, "Angle", this::getAngle, 2);
 
-        Utils.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
-        Utils.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
+        UtilsGeneral.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
+        UtilsGeneral.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
 
-        Utils.putData("Change Neutral", "Change", new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+        UtilsGeneral.putData("Change Neutral", "Change", new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
 
-        Utils.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
+        UtilsGeneral.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
 
-        Utils.putData("Calibrate Offsets", "Calibrate", new InstantCommand(() -> {
+        UtilsGeneral.putData("Calibrate Offsets", "Calibrate", new InstantCommand(() -> {
             for (var module : modules) {
                 module.calibrateOffset();
             }
         }).ignoringDisable(true));
+
+        UtilsGeneral.addDoubleProperty(builder, "Velocity", () -> {
+            return getVelocity().getNorm();
+        }, 2);
+        UtilsGeneral.addDoubleProperty(builder, "Velocity Angle", () -> {
+            return getVelocity().getAngle().getDegrees();
+        }, 2);
+
+        builder.addBooleanProperty("Is Break", () -> isBreak, null);
     }
 }

@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Chassis;
-import frc.robot.utils.TrajectoryGenerator;
-import frc.robot.utils.Utils;
-import frc.robot.utils.Utils.Zone;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
+import frc.robot.utils.UtilsGeneral;
+import frc.robot.utils.UtilsGeneral.Zone;
 
 /**
  * Drives the robot semi autonomously to the loading zone.
@@ -71,7 +71,7 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !command.isScheduled() || Utils.hasInput(controller);
+        return !command.isScheduled() || UtilsGeneral.hasInput(controller);
     }
 
     @Override

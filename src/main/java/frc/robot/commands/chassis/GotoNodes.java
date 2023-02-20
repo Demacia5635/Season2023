@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Chassis;
-import frc.robot.utils.TrajectoryGenerator;
-import frc.robot.utils.Utils;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * This command is used to go to the nodes on the field from the community.
@@ -99,7 +99,7 @@ public class GotoNodes extends CommandBase {
         gridPosition = Position.BOTTOM;
         nodePosition = Position.BOTTOM;
 
-        Utils.putData("Choose Node", "Choose", new InstantCommand(this::changeTarget).ignoringDisable(true));
+        UtilsGeneral.putData("Choose Node", "Choose", new InstantCommand(this::changeTarget).ignoringDisable(true));
     }
 
     /**
@@ -151,6 +151,6 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Utils.hasInput(controller) || CommandScheduler.getInstance().requiring(chassis) != command;
+        return UtilsGeneral.hasInput(controller) || CommandScheduler.getInstance().requiring(chassis) != command;
     }
 }
