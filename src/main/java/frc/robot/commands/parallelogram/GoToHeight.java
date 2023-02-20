@@ -23,6 +23,7 @@ public class GoToHeight extends CommandBase{
 
     @Override
     public void initialize() {
+        this.desiredAngle = Utils.calculateAngle(SmartDashboard.getNumber("Height", 0), isFront);
         SmartDashboard.putNumber("calculated angle", desiredAngle);
         parallelogram.setBrake();
     }

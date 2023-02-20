@@ -19,7 +19,8 @@ public class Utils {
         if (!isFront) {
             angle = 2 * Math.PI - angle;
         }
-        return toDegrees(angle);
+
+        return toDegrees(angle) - ParallelConstants.HEIGHT_ANGLE_ERROR;
     }
 
     /**
