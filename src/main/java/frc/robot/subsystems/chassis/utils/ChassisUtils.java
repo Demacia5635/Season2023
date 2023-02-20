@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
-import frc.robot.utils.Utils;
+import frc.robot.utils.UtilsGeneral;
 
 public class ChassisUtils {
     /**
@@ -24,7 +24,7 @@ public class ChassisUtils {
          * @return The zone the robot is in
          */
         public static Zone fromRobotLocation(Translation2d robotPosition) {
-            if (Utils.isRedAlliance())
+            if (UtilsGeneral.isRedAlliance())
                 robotPosition = new Translation2d(Constants.FIELD_WIDTH - robotPosition.getX(), robotPosition.getY());
             if (Constants.COMMUNITY_BOTTOM.isInside(robotPosition))
                 return COMMUNITY_BOTTOM;

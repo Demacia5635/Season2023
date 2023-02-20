@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
-import frc.robot.utils.Utils;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * A swerve module
@@ -66,7 +66,7 @@ public class SwerveModule implements Sendable {
      * @return The angle of the module, between 0 and 360 degrees
      */
     public double getAngle() {
-        return Utils.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
+        return UtilsGeneral.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
     }
 
     /**
@@ -105,7 +105,7 @@ public class SwerveModule implements Sendable {
      * @return The target angle, in encoder pulses
      */
     private double calculateTarget(double targetAngle) {
-        double difference = Utils.getAngleDifference(getAngle(), targetAngle);
+        double difference = UtilsGeneral.getAngleDifference(getAngle(), targetAngle);
         return angleMotor.getSelectedSensorPosition() + (difference * SwerveModuleConstants.PULSE_PER_DEGREE);
     }
 
@@ -206,7 +206,7 @@ public class SwerveModule implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        Utils.addDoubleProperty(builder, "Angle", this::getAngle, 2);
+        UtilsGeneral.addDoubleProperty(builder, "Angle", this::getAngle, 2);
         builder.addDoubleProperty("Velocity", this::getVelocity, null);
         builder.addDoubleProperty("Angle Offset", () -> angleOffset, null);
 

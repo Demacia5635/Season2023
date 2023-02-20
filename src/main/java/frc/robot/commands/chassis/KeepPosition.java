@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.chassis;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
-import frc.robot.utils.Utils;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * A command that keeps the robot at a certain position on the field.
@@ -50,7 +50,7 @@ public class KeepPosition extends CommandBase {
         chassis.setVelocities(xPIDController.calculate(currentPose.getX()), yPIDController.calculate(currentPose.getY()), rotationPIDController.calculate(currentPose.getRotation().getRadians()));
         SmartDashboard.putNumber("KP X Error", currentPose.getX() - position.getX());
         SmartDashboard.putNumber("KP Y Error", currentPose.getY() - position.getY());
-        SmartDashboard.putNumber("KP Degrees Error", Utils.getAngleDifference(position.getRotation().getDegrees(), currentPose.getRotation().getDegrees()));
+        SmartDashboard.putNumber("KP Degrees Error", UtilsGeneral.getAngleDifference(position.getRotation().getDegrees(), currentPose.getRotation().getDegrees()));
     }
 
     @Override

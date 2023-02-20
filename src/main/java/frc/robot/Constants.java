@@ -38,6 +38,10 @@ public final class Constants {
     public static final double FIELD_WIDTH = 16.54; // in meters
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
+    public static final double LOADING_HEIGHT = -1;
+    public static final double CUBE_ANGLE = -1;
+    public static final double CONE_ANGLE = -1;
+
     /**
      * The Vision constants.
      */
@@ -69,11 +73,5 @@ public final class Constants {
          * [5] - roll from the camera to the april tag in degrees
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("camtran");
-    }
-
-    public static final class GripperConstants {
-        public static final double CLOSE_POWER = -1;
-        public static final double OPEN_POWER = 1;
-        public static final int MOTOR_ID = 20;
     }
 }

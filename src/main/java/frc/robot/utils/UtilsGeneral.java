@@ -16,7 +16,7 @@ import frc.robot.Constants;
 /**
  * Contains general utility methods
  */
-public final class Utils {
+public final class UtilsGeneral {
     /**
      * Gets the difference between two angles, accounting for wrapping around 360
      * degrees
@@ -177,6 +177,38 @@ public final class Utils {
      */
     public static boolean isRedAlliance() {
         return DriverStation.getAlliance() == Alliance.Red;
+    }
+
+        /**
+     * The zone the robot is in
+     */
+    public static enum Zone {
+        LOADING_ZONE, OPEN_AREA, COMMUNITY_TOP, COMMUNITY_MIDDLE, COMMUNITY_BOTTOM, COMMUNITY_ENTRANCE_TOP,
+        COMMUNITY_ENTRANCE_BOTTOM;
+
+        /**
+         * Gets the zone the robot is in from its position
+         * 
+         * @param robotPosition The robot's position
+         * @return The zone the robot is in
+         */
+        public static Zone fromRobotLocation(Translation2d robotPosition) {
+            if (isRedAlliance())
+                robotPosition = new Translation2d(Constants.FIELD_WIDTH - robotPosition.getX(), robotPosition.getY());
+            if (Constants.COMMUNITY_BOTTOM.isInside(robotPosition))
+                return COMMUNITY_BOTTOM;
+            if (Constants.COMMUNITY_MIDDLE.isInside(robotPosition))
+                return COMMUNITY_MIDDLE;
+            if (Constants.COMMUNITY_TOP.isInside(robotPosition))
+                return COMMUNITY_TOP;
+            if (Constants.ENTRANCE_BOTTOM.isInside(robotPosition))
+                return COMMUNITY_ENTRANCE_BOTTOM;
+            if (Constants.ENTRANCE_TOP.isInside(robotPosition))
+                return COMMUNITY_ENTRANCE_TOP;
+            if (Constants.LOADING_ZONE.isInside(robotPosition))
+                return LOADING_ZONE;
+            return OPEN_AREA;
+        }
     }
 
     /**
