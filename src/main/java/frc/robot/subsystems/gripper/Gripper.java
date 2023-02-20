@@ -50,7 +50,7 @@ public class Gripper extends SubsystemBase {
    * @return Lim switch state
    */
   private boolean isLimitSwitchOpen(){
-    return(motor.isFwdLimitSwitchClosed() == 1);
+    return motor.isFwdLimitSwitchClosed() == 1;
   }
 
   @Override
