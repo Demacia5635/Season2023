@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
@@ -18,9 +17,9 @@ import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
-import frc.robot.commands.parallelogram.GoToBack;
+import frc.robot.commands.parallelogram.CalibrateParallelogram;
+import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.PickUp;
-import frc.robot.commands.parallelogram.PutGamepiece;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
@@ -43,7 +42,7 @@ public class RobotContainer {
     private final Gripper gripper;
 
     public final class RobotFinalCommands {
-        
+
     }
 
     /**
@@ -59,7 +58,6 @@ public class RobotContainer {
         configureButtonBindings();
 
         SmartDashboard.putData("pickup", new PickUp(parallelogram, chassis));
-        SmartDashboard.putData("put gamepiece", new PutGamepiece(parallelogram, chassis));
     }
 
     /**
@@ -81,31 +79,33 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, controller.getHID(),
+                new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
+                .andThen(gripper.getCloseCommand(),
+                        new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
-        Command open = gripper.getOpenCommand();
-        Command close = gripper.getCloseCommand();
+        Command unload = new GotoCommunity(chassis, controller.getHID())
+                .andThen(
+                        new GotoNodes(chassis, controller.getHID(),
+                                new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
+                                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
-        Command load = new GotoLoadingZone(chassis, controller.getHID())
-        .alongWith(new PickUp(parallelogram, chassis))
-        .andThen(open, close, new GoToBack(parallelogram));
+        controller.rightBumper().onTrue(gripper.getOpenCommand());
+        controller.leftBumper().onTrue(gripper.getCloseCommand());
 
-        Command unload = new GotoNodes(chassis, controller.getHID())
-        .alongWith(new PutGamepiece(parallelogram, chassis))
-        .andThen(open, close, new GoToBack(parallelogram));
+        // Command loadIfInPlace = new PickUp(parallelogram, chassis)
+        // .andThen(open, close, new GoToBack(parallelogram));
 
-        Command loadIfInPlace = new PickUp(parallelogram, chassis)
-        .andThen(open, close, new GoToBack(parallelogram));
-
-        Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
-        .andThen(open, close, new GoToBack(parallelogram));
+        // Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
+        // .andThen(open, close, new GoToBack(parallelogram));
 
         controller.a().onTrue(load);
         controller.b().onTrue(unload);
         controller.y().onTrue(new GotoCommunity(chassis, controller.getHID()));
         controller.x().onTrue(new GoUpRamp(chassis, 1.5));
 
-        controller.leftBumper().onTrue(loadIfInPlace);
-        controller.rightBumper().onTrue(unloadIfInPlace);
+        // controller.leftBumper().onTrue(loadIfInPlace);
+        // controller.rightBumper().onTrue(unloadIfInPlace);
 
     }
 
@@ -116,5 +116,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return null;
+    }
+
+    public void onEnable() {
+        new CalibrateParallelogram(parallelogram).schedule();
     }
 }

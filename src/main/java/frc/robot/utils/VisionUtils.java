@@ -45,7 +45,7 @@ public class VisionUtils {
             return null;
 
         double[] robotPose = VisionConstants.ROBOT_POSE_ENTRY.getDoubleArray(new double[0]);
-        if (robotPose.length != 6)
+        if (robotPose.length != 7)
             return null;
 
         double latency = VisionConstants.LIMELIGHT_LATENCY_ENTRY.getDouble(0) + VisionConstants.LIMELIGHT_CAPTURE_LATENCY_ENTRY.getDouble(0);

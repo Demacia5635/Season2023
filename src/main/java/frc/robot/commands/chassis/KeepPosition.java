@@ -47,10 +47,28 @@ public class KeepPosition extends CommandBase {
     @Override
     public void execute() {
         Pose2d currentPose = chassis.getPose();
-        chassis.setVelocities(xPIDController.calculate(currentPose.getX()), yPIDController.calculate(currentPose.getY()), rotationPIDController.calculate(currentPose.getRotation().getRadians()));
+        double vx, vy, vo;
+        if (xPIDController.atSetpoint())
+            vx = 0;
+        else
+            vx = xPIDController.calculate(currentPose.getX());
+        if (yPIDController.atSetpoint())
+            vy = 0;
+        else
+            vy = yPIDController.calculate(currentPose.getY());
+        if (rotationPIDController.atSetpoint())
+            vo = 0;
+        else
+            vo = rotationPIDController.calculate(currentPose.getRotation().getRadians());
+        chassis.setVelocities(vx, vy, vo);
         SmartDashboard.putNumber("KP X Error", currentPose.getX() - position.getX());
         SmartDashboard.putNumber("KP Y Error", currentPose.getY() - position.getY());
         SmartDashboard.putNumber("KP Degrees Error", UtilsGeneral.getAngleDifference(position.getRotation().getDegrees(), currentPose.getRotation().getDegrees()));
+    }
+
+    @Override
+    public boolean isFinished() {
+        return xPIDController.atSetpoint() && yPIDController.atSetpoint() && rotationPIDController.atSetpoint();
     }
 
     @Override

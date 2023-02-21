@@ -66,16 +66,16 @@ public class ChassisConstants {
 
     public static final int GYRO_ID = 14;
 
-    public static final double MAX_SPEED = 4; // meters per second
-    public static final double MAX_ACCELERATION = 4; // meters per second squared
+    public static final double MAX_SPEED = 2; // meters per second
+    public static final double MAX_ACCELERATION = 2; // meters per second squared
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_SPEED, MAX_ACCELERATION);
     public static final double MAX_DRIVE_SPEED = 3.5;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     public static final double AUTO_TRANSLATION_KP = 2;
-    public static final double AUTO_TRANSLATION_KI = 0;
+    public static final double AUTO_TRANSLATION_KI = 0.1;
     public static final double AUTO_ROTATION_KP = 1;
-    public static final double AUTO_ROTATION_KI = 0;
+    public static final double AUTO_ROTATION_KI = 0.05;
 
     public static final double TELEOP_ROTATION_KP = 4;
     public static final double TELEOP_ROTATION_KI = 0.3;
@@ -83,5 +83,5 @@ public class ChassisConstants {
     public static final double TELEOP_ANGLE_TOLERANCE = Math.PI / 120;
 
     public static final double AUTO_ANGLE_TOLERANCE = Math.PI / 360;
-    public static final double AUTO_TRANSLATION_TOLERANCE = 0.01;
+    public static final double AUTO_TRANSLATION_TOLERANCE = 0.03;
 }

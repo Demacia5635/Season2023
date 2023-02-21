@@ -26,9 +26,8 @@ public class GotoNodes extends CommandBase {
             { new Translation2d(1.38, 3.87), new Translation2d(1.38, 4.43), new Translation2d(1.38, 4.99) }
     }; // All relative to blue alliance
 
-    // TODO: Fix these values
     /** Distance the robot should be from the node of the cube */
-    private static final double DISTANCE_CUBE = 0.75;
+    private static final double DISTANCE_CUBE = 0.67;
     /** Distance the robot should be from the node of the cone */
     private static final double DISTANCE_CONE = 0.67;
 
@@ -63,6 +62,25 @@ public class GotoNodes extends CommandBase {
     private Position nodePosition;
 
     private boolean isScheduled;
+    private final Command onPosition;
+
+    /**
+     * Constructor for the GotoNodes command.
+     * 
+     * @param chassis
+     * @param controller
+     */
+    public GotoNodes(Chassis chassis, XboxController controller, Command onPosition) {
+        this.chassis = chassis;
+        this.controller = controller;
+        this.onPosition = onPosition;
+        gridPositionChooser = new SendableChooser<>();
+        nodePositionChooser = new SendableChooser<>();
+        command = new InstantCommand();
+        isScheduled = false;
+
+        initChoosers();
+    }
 
     /**
      * Constructor for the GotoNodes command.
@@ -73,6 +91,7 @@ public class GotoNodes extends CommandBase {
     public GotoNodes(Chassis chassis, XboxController controller) {
         this.chassis = chassis;
         this.controller = controller;
+        onPosition = new InstantCommand();
         gridPositionChooser = new SendableChooser<>();
         nodePositionChooser = new SendableChooser<>();
         command = new InstantCommand();
@@ -117,7 +136,7 @@ public class GotoNodes extends CommandBase {
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(onPosition.asProxy(), generator.generate(chassis.getPose()));
     }
 
     @Override

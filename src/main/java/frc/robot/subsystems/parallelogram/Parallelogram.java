@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,9 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
-import frc.robot.commands.parallelogram.GoToHeight;
-import frc.robot.commands.parallelogram.PickUp;
-import frc.robot.commands.parallelogram.ResetCalibrate;
 
 /**
  * Paralellogram subsystem.
@@ -55,7 +51,7 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
                 new CalibrateParallelogram(this));
         SmartDashboard.putData("Parallelogram/Go to angle",
-                new GoToAngle(this, 90));
+                new GoToAngle(this, 20));
     }
 
     /**

@@ -1,6 +1,5 @@
 package frc.robot.commands.parallelogram;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
@@ -8,6 +7,7 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 public class GoToAngle extends CommandBase {
     private Parallelogram parallelogram;
     private double desiredAngle;
+    private boolean isFinished;
 
     /**
      * Command's constructor.
@@ -21,22 +21,26 @@ public class GoToAngle extends CommandBase {
 
     @Override
     public void initialize() {
+        isFinished = false;
         parallelogram.setBrake();
     }
 
     @Override
     public void execute() {
-        if (parallelogram.getAngle() - desiredAngle > 0) {
-            parallelogram.setPower(-ParallelConstants.GOTOANGLE_MOTOR_POWER);
+        double diff = desiredAngle - parallelogram.getAngle();
+        if (Math.abs(diff) < 5) {
+            parallelogram.setPower(Math.signum(diff) * 0.1);
         } else {
-            parallelogram.setPower(ParallelConstants.GOTOANGLE_MOTOR_POWER);
+            parallelogram.setPower(Math.signum(diff) * ParallelConstants.GOTOANGLE_MOTOR_POWER);
         }
 
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(parallelogram.getAngle() - desiredAngle) < ParallelConstants.TOLERANCE_DEGREES;
+        if (!isFinished)
+            isFinished = Math.abs(parallelogram.getAngle() - desiredAngle) < ParallelConstants.TOLERANCE_DEGREES;
+        return isFinished;
     }
 
     public void end(boolean interrupted) {

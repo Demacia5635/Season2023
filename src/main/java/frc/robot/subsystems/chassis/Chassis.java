@@ -243,7 +243,7 @@ public class Chassis extends SubsystemBase {
      * @return The path following command
      */
     public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
-            boolean resetPose, boolean keepPosition) {
+            boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     if (resetPose)
@@ -259,9 +259,18 @@ public class Chassis extends SubsystemBase {
                                 0),
                         new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
-                        this).andThen(new KeepPosition(this, new Pose2d(trajectory.getEndState().poseMeters.getTranslation(), trajectory.getEndState().holonomicRotation))));
+                        this).andThen(
+                                new KeepPosition(this,
+                                        new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
+                                                trajectory.getEndState().holonomicRotation))
+                                        .alongWith(onTrajectoryEnd)));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
+    }
+
+    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
+            boolean resetPose, boolean keepPosition) {
+        return createPathFollowingCommand(trajectory, events, resetPose, keepPosition, new InstantCommand());
     }
 
     /**
@@ -333,8 +342,9 @@ public class Chassis extends SubsystemBase {
     /**
      * Creates a path following command
      * 
-     * @param keepPosition Whether to keep the position of the robot at the end of the command
-     * @param points The points to follow (including the current position)
+     * @param keepPosition Whether to keep the position of the robot at the end of
+     *                     the command
+     * @param points       The points to follow (including the current position)
      * @return the path following command
      */
     public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
@@ -342,6 +352,13 @@ public class Chassis extends SubsystemBase {
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, new HashMap<>(), false, keepPosition);
+    }
+
+    public Command createPathFollowingCommand(Command onTrajectoryEnd, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, new HashMap<>(), false, true, onTrajectoryEnd);
     }
 
     /**
@@ -448,7 +465,8 @@ public class Chassis extends SubsystemBase {
         UtilsGeneral.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
         UtilsGeneral.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
 
-        UtilsGeneral.putData("Change Neutral", "Change", new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+        UtilsGeneral.putData("Change Neutral", "Change",
+                new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
 
         UtilsGeneral.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
 

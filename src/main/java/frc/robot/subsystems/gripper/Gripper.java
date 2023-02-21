@@ -75,7 +75,7 @@ public class Gripper extends SubsystemBase {
    * @return Open COMMAND
    */
   public Command getOpenCommand(){
-    return new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen);
+    return new StartEndCommand(this::open, ()-> setPower(0), this).until(this::isLimitSwitchOpen);
   }
 
   /**
@@ -83,7 +83,7 @@ public class Gripper extends SubsystemBase {
    * @return Close COMMAND
    */
   public Command getCloseCommand(){
-    return new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose);
+    return new StartEndCommand(this::close, ()-> {} , this).until(this::isLimitSwitchClose);
   }
 
   @Override

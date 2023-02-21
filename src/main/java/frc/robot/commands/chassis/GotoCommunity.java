@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
@@ -62,14 +63,15 @@ public class GotoCommunity extends CommandBase {
                     Rotation2d.fromDegrees(180));
         }
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
 
         command.schedule();
     }
 
     @Override
     public boolean isFinished() {
-        return !command.isScheduled() || UtilsGeneral.hasInput(controller);
+        return CommandScheduler.getInstance().requiring(chassis) != command || UtilsGeneral.hasInput(controller) 
+                || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6 : chassis.getPose().getX() < 2.6);
     }
 
     @Override

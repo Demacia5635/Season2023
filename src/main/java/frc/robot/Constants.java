@@ -38,9 +38,8 @@ public final class Constants {
     public static final double FIELD_WIDTH = 16.54; // in meters
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
-    public static final double LOADING_ANGLE = -1;
-    public static final double CUBE_ANGLE = 10;
-    public static final double CONE_ANGLE = 10;
+    public static final double LOADING_ANGLE = 36;
+    public static final double DEPLOY_ANGLE = 20;
 
     /**
      * The Vision constants.
@@ -72,6 +71,6 @@ public final class Constants {
          * [4] - yaw from the camera to the april tag in degrees<p>
          * [5] - roll from the camera to the april tag in degrees
          */
-        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("camtran");
+        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("targetpose_cameraspace");
     }
 }
