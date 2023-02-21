@@ -151,7 +151,7 @@ public class Chassis extends SubsystemBase {
      */
     private void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ChassisConstants.MAX_SPEED);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < modules.length; i++) {
             states[i] = SwerveModuleState.optimize(states[i], modules[i].getAngleRotation());
             modules[i].setState(states[i]);
         }

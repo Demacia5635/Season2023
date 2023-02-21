@@ -1,7 +1,10 @@
 package frc.robot.utils;
 
 import java.util.function.DoubleSupplier;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
@@ -204,5 +207,12 @@ public final class Utils {
     public static void putData(String key, String name, Sendable value) {
         SendableRegistry.add(value, name);
         SmartDashboard.putData(key, value);
+    }
+
+    public static <T, E> Stream<Pair<T, E>> streamTogether(T[] first, E[] second) {
+        if (first.length != second.length) {
+            throw new IllegalArgumentException("Arrays must be the same length");
+        }
+        return IntStream.range(0, first.length).mapToObj(i -> new Pair<>(first[i], second[i]));
     }
 }
