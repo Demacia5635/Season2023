@@ -89,7 +89,7 @@ public class Gripper extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("Current", this::getCurrent, null);
 
-        SmartDashboard.putData("Calibrate", getOpenCommand());
+        SmartDashboard.putData("Open", getOpenCommand());
         SmartDashboard.putData("Close Cube", getCloseCubeCommand());
         SmartDashboard.putData("Close Cone", getCloseConeCommand());
     }
