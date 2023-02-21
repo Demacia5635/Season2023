@@ -70,4 +70,10 @@ public final class Constants {
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("camtran");
     }
+
+    public static final class GripperConstants {
+        public static final double CLOSE_POWER = -1;
+        public static final double OPEN_POWER = 1;
+        public static final int MOTOR_ID = 20;
+    }
 }
