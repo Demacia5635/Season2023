@@ -59,6 +59,7 @@ public class RobotContainer {
         configureButtonBindings();
 
         SmartDashboard.putData("pickup", new PickUp(parallelogram, chassis));
+        SmartDashboard.putData("put gamepiece", new PutGamepiece(parallelogram, chassis));
     }
 
     /**

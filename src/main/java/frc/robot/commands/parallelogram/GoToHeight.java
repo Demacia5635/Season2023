@@ -32,7 +32,6 @@ public class GoToHeight extends CommandBase{
         else {
             parallelogram.setPower(ParallelConstants.GOTOANGLE_MOTOR_POWER);
         }
-       
     }
 
     @Override
