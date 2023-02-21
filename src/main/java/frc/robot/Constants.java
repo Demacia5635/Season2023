@@ -51,16 +51,14 @@ public final class Constants {
         
         /**
          * An array of doubles with the following values:<p>
-         * [0] - meters from the middle of the field in the x axis<p>
-         * [1] - meters from the middle of the field in the y axis<p>
+         * [0] - meters from the corner of the blue alliance x axis<p>
+         * [1] - meters from the corner of the blue alliance y axis<p>
          * [2] - meters from the the field carpet in the z axis<p>
          * [3] - roll in degrees<p>
          * [4] - pitch in degrees<p>
          * [5] - yaw in degrees
          */
-        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose");
-        public static final NetworkTableEntry LIMELIGHT_CAPTURE_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("cl"); // in ms
-        public static final NetworkTableEntry LIMELIGHT_LATENCY_ENTRY = LIMELIGHT_TABLE.getEntry("tl"); // in ms
+        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose_wpiblue");
 
         /**
          * An array of doubles with the following values:<p>
@@ -72,5 +70,7 @@ public final class Constants {
          * [5] - roll from the camera to the april tag in degrees
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("targetpose_cameraspace");
+
+        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4;
     }
 }

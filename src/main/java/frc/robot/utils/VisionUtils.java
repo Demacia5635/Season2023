@@ -48,9 +48,7 @@ public class VisionUtils {
         if (robotPose.length != 7)
             return null;
 
-        double latency = VisionConstants.LIMELIGHT_LATENCY_ENTRY.getDouble(0) + VisionConstants.LIMELIGHT_CAPTURE_LATENCY_ENTRY.getDouble(0);
-        robotPose[0] = Constants.FIELD_WIDTH / 2 + robotPose[0];
-        robotPose[1] = robotPose[1] + Constants.FIELD_HEIGHT / 2;
+        double latency = robotPose[6];
 
         Rotation2d robotRotation = Rotation2d.fromDegrees(robotPose[5]);
         Translation2d robotTranslation = new Translation2d(robotPose[0], robotPose[1]);
@@ -61,7 +59,7 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
         SmartDashboard.putNumber("OurLimeLight/Angle", robotRotation.getDegrees());
-        if (distance > 2.5)
+        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT)
             return null;
 
         return new Pair<Pose2d, Double>(
