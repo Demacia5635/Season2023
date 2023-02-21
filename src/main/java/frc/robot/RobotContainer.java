@@ -35,7 +35,8 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController main = new CommandXboxController(0);
+    private final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private static RobotContainer instance;
     public Parallelogram parallelogram;
@@ -51,7 +52,7 @@ public class RobotContainer {
     private RobotContainer() {
         chassis = new Chassis();
         parallelogram = new Parallelogram();
-        chassis.setDefaultCommand(new Drive(chassis, controller.getHID()));
+        chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
@@ -79,19 +80,19 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, controller.getHID(),
+        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, main.getHID(),
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
                 .andThen(gripper.getCloseCommand(),
                         new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
-        Command unload = new GotoCommunity(chassis, controller.getHID())
+        Command unload = new GotoCommunity(chassis, main.getHID())
                 .andThen(
-                        new GotoNodes(chassis, controller,
+                        new GotoNodes(chassis, main.getHID(), secondary,
                                 new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
                                         gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
-        controller.rightBumper().onTrue(gripper.getOpenCommand());
-        controller.leftBumper().onTrue(gripper.getCloseCommand());
+        main.rightBumper().onTrue(gripper.getOpenCommand());
+        main.leftBumper().onTrue(gripper.getCloseCommand());
 
         // Command loadIfInPlace = new PickUp(parallelogram, chassis)
         // .andThen(open, close, new GoToBack(parallelogram));
@@ -99,10 +100,10 @@ public class RobotContainer {
         // Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
         // .andThen(open, close, new GoToBack(parallelogram));
 
-        controller.a().onTrue(load);
-        controller.b().onTrue(unload);
-        controller.y().onTrue(new GotoCommunity(chassis, controller.getHID()));
-        controller.x().onTrue(new GoUpRamp(chassis, 1.5));
+        main.a().onTrue(load);
+        main.b().onTrue(unload);
+        main.y().onTrue(new GotoCommunity(chassis, main.getHID()));
+        main.x().onTrue(new GoUpRamp(chassis, 1.5));
 
         // controller.leftBumper().onTrue(loadIfInPlace);
         // controller.rightBumper().onTrue(unloadIfInPlace);

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -66,7 +67,7 @@ public class GotoNodes extends CommandBase {
     }
 
     private final Chassis chassis;
-    private final CommandXboxController controller;
+    private final XboxController main;
     private Command command;
 
     private Position gridPosition;
@@ -80,14 +81,26 @@ public class GotoNodes extends CommandBase {
      * Constructor for the GotoNodes command.
      * 
      * @param chassis
-     * @param controller
+     * @param secondary
      */
-    public GotoNodes(Chassis chassis, CommandXboxController controller, Command onPosition) {
+    public GotoNodes(Chassis chassis, XboxController main, CommandXboxController secondary, Command onPosition) {
+        nodePosition = Position.BOTTOM;
+        gridPosition = Position.BOTTOM;
+        secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
+        secondary.x().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
+        secondary.x().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
+        secondary.y().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
+        secondary.y().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.MIDDLE)).ignoringDisable(true));
+        secondary.y().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
+        secondary.b().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
+        secondary.b().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
+        secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         this.chassis = chassis;
-        this.controller = controller;
+        this.main = main;
         this.onPosition = onPosition;
         command = new InstantCommand();
         isScheduled = false;
+        SmartDashboard.putData(this);
     }
 
     /**
@@ -96,26 +109,8 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param controller
      */
-    public GotoNodes(Chassis chassis, CommandXboxController controller) {
-        nodePosition = Position.BOTTOM;
-        gridPosition = Position.BOTTOM;
-        controller.x().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
-        controller.x().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
-        controller.x().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
-        controller.y().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
-        controller.y().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.MIDDLE)).ignoringDisable(true));
-        controller.y().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
-        controller.b().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
-        controller.b().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
-        controller.b().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
-        
-        this.chassis = chassis;
-        this.controller = controller;
-        onPosition = new InstantCommand();
-        command = new InstantCommand();
-        isScheduled = false;
-        SmartDashboard.putData(this);
-
+    public GotoNodes(Chassis chassis, XboxController main, CommandXboxController secondary) {   
+        this(chassis, main, secondary, new InstantCommand());
     }
 
     private void doChangeTarget(Position grid, Position node){
@@ -170,7 +165,7 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return UtilsGeneral.hasInput(controller.getHID()) || CommandScheduler.getInstance().requiring(chassis) != command;
+        return UtilsGeneral.hasInput(main) || CommandScheduler.getInstance().requiring(chassis) != command;
     }
 
     @Override
