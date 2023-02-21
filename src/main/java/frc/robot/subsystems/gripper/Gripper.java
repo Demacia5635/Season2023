@@ -87,7 +87,7 @@ public class Gripper extends SubsystemBase {
    * @return Close COMMAND
    */
   public Command getCloseCommand(){
-    return new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose);
+    return new StartEndCommand(this::close, null, this).until(this::isLimitSwitchClose);
   }
 
   @Override
@@ -95,6 +95,6 @@ public class Gripper extends SubsystemBase {
     builder.addBooleanProperty("Limit Switch close", this::isLimitSwitchClose, null);
     builder.addBooleanProperty("Limit Switch open", this::isLimitSwitchOpen, null);
     SmartDashboard.putData("Open Gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen));
-    SmartDashboard.putData("Close Gripper",  new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose));
+    SmartDashboard.putData("Close Gripper",  new StartEndCommand(this::close, null , this).until(this::isLimitSwitchClose));
   }
 }
