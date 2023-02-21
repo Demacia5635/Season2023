@@ -3,14 +3,14 @@ package frc.robot.commands.chassis;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.UtilsGeneral;
@@ -49,16 +49,28 @@ public class GotoNodes extends CommandBase {
                     return -1;
             }
         }
+
+        public static Position fromAllianceRelative(Position position) {
+            if (UtilsGeneral.isRedAlliance()) {
+                switch (position) {
+                    case BOTTOM:
+                        return TOP;
+                    case MIDDLE:
+                        return MIDDLE;
+                    default:
+                        return BOTTOM;
+                }
+            }
+            return position;
+        }
     }
 
     private final Chassis chassis;
-    private final XboxController controller;
+    private final CommandXboxController controller;
     private Command command;
 
-    private final SendableChooser<Position> gridPositionChooser;
     private Position gridPosition;
 
-    private final SendableChooser<Position> nodePositionChooser;
     private Position nodePosition;
 
     private boolean isScheduled;
@@ -70,16 +82,12 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param controller
      */
-    public GotoNodes(Chassis chassis, XboxController controller, Command onPosition) {
+    public GotoNodes(Chassis chassis, CommandXboxController controller, Command onPosition) {
         this.chassis = chassis;
         this.controller = controller;
         this.onPosition = onPosition;
-        gridPositionChooser = new SendableChooser<>();
-        nodePositionChooser = new SendableChooser<>();
         command = new InstantCommand();
         isScheduled = false;
-
-        initChoosers();
     }
 
     /**
@@ -88,39 +96,32 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param controller
      */
-    public GotoNodes(Chassis chassis, XboxController controller) {
+    public GotoNodes(Chassis chassis, CommandXboxController controller) {
+        nodePosition = Position.BOTTOM;
+        gridPosition = Position.BOTTOM;
+        controller.x().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
+        controller.x().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
+        controller.x().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
+        controller.y().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
+        controller.y().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.MIDDLE)).ignoringDisable(true));
+        controller.y().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
+        controller.b().and(controller.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
+        controller.b().and(controller.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
+        controller.b().and(controller.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
+        
         this.chassis = chassis;
         this.controller = controller;
         onPosition = new InstantCommand();
-        gridPositionChooser = new SendableChooser<>();
-        nodePositionChooser = new SendableChooser<>();
         command = new InstantCommand();
         isScheduled = false;
+        SmartDashboard.putData(this);
 
-        initChoosers();
     }
 
-    /**
-     * Initialize the sendable choosers.
-     */
-    private void initChoosers() {
-        gridPositionChooser.setDefaultOption("Bottom", Position.BOTTOM);
-        gridPositionChooser.addOption("Middle", Position.MIDDLE);
-        gridPositionChooser.addOption("Top", Position.TOP);
-
-        nodePositionChooser.setDefaultOption("ConeBottom", Position.BOTTOM);
-        nodePositionChooser.addOption("Cube", Position.MIDDLE);
-        nodePositionChooser.addOption("ConeTop", Position.TOP);
-
-        SmartDashboard.putData("Grid", gridPositionChooser);
-        SmartDashboard.putData("Node", nodePositionChooser);
-
-        gridPosition = Position.BOTTOM;
-        nodePosition = Position.BOTTOM;
-
-        UtilsGeneral.putData("Choose Node", "Choose", new InstantCommand(this::changeTarget).ignoringDisable(true));
+    private void doChangeTarget(Position grid, Position node){
+        changeTarget(Position.fromAllianceRelative(grid), Position.fromAllianceRelative(node));
     }
-
+    
     /**
      * Initialize the command.
      */
@@ -142,16 +143,15 @@ public class GotoNodes extends CommandBase {
     @Override
     public void initialize() {
         isScheduled = true;
-        changeTarget();
     }
 
     /**
      * Changes the target of the command to the target selected in the Smart
      * Dashboard.
      */
-    private void changeTarget() {
-        gridPosition = gridPositionChooser.getSelected();
-        nodePosition = nodePositionChooser.getSelected();
+    private void changeTarget(Position grid, Position node) {
+        gridPosition = grid;
+        nodePosition = node;
 
         if (command.isScheduled()) {
             command.cancel();
@@ -170,6 +170,41 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return UtilsGeneral.hasInput(controller) || CommandScheduler.getInstance().requiring(chassis) != command;
+        return UtilsGeneral.hasInput(controller.getHID()) || CommandScheduler.getInstance().requiring(chassis) != command;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("Grid selected pos", ()->{
+            switch (gridPosition) {
+                case BOTTOM:
+                    return "3";
+                    
+                case MIDDLE:
+                    return "2";
+                
+                case TOP:
+                    return "1";
+            
+                default:
+                    return "NON SELECTED";
+            }
+        }, null);
+
+        builder.addStringProperty("Node selected pos", ()->{
+            switch (nodePosition) {
+                case BOTTOM:
+                    return "C";
+                    
+                case MIDDLE:
+                    return "B";
+                
+                case TOP:
+                    return "A";
+            
+                default:
+                    return "NON SELECTED";
+            }
+        }, null);
     }
 }

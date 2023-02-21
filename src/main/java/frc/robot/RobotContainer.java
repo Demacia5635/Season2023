@@ -86,7 +86,7 @@ public class RobotContainer {
 
         Command unload = new GotoCommunity(chassis, controller.getHID())
                 .andThen(
-                        new GotoNodes(chassis, controller.getHID(),
+                        new GotoNodes(chassis, controller,
                                 new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
                                         gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
