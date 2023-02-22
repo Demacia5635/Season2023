@@ -72,7 +72,7 @@ public class Gripper extends SubsystemBase {
 
   /**
    * Creates a new StartEndCommand to open the gripper with the end condition of the limit switch being pressed
-   * @return Open COMMAND
+   * @return Open command
    */
   public Command getOpenCommand(){
     return new StartEndCommand(this::open, ()-> setPower(0), this).until(this::isLimitSwitchOpen);
@@ -80,7 +80,7 @@ public class Gripper extends SubsystemBase {
 
   /**
    * Creates a new StartEndCommand to Close the gripper with the end condition of the limit switch being pressed
-   * @return Close COMMAND
+   * @return Close command
    */
   public Command getCloseCommand(){
     return new StartEndCommand(this::close, ()-> {} , this).until(this::isLimitSwitchClose);
