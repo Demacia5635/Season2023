@@ -109,12 +109,12 @@ public class RobotContainer {
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
 
-        main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
-        main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
+        main.leftBumper().onTrue(gripper.getSwitchPositionCommand());
+        main.rightBumper().onTrue(new CalibrateParallelogram(parallelogram));
 
         main.a().onTrue(load);
-        main.b().onTrue(unload);
-        main.x().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        main.x().onTrue(unload);
+        main.b().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
