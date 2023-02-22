@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants;
 import frc.robot.utils.UtilsGeneral;
 
@@ -65,45 +64,5 @@ public class ChassisUtils {
                 velocity = -velocity;
         }
         return new PathPoint(position, heading, holonomicRotation, velocity);
-    }
-
-    /**
-     * An enum for the type of field controller
-     */
-    public static enum FieldControllerType {
-        X, Y, HEADING
-    }
-
-    /**
-     * Creates a PIDController that updates the field with the robot's position
-     * 
-     * @param kP    The P value
-     * @param kI    The I value
-     * @param kD    The D value
-     * @param field The field to update
-     * @param type  The type of controller
-     * @return The PIDController
-     */
-    public static CoolPIDController createFieldController(double kP, double kI, double kD, Field2d field,
-            FieldControllerType type) {
-        switch (type) {
-            case X:
-                return new CoolPIDController(kP, kI, kD, (x) -> {
-                    field.setRobotPose(x, field.getRobotPose().getY(),
-                            field.getRobotPose().getRotation());
-                });
-            case Y:
-                return new CoolPIDController(kP, kI, kD, (y) -> {
-                    field.setRobotPose(field.getRobotPose().getX(), y,
-                            field.getRobotPose().getRotation());
-                });
-            case HEADING:
-                return new CoolPIDController(kP, kI, kD, (heading) -> {
-                    field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(),
-                            new Rotation2d(heading));
-                });
-            default:
-                return null;
-        }
     }
 }
