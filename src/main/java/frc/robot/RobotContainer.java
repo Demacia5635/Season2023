@@ -62,7 +62,7 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        goToNodes = new GotoNodes(chassis, null, secondary);
+        goToNodes = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
@@ -99,10 +99,8 @@ public class RobotContainer {
                         new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(
-                        new GotoNodes(chassis, secondary,
-                                new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
-                                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
+                .andThen(goToNodes.asProxy().andThen(
+                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
