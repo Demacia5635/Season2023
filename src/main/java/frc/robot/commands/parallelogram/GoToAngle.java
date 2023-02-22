@@ -44,6 +44,7 @@ public class GoToAngle extends CommandBase {
     }
 
     public void end(boolean interrupted) {
+        System.out.println("angle end");
         parallelogram.setPower(0);
     }
 

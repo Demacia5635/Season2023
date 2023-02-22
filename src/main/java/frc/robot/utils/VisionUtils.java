@@ -57,7 +57,6 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        SmartDashboard.putNumber("OurLimeLight/Angle", robotRotation.getDegrees());
         if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT)
             return null;
 

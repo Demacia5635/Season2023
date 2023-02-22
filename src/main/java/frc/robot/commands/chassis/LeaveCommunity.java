@@ -44,10 +44,10 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(2.06, 4.02), new Rotation2d()),
-                            Rotation2d.fromDegrees(70.79));
+                    generator.add(new Pose2d(new Translation2d(2.06, 4.89), Rotation2d.fromDegrees(180)),
+                            Rotation2d.fromDegrees(0));
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(4.28, 4.89), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(4.28, 4.89), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(-3.47));
                 default:
                     break;
@@ -56,10 +56,10 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(2.23, 0.65), new Rotation2d()),
-                            Rotation2d.fromDegrees(5.44));
+                    generator.add(new Pose2d(new Translation2d(2.5, 0.65), Rotation2d.fromDegrees(180)),
+                            Rotation2d.fromDegrees(0));
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(5.57, 0.70), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(6, 0.70), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(1.59));
                 default:
                     break;
@@ -73,6 +73,7 @@ public class LeaveCommunity extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        System.out.println("left community");
         command.cancel();
         chassis.stop();
     }

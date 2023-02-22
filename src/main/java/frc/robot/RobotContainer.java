@@ -50,7 +50,8 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
-    private final GotoNodes goToNodes;
+
+    private final Command autoCommand;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,10 +63,14 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        goToNodes = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
+       autoCommand = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
+               .andThen(new CalibrateParallelogram(parallelogram)).andThen(new LeaveCommunity(chassis, TopOrBottom.BOTTOM).asProxy()).andThen(() -> {
+                        System.out.println("auto ended");
+                });
+        
         leds = new AddressableLED(0);
         leds.setLength(64);
         buffer = new AddressableLEDBuffer(64);
@@ -99,7 +104,7 @@ public class RobotContainer {
                         new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(goToNodes.asProxy().andThen(
+                .andThen(new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
                         gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
@@ -144,9 +149,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
-            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP).alongWith(new CalibrateParallelogram(parallelogram)));
-            return autonomous; 
+        return autoCommand;
     }
 
     public void onTeleopInit() {

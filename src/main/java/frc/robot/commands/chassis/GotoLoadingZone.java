@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -45,7 +46,9 @@ public class GotoLoadingZone extends CommandBase {
             } else {
                 this.position = Position.TOP;
             }
-        }));
+        }).ignoringDisable(true));
+
+        SmartDashboard.putData(this);
     }
 
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Position position) {
@@ -121,6 +124,7 @@ public class GotoLoadingZone extends CommandBase {
         command.cancel();
         onEntry.cancel();
         chassis.stop();
+        System.out.println("loading zone ended, " + interrupted);
     }
 
     @Override

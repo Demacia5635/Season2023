@@ -268,9 +268,10 @@ public class Chassis extends SubsystemBase {
                         new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
                         this).andThen(
-                                new KeepPosition(this,
+                                (keepPosition ? new KeepPosition(this,
                                         new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
                                                 trajectory.getEndState().holonomicRotation))
+                                        : new InstantCommand())
                                         .alongWith(onTrajectoryEnd)));
 
         return new FollowPathWithEvents(command, trajectory.getMarkers(), events);

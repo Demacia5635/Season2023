@@ -135,6 +135,7 @@ public class GotoNodes extends CommandBase {
     @Override
     public void initialize() {
         isScheduled = true;
+        changeTarget(gridPosition, nodePosition);
     }
 
     /**
@@ -158,6 +159,7 @@ public class GotoNodes extends CommandBase {
         command.cancel();
         chassis.stop();
         isScheduled = false;
+        System.out.println("ended: " + interrupted);
     }
 
     @Override
@@ -186,13 +188,13 @@ public class GotoNodes extends CommandBase {
         builder.addStringProperty("Node selected pos", ()->{
             switch (nodePosition) {
                 case BOTTOM:
-                    return "C";
+                    return "A";
                     
                 case MIDDLE:
                     return "B";
                 
                 case TOP:
-                    return "A";
+                    return "C";
             
                 default:
                     return "NON SELECTED";
