@@ -145,7 +145,7 @@ public class RobotContainer {
         return null;
     }
 
-    public void onEnable() {
+    public void onTeleopInit() {
         new CalibrateParallelogram(parallelogram).schedule();
     }
 }
