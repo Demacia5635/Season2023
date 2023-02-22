@@ -100,15 +100,14 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand(),
-                        new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
+                .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
                 .andThen(new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
-                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
+                        gripper.getOpenCommand()));
 
-        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
-        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
+        load = load.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
+        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
 
         main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
         main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
