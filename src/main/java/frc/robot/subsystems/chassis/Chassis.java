@@ -465,7 +465,7 @@ public class Chassis extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
 
-        SmartDashboard.putData("End Of Path", pathDisplay);
+        SmartDashboard.putData("Trajectory", pathDisplay);
 
         UtilsGeneral.addDoubleProperty(builder, "Angle", this::getAngle, 2);
 
