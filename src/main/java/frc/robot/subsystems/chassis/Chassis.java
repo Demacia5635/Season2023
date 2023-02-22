@@ -35,7 +35,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
+import frc.robot.subsystems.chassis.utils.ChassisUtils;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
+import frc.robot.subsystems.chassis.utils.ChassisUtils.FieldControllerType;
 import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.VisionUtils;
 
@@ -43,6 +45,8 @@ import frc.robot.utils.VisionUtils;
  * The subsystem that controls the robot's swerve chassis
  */
 public class Chassis extends SubsystemBase {
+    private final Field2d pathDisplay;
+
     private final Field2d field;
     private final SwerveModule[] modules;
     private final PigeonIMU gyro;
@@ -56,6 +60,7 @@ public class Chassis extends SubsystemBase {
      */
     public Chassis() {
         field = new Field2d();
+        pathDisplay = new Field2d();
         gyro = new PigeonIMU(ChassisConstants.GYRO_ID);
         modules = new SwerveModule[] {
                 new SwerveModule(SwerveModuleConstants.FRONT_LEFT),
@@ -75,8 +80,6 @@ public class Chassis extends SubsystemBase {
         startRoll = gyro.getRoll();
 
         setupVisionListener();
-
-        SmartDashboard.putData(this);
     }
 
     /**
@@ -246,6 +249,7 @@ public class Chassis extends SubsystemBase {
             boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
+                    pathDisplay.getObject("traj").setTrajectory(trajectory);
                     if (resetPose)
                         resetPose(trajectory.getInitialPose());
                 }),
@@ -253,11 +257,12 @@ public class Chassis extends SubsystemBase {
                         trajectory,
                         this::getPose,
                         ChassisConstants.KINEMATICS,
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
-                                0),
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
-                                0),
-                        new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
+                        ChassisUtils.createFieldController(ChassisConstants.AUTO_TRANSLATION_KP,
+                                ChassisConstants.AUTO_TRANSLATION_KI, 0, pathDisplay, FieldControllerType.X),
+                        ChassisUtils.createFieldController(ChassisConstants.AUTO_TRANSLATION_KP,
+                                ChassisConstants.AUTO_TRANSLATION_KI, 0, pathDisplay, FieldControllerType.Y),
+                        ChassisUtils.createFieldController(ChassisConstants.AUTO_ROTATION_KP,
+                                ChassisConstants.AUTO_ROTATION_KI, 0, pathDisplay, FieldControllerType.HEADING),
                         this::setModuleStates,
                         this).andThen(
                                 new KeepPosition(this,
@@ -459,6 +464,8 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putData("Back Right Module", modules[3]);
 
         SmartDashboard.putData("Field", field);
+
+        SmartDashboard.putData("End Of Path", pathDisplay);
 
         UtilsGeneral.addDoubleProperty(builder, "Angle", this::getAngle, 2);
 
