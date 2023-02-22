@@ -50,8 +50,8 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
-
-    private final Command autoCommand;
+    private final GotoNodes goToNodes;
+    private Color LedLastColor;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -63,14 +63,10 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
+        goToNodes = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
-       autoCommand = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
-               .andThen(new CalibrateParallelogram(parallelogram)).andThen(new LeaveCommunity(chassis, TopOrBottom.BOTTOM).asProxy()).andThen(() -> {
-                        System.out.println("auto ended");
-                });
-        
         leds = new AddressableLED(0);
         leds.setLength(64);
         buffer = new AddressableLEDBuffer(64);
@@ -100,14 +96,15 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand());
+                .andThen(gripper.getCloseCommand(),
+                        new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
-                        gripper.getOpenCommand()));
+                .andThen(goToNodes.asProxy().andThen(
+                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
-        load = load.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
-        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID())).andThen(new CalibrateParallelogram(parallelogram));
+        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
+        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
 
         main.leftBumper().onTrue(gripper.getSwitchPositionCommand());
         main.rightBumper().onTrue(new CalibrateParallelogram(parallelogram));
@@ -122,18 +119,27 @@ public class RobotContainer {
                 for (int i = 0; i < 64; i++) {
                     buffer.setRGB(i, 168, 0, 230);
                 }
+                LedLastColor = new Color(168, 0, 230);
             } else {
                 for (int i = 0; i < 64; i++) {
                     buffer.setRGB(i, 255, 140, 0);
                 }
+                LedLastColor = new Color(255, 140, 0);
             }
             leds.setData(buffer);
         }).ignoringDisable(true));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
-            for (int i = 0; i < 64; i++) {
-                buffer.setRGB(i, 0, 0, 0);
+            if(!buffer.getLED(0).equals(new Color(0,0,0))){
+                for (int i = 0; i < 64; i++) {
+                    buffer.setRGB(i, 0, 0, 0);
+                }
+            }else{
+                for (int i = 0; i < 64; i++) {
+                    buffer.setRGB(i, (int)LedLastColor.red, (int)LedLastColor.green, (int)LedLastColor.blue);
+                }
             }
+            
             leds.setData(buffer);
         }).ignoringDisable(true));
 
@@ -148,7 +154,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoCommand;
+        Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
+            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP).alongWith(new CalibrateParallelogram(parallelogram)));
+            return autonomous; 
     }
 
     public void onTeleopInit() {
