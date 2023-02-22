@@ -145,7 +145,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
-            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP, main.getHID()).alongWith(new CalibrateParallelogram(parallelogram)));
+            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP).alongWith(new CalibrateParallelogram(parallelogram)));
             return autonomous; 
     }
 
