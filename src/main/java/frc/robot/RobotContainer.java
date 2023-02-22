@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
-import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
@@ -28,6 +27,7 @@ import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -39,11 +39,12 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    private static RobotContainer instance;
+
     private final CommandXboxController main = new CommandXboxController(0);
     private final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
-    private static RobotContainer instance;
-    public Parallelogram parallelogram;
+    private final Parallelogram parallelogram;
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
@@ -56,6 +57,7 @@ public class RobotContainer {
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
+        SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
@@ -87,30 +89,27 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, main.getHID(),
+        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
                 .andThen(gripper.getCloseCommand(),
                         new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
 
-        Command unload = new GotoCommunity(chassis, main.getHID())
+        Command unload = new GotoCommunity(chassis)
                 .andThen(
-                        new GotoNodes(chassis, main.getHID(), secondary,
+                        new GotoNodes(chassis, secondary,
                                 new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(
                                         gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
 
-        main.rightBumper().onTrue(gripper.getOpenCommand());
-        main.leftBumper().onTrue(gripper.getCloseCommand());
+        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
+        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
 
-        // Command loadIfInPlace = new PickUp(parallelogram, chassis)
-        // .andThen(open, close, new GoToBack(parallelogram));
-
-        // Command unloadIfInPlace = new PutGamepiece(parallelogram, chassis)
-        // .andThen(open, close, new GoToBack(parallelogram));
+        main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
+        main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
 
         main.a().onTrue(load);
         main.b().onTrue(unload);
-        main.y().onTrue(new GotoCommunity(chassis, main.getHID()));
-        main.x().onTrue(new GoUpRamp(chassis, 1.5));
+        main.x().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -120,7 +119,7 @@ public class RobotContainer {
             } else {
                 for (int i = 0; i < 64; i++) {
                     buffer.setRGB(i, 255, 140, 0);
-                } 
+                }
             }
             leds.setData(buffer);
         }).ignoringDisable(true));

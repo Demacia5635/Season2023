@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,7 +19,6 @@ import frc.robot.utils.UtilsGeneral.Zone;
 public class GotoCommunity extends CommandBase {
 
     private final Chassis chassis;
-    private final XboxController controller;
     private Command command;
 
     /**
@@ -29,9 +27,8 @@ public class GotoCommunity extends CommandBase {
      * @param chassis    The chassis subsystem
      * @param controller The controller to use for input
      */
-    public GotoCommunity(Chassis chassis, XboxController controller) {
+    public GotoCommunity(Chassis chassis) {
         this.chassis = chassis;
-        this.controller = controller;
     }
 
     @Override
@@ -70,8 +67,9 @@ public class GotoCommunity extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return CommandScheduler.getInstance().requiring(chassis) != command || UtilsGeneral.hasInput(controller) 
-                || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6 : chassis.getPose().getX() < 2.6);
+        return CommandScheduler.getInstance().requiring(chassis) != command
+                || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6
+                        : chassis.getPose().getX() < 2.6);
     }
 
     @Override
