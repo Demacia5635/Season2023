@@ -21,6 +21,8 @@ import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
+import frc.robot.commands.chassis.LeaveCommunity;
+import frc.robot.commands.chassis.LeaveCommunity.TopOrBottom;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.PickUp;
@@ -47,6 +49,7 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
+    private final GotoNodes goToNodes;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,6 +60,7 @@ public class RobotContainer {
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         gripper = new Gripper(GripperConstants.MOTOR_ID);
+        goToNodes = new GotoNodes(chassis, null, secondary);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
@@ -143,7 +147,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return null;
+        Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
+            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP, main.getHID()).alongWith(new CalibrateParallelogram(parallelogram)));
+            return autonomous; 
     }
 
     public void onEnable() {
