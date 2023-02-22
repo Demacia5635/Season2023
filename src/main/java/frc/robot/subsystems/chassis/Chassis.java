@@ -35,9 +35,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
-import frc.robot.subsystems.chassis.utils.ChassisUtils;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
-import frc.robot.subsystems.chassis.utils.ChassisUtils.FieldControllerType;
 import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.VisionUtils;
 
@@ -80,6 +78,13 @@ public class Chassis extends SubsystemBase {
         startRoll = gyro.getRoll();
 
         setupVisionListener();
+        setupPathDisplay();
+    }
+
+    private void setupPathDisplay() {
+        PPSwerveControllerCommand.setLoggingCallbacks((traj) -> {
+            pathDisplay.getObject("traj").setTrajectory(traj);
+        }, pathDisplay::setRobotPose, null, null);
     }
 
     /**
@@ -249,7 +254,6 @@ public class Chassis extends SubsystemBase {
             boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
-                    pathDisplay.getObject("traj").setTrajectory(trajectory);
                     if (resetPose)
                         resetPose(trajectory.getInitialPose());
                 }),
@@ -257,12 +261,11 @@ public class Chassis extends SubsystemBase {
                         trajectory,
                         this::getPose,
                         ChassisConstants.KINEMATICS,
-                        ChassisUtils.createFieldController(ChassisConstants.AUTO_TRANSLATION_KP,
-                                ChassisConstants.AUTO_TRANSLATION_KI, 0, pathDisplay, FieldControllerType.X),
-                        ChassisUtils.createFieldController(ChassisConstants.AUTO_TRANSLATION_KP,
-                                ChassisConstants.AUTO_TRANSLATION_KI, 0, pathDisplay, FieldControllerType.Y),
-                        ChassisUtils.createFieldController(ChassisConstants.AUTO_ROTATION_KP,
-                                ChassisConstants.AUTO_ROTATION_KI, 0, pathDisplay, FieldControllerType.HEADING),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
+                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
+                                0),
+                        new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
                         this::setModuleStates,
                         this).andThen(
                                 new KeepPosition(this,

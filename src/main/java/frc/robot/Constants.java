@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.commands.chassis.GotoNodes.Position;
 import frc.robot.utils.Rectangle;
 
 /**
@@ -41,9 +40,7 @@ public final class Constants {
 
     public static final double LOADING_ANGLE = 36;
     public static final double DEPLOY_ANGLE = 20;
-    public static final Position AUTONOMOUS_GRID = Position.TOP;
-    public static final Position AUTONOMOUS_NODE = Position.TOP;
-    public static final double AUTONOMOUS_CLIMB_SPEED = 0.4;
+    public static final double AUTONOMOUS_CLIMB_SPEED = 1;
 
 
     /**
