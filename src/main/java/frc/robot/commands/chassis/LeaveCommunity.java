@@ -40,20 +40,31 @@ public class LeaveCommunity extends CommandBase {
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
-        if (zone == Zone.COMMUNITY_BOTTOM || zone == Zone.COMMUNITY_MIDDLE || zone == Zone.COMMUNITY_TOP) {
-            if (topOrBottom == TopOrBottom.TOP) {
-                generator.add(new Pose2d(new Translation2d(2.06, 4.02), new Rotation2d()),
-                        Rotation2d.fromDegrees(70.79));
-                generator.add(new Pose2d(new Translation2d(4.28, 4.89), new Rotation2d()),
-                        Rotation2d.fromDegrees(-3.47));
-            } else if (topOrBottom == TopOrBottom.BOTTOM) {
-                generator.add(new Pose2d(new Translation2d(2.23, 0.65), new Rotation2d()),
-                        Rotation2d.fromDegrees(5.44));
-                generator.add(new Pose2d(new Translation2d(5.57, 0.70), new Rotation2d()),
-                        Rotation2d.fromDegrees(1.59));
+        if (topOrBottom == TopOrBottom.TOP) {
+            switch (zone) {
+                case COMMUNITY_MIDDLE:
+                case COMMUNITY_BOTTOM:
+                    generator.add(new Pose2d(new Translation2d(2.06, 4.02), new Rotation2d()),
+                            Rotation2d.fromDegrees(70.79));
+                case COMMUNITY_TOP:
+                    generator.add(new Pose2d(new Translation2d(4.28, 4.89), new Rotation2d()),
+                            Rotation2d.fromDegrees(-3.47));
+                default:
+                    break;
+            }
+        } else {
+            switch (zone) {
+                case COMMUNITY_MIDDLE:
+                case COMMUNITY_TOP:
+                    generator.add(new Pose2d(new Translation2d(2.23, 0.65), new Rotation2d()),
+                            Rotation2d.fromDegrees(5.44));
+                case COMMUNITY_BOTTOM:
+                    generator.add(new Pose2d(new Translation2d(5.57, 0.70), new Rotation2d()),
+                            Rotation2d.fromDegrees(1.59));
+                default:
+                    break;
             }
         }
-
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
         command.schedule();
 
