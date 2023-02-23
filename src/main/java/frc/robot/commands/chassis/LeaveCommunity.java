@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
@@ -30,6 +29,8 @@ public class LeaveCommunity extends CommandBase {
     public LeaveCommunity(Chassis chassis, TopOrBottom topOrBottom) {
         this.chassis = chassis;
         this.topOrBottom = topOrBottom;
+
+        addRequirements(chassis);
     }
 
     // Called when the command is initially scheduled.
@@ -65,19 +66,24 @@ public class LeaveCommunity extends CommandBase {
             }
         }
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
-        command.schedule();
+        command.initialize();
+    }
+
+    @Override
+    public void execute() {
+        command.execute();
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
+        command.end(interrupted);
         chassis.stop();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return CommandScheduler.getInstance().requiring(chassis) != command;
+        return command.isFinished();
     }
 }

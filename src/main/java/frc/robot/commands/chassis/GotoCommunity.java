@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
@@ -29,6 +28,7 @@ public class GotoCommunity extends CommandBase {
      */
     public GotoCommunity(Chassis chassis) {
         this.chassis = chassis;
+        addRequirements(chassis);
     }
 
     @Override
@@ -62,19 +62,24 @@ public class GotoCommunity extends CommandBase {
 
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
 
-        command.schedule();
+        command.initialize();
+    }
+
+    @Override
+    public void execute() {
+        command.execute();
     }
 
     @Override
     public boolean isFinished() {
-        return CommandScheduler.getInstance().requiring(chassis) != command
+        return command.isFinished()
                 || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6
                         : chassis.getPose().getX() < 2.6);
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
+        command.end(interrupted);
         chassis.stop();
     }
 }

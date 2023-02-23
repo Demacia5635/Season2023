@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
@@ -97,6 +97,9 @@ public class GotoNodes extends CommandBase {
         this.onPosition = onPosition;
         command = new InstantCommand();
         isScheduled = false;
+
+        addRequirements(chassis);
+        addRequirements(onPosition.getRequirements().toArray(Subsystem[]::new));
         SmartDashboard.putData(this);
     }
 
@@ -146,25 +149,27 @@ public class GotoNodes extends CommandBase {
         gridPosition = grid;
         nodePosition = node;
 
-        if (command.isScheduled()) {
-            command.cancel();
-        }
+        command.end(true);
         initCommand();
         if (isScheduled)
-            command.schedule();
+            command.initialize();
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
+        command.end(interrupted);
         chassis.stop();
         isScheduled = false;
-        System.out.println("ended: " + interrupted);
     }
 
     @Override
     public boolean isFinished() {
-        return CommandScheduler.getInstance().requiring(chassis) != command;
+        return command.isFinished();
+    }
+    
+    @Override
+    public void execute() {
+        command.execute();
     }
 
     @Override

@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
@@ -48,6 +48,8 @@ public class GotoLoadingZone extends CommandBase {
             }
         }).ignoringDisable(true));
 
+        addRequirements(onEntry.getRequirements().toArray(Subsystem[]::new));
+        addRequirements(chassis);
         SmartDashboard.putData(this);
     }
 
@@ -103,28 +105,30 @@ public class GotoLoadingZone extends CommandBase {
 
         command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
 
-        command.schedule();
+        command.initialize();
     }
 
     @Override
     public void execute() {
         if (!entered && Zone.fromRobotLocation(chassis.getPose().getTranslation()) == Zone.LOADING_ZONE) {
-            onEntry.schedule();
+            onEntry.initialize();
             entered = true;
+        } else if (entered) {
+            onEntry.execute();
         }
+        command.execute();
     }
 
     @Override
     public boolean isFinished() {
-        return (CommandScheduler.getInstance().requiring(chassis) != command && onEntry.isFinished());
+        return command.isFinished() && onEntry.isFinished();
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
-        onEntry.cancel();
+        command.end(interrupted);
+        onEntry.end(interrupted);
         chassis.stop();
-        System.out.println("loading zone ended, " + interrupted);
     }
 
     @Override
