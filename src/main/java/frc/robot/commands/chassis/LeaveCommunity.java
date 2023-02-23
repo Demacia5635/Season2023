@@ -29,7 +29,6 @@ public class LeaveCommunity extends CommandBase {
     /** Creates a new LeaveCommunity. */
     public LeaveCommunity(Chassis chassis, TopOrBottom topOrBottom) {
         this.chassis = chassis;
-        addRequirements(chassis);
         this.topOrBottom = topOrBottom;
     }
 
@@ -47,8 +46,8 @@ public class LeaveCommunity extends CommandBase {
                     generator.add(new Pose2d(new Translation2d(2.06, 4.89), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(6, 4.89), Rotation2d.fromDegrees(180)),
-                            Rotation2d.fromDegrees(-3.47));
+                    generator.add(new Pose2d(new Translation2d(5.6, 4.89), Rotation2d.fromDegrees(180)),
+                            Rotation2d.fromDegrees(0));
                 default:
                     break;
             }
@@ -56,24 +55,22 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(2.5, 0.65), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(2.5, 0.7), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(6, 0.70), Rotation2d.fromDegrees(180)),
-                            Rotation2d.fromDegrees(1.59));
+                    generator.add(new Pose2d(new Translation2d(5.6, 0.7), Rotation2d.fromDegrees(180)),
+                            Rotation2d.fromDegrees(0));
                 default:
                     break;
             }
         }
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
         command.schedule();
-
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        System.out.println("left community");
         command.cancel();
         chassis.stop();
     }

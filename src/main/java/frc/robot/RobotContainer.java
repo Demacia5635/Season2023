@@ -20,6 +20,7 @@ import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
+import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.LeaveCommunity.TopOrBottom;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
@@ -50,7 +51,7 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
-    private final GotoNodes goToNodes;
+    private final Command goToNodes;
     private Color LedLastColor;
 
     /**
@@ -96,15 +97,16 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand(),
-                        new CalibrateParallelogram(parallelogram).alongWith(gripper.getCloseCommand()));
+                .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
                 .andThen(goToNodes.asProxy().andThen(
-                        gripper.getOpenCommand(), new CalibrateParallelogram(parallelogram)));
+                        gripper.getOpenCommand()));
 
-        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
-        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
+        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
+                .andThen(new CalibrateParallelogram(parallelogram));
+        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
+                .andThen(new CalibrateParallelogram(parallelogram));
 
         main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
         main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
@@ -130,16 +132,17 @@ public class RobotContainer {
         }).ignoringDisable(true));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
-            if(!buffer.getLED(0).equals(new Color(0,0,0))){
-            for (int i = 0; i < 64; i++) {
-                buffer.setRGB(i, 0, 0, 0);
-            }
-            }else{
+            if (!buffer.getLED(0).equals(new Color(0, 0, 0))) {
                 for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, (int)(LedLastColor.red * 255), (int)(LedLastColor.green * 255), (int)(LedLastColor.blue * 255));
+                    buffer.setRGB(i, 0, 0, 0);
+                }
+            } else {
+                for (int i = 0; i < 64; i++) {
+                    buffer.setRGB(i, (int) (LedLastColor.red * 255), (int) (LedLastColor.green * 255),
+                            (int) (LedLastColor.blue * 255));
                 }
             }
-            
+
             leds.setData(buffer);
         }).ignoringDisable(true));
 
@@ -155,8 +158,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
-            .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP).alongWith(new CalibrateParallelogram(parallelogram)));
-            return autonomous; 
+                .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP)
+                        .alongWith(new CalibrateParallelogram(parallelogram)), new GotoRamp(chassis));
+        return autonomous;
     }
 
     public void onTeleopInit() {
