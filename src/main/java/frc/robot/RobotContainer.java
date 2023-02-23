@@ -106,12 +106,12 @@ public class RobotContainer {
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()));
 
-        main.leftBumper().onTrue(gripper.getSwitchPositionCommand());
-        main.rightBumper().onTrue(new CalibrateParallelogram(parallelogram));
+        main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
+        main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
 
         main.a().onTrue(load);
-        main.x().onTrue(unload);
-        main.b().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        main.b().onTrue(unload);
+        main.x().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
@@ -131,12 +131,12 @@ public class RobotContainer {
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if(!buffer.getLED(0).equals(new Color(0,0,0))){
-                for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
+            for (int i = 0; i < 64; i++) {
+                buffer.setRGB(i, 0, 0, 0);
+            }
             }else{
                 for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, (int)LedLastColor.red, (int)LedLastColor.green, (int)LedLastColor.blue);
+                    buffer.setRGB(i, (int)(LedLastColor.red * 255), (int)(LedLastColor.green * 255), (int)(LedLastColor.blue * 255));
                 }
             }
             
