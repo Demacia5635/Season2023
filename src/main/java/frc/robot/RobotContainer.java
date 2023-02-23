@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -23,7 +24,6 @@ import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.LeaveCommunity.TopOrBottom;
-import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.PickUp;
 import frc.robot.subsystems.chassis.Chassis;
@@ -51,7 +51,6 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
-    private final Command goToNodes;
     private Color LedLastColor;
 
     /**
@@ -64,7 +63,6 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        goToNodes = new GotoNodes(chassis, secondary, new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
@@ -74,6 +72,7 @@ public class RobotContainer {
         leds.start();
 
         SmartDashboard.putData("pickup", new PickUp(parallelogram, chassis));
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     /**
@@ -100,16 +99,17 @@ public class RobotContainer {
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(goToNodes.asProxy().andThen(
-                        gripper.getOpenCommand()));
+                .andThen(new GotoNodes(chassis, secondary, () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE))
+                        .andThen(
+                                gripper.getOpenCommand()));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new CalibrateParallelogram(parallelogram));
+                .andThen(parallelogram.getCalibrateCommad());
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new CalibrateParallelogram(parallelogram));
+                .andThen(parallelogram.getCalibrateCommad());
 
         main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
-        main.leftBumper().onTrue(new CalibrateParallelogram(parallelogram));
+        main.leftBumper().onTrue(parallelogram.getCalibrateCommad());
 
         main.a().onTrue(load);
         main.b().onTrue(unload);
@@ -157,13 +157,14 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        Command autonomous = goToNodes.asProxy().andThen(gripper.getOpenCommand())
+        Command autonomous = new GotoNodes(chassis, secondary,
+                () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
                 .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP)
-                        .alongWith(new CalibrateParallelogram(parallelogram)), new GotoRamp(chassis));
+                        .alongWith(parallelogram.getCalibrateCommad()), new GotoRamp(chassis));
         return autonomous;
     }
 
     public void onTeleopInit() {
-        new CalibrateParallelogram(parallelogram).schedule();
+        parallelogram.getCalibrateCommad().schedule();
     }
 }

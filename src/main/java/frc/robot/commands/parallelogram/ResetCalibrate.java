@@ -13,6 +13,8 @@ public class ResetCalibrate extends CommandBase {
      */
     public ResetCalibrate(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
+
+        addRequirements(parallelogram);
         parallelogram.resetPosition();
     }
 
@@ -20,11 +22,6 @@ public class ResetCalibrate extends CommandBase {
     @Override
     public void initialize() {
         parallelogram.setBrake();
-    }
-
-
-    @Override
-    public void execute() {
         parallelogram.setPower(ParallelConstants.BACKWARDS_CALIBRATION_POWER);
     }
 

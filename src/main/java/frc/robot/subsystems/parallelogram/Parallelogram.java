@@ -10,9 +10,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
+import frc.robot.commands.parallelogram.ResetCalibrate;
 
 /**
  * Paralellogram subsystem.
@@ -161,6 +163,10 @@ public class Parallelogram extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("encoder", motor::getSelectedSensorPosition, null);
+    }
+
+    public Command getCalibrateCommad() {
+        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
     }
 
     @Override

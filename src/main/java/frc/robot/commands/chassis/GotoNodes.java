@@ -1,5 +1,7 @@
 package frc.robot.commands.chassis;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -73,7 +75,7 @@ public class GotoNodes extends CommandBase {
     private Position nodePosition;
 
     private boolean isScheduled;
-    private final Command onPosition;
+    private final Supplier<Command> onPosition;
 
     /**
      * Constructor for the GotoNodes command.
@@ -81,7 +83,7 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param secondary
      */
-    public GotoNodes(Chassis chassis, CommandXboxController secondary, Command onPosition) {
+    public GotoNodes(Chassis chassis, CommandXboxController secondary, Supplier<Command> onPosition) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
         secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
@@ -99,7 +101,7 @@ public class GotoNodes extends CommandBase {
         isScheduled = false;
 
         addRequirements(chassis);
-        addRequirements(onPosition.getRequirements().toArray(Subsystem[]::new));
+        addRequirements(onPosition.get().getRequirements().toArray(Subsystem[]::new));
         SmartDashboard.putData(this);
     }
 
@@ -110,7 +112,7 @@ public class GotoNodes extends CommandBase {
      * @param controller
      */
     public GotoNodes(Chassis chassis, CommandXboxController secondary) {   
-        this(chassis, secondary, new InstantCommand());
+        this(chassis, secondary, () -> new InstantCommand());
     }
 
     private void doChangeTarget(Position grid, Position node){
@@ -132,7 +134,7 @@ public class GotoNodes extends CommandBase {
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
-        command = chassis.createPathFollowingCommand(onPosition.asProxy(), generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(onPosition.get(), generator.generate(chassis.getPose()));
     }
 
     @Override
