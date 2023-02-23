@@ -23,7 +23,6 @@ import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
-import frc.robot.commands.chassis.LeaveCommunity.TopOrBottom;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
@@ -50,6 +49,7 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
+    private final Command auto;
     private Color LedLastColor;
 
     /**
@@ -69,6 +69,11 @@ public class RobotContainer {
         leds.setLength(64);
         buffer = new AddressableLEDBuffer(64);
         leds.start();
+
+        auto = new GotoNodes(chassis, secondary,
+                () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
+                .andThen(new LeaveCommunity(chassis)
+                        .alongWith(parallelogram.getCalibrateCommad()), new GotoRamp(chassis));
 
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
@@ -106,12 +111,15 @@ public class RobotContainer {
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen(parallelogram.getCalibrateCommad());
 
-        main.rightBumper().onTrue(gripper.getSwitchPositionCommand());
-        main.leftBumper().onTrue(parallelogram.getCalibrateCommad());
+        main.leftBumper().onTrue(new InstantCommand(()-> gripper.getSwitchPositionCommand().schedule()));
+        main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
+
+        load.setName("Load");
+        unload.setName("Unload");
 
         main.a().onTrue(load);
-        main.b().onTrue(unload);
-        main.x().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        main.x().onTrue(unload);
+        main.b().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
@@ -144,6 +152,7 @@ public class RobotContainer {
             leds.setData(buffer);
         }).ignoringDisable(true));
 
+
         // controller.leftBumper().onTrue(loadIfInPlace);
         // controller.rightBumper().onTrue(unloadIfInPlace);
 
@@ -155,11 +164,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        Command autonomous = new GotoNodes(chassis, secondary,
-                () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
-                .andThen(new LeaveCommunity(chassis, TopOrBottom.TOP)
-                        .alongWith(parallelogram.getCalibrateCommad()), new GotoRamp(chassis));
-        return autonomous;
+        return auto;
     }
 
     public void onTeleopInit() {

@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -23,13 +25,16 @@ public class LeaveCommunity extends CommandBase {
         TOP, BOTTOM;
     }
 
-    private TopOrBottom topOrBottom;
+
+    private SendableChooser<TopOrBottom> chooser;
 
     /** Creates a new LeaveCommunity. */
-    public LeaveCommunity(Chassis chassis, TopOrBottom topOrBottom) {
+    public LeaveCommunity(Chassis chassis) {
         this.chassis = chassis;
-        this.topOrBottom = topOrBottom;
-
+        chooser = new SendableChooser<>();
+        chooser.setDefaultOption("Top", TopOrBottom.TOP);
+        chooser.addOption("Bottom", TopOrBottom.BOTTOM);
+        SmartDashboard.putData(chooser);
         addRequirements(chassis);
     }
 
@@ -40,11 +45,11 @@ public class LeaveCommunity extends CommandBase {
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
-        if (topOrBottom == TopOrBottom.TOP) {
+        if (chooser.getSelected() == TopOrBottom.TOP) {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(2.06, 4.89), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(2.35, 4.89), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 case COMMUNITY_TOP:
                     generator.add(new Pose2d(new Translation2d(5.6, 4.89), Rotation2d.fromDegrees(180)),
@@ -65,6 +70,7 @@ public class LeaveCommunity extends CommandBase {
                     break;
             }
         }
+        generator.add(new Pose2d(new Translation2d(5.6, 2.75), Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
         command.initialize();
     }
@@ -81,9 +87,11 @@ public class LeaveCommunity extends CommandBase {
         chassis.stop();
     }
 
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return command.isFinished();
     }
+    
 }

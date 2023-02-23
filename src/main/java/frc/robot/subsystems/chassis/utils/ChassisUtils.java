@@ -58,7 +58,7 @@ public class ChassisUtils {
 
         if (DriverStation.getAlliance() != alliance) {
             position = new Translation2d(Constants.FIELD_WIDTH - position.getX(), position.getY());
-            heading = heading.rotateBy(Rotation2d.fromDegrees(180));
+            heading = new Rotation2d(-heading.getCos(), heading.getSin());
             holonomicRotation = holonomicRotation.rotateBy(Rotation2d.fromDegrees(180));
         }
         return new PathPoint(position, heading, holonomicRotation, velocity);

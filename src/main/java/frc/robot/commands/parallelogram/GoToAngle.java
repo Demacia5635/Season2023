@@ -41,7 +41,7 @@ public class GoToAngle extends CommandBase {
     @Override
     public boolean isFinished() {
         if (!isFinished)
-            isFinished = Math.abs(parallelogram.getAngle() - desiredAngle) < ParallelConstants.TOLERANCE_DEGREES;
+            isFinished = parallelogram.getAngle() - desiredAngle < ParallelConstants.TOLERANCE_DEGREES;
         return isFinished;
     }
 

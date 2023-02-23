@@ -28,6 +28,9 @@ public class GotoLoadingZone extends CommandBase {
     private Command command;
     private Position position;
 
+    private boolean commandEnded;
+    private boolean onEntryEnded;
+
     /**
      * Constructs a new GotoLoadingZone command.
      * 
@@ -71,6 +74,8 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public void initialize() {
+        onEntryEnded = false;
+        commandEnded = false;
         entered = false;
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
         double endY = position == Position.TOP ? 7.5 : 6.25;
@@ -113,15 +118,22 @@ public class GotoLoadingZone extends CommandBase {
         if (!entered && Zone.fromRobotLocation(chassis.getPose().getTranslation()) == Zone.LOADING_ZONE) {
             onEntry.initialize();
             entered = true;
-        } else if (entered) {
+        } else if (entered && !onEntryEnded) {
             onEntry.execute();
         }
-        command.execute();
+        if (!commandEnded)
+            command.execute();
     }
 
     @Override
     public boolean isFinished() {
-        return command.isFinished() && onEntry.isFinished();
+        if (!onEntryEnded) {
+            onEntryEnded = onEntry.isFinished();
+        }
+        if (!commandEnded) {
+            commandEnded = command.isFinished();
+        }
+        return commandEnded && onEntryEnded;
     }
 
     @Override

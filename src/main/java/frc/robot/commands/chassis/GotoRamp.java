@@ -1,5 +1,7 @@
 package frc.robot.commands.chassis;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -7,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 
 /**
@@ -25,10 +28,11 @@ public class GotoRamp extends CommandBase {
     @Override
     public void initialize() {
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
-        generator.add(new Pose2d(new Translation2d(5.6, 2.75), Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
-        generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
+        generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(180)),
+                Rotation2d.fromDegrees(180));
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(new PathConstraints(0.5, ChassisConstants.MAX_ACCELERATION),
+                generator.generate(chassis.getPose()));
         command.initialize();
     }
 

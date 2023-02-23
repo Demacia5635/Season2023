@@ -7,6 +7,7 @@ package frc.robot.subsystems.chassis;
 import java.util.Arrays;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
@@ -269,7 +270,8 @@ public class Chassis extends SubsystemBase {
                                         new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
                                                 trajectory.getEndState().holonomicRotation))
                                         : new InstantCommand())
-                                        .alongWith(onTrajectoryEnd)));
+                                        .alongWith(onTrajectoryEnd)),new InstantCommand(()-> System.out.println(("Trajectory ended"))));
+                                        
 
         return command;
     }
@@ -330,6 +332,19 @@ public class Chassis extends SubsystemBase {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, false, true);
+    }
+
+    /**
+     * Creates a path following command
+     * 
+     * @param points The points to follow (including the current position)
+     * @return the path following command
+     */
+    public Command createPathFollowingCommand(PathConstraints constraints, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(constraints, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, false, true);
     }
 

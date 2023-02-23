@@ -94,7 +94,7 @@ public class GotoNodes extends CommandBase {
         secondary.y().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
         secondary.b().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         secondary.b().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
-        secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
+        secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
         this.chassis = chassis;
         this.onPosition = onPosition;
         command = new InstantCommand();
@@ -162,6 +162,7 @@ public class GotoNodes extends CommandBase {
         command.end(interrupted);
         chassis.stop();
         isScheduled = false;
+        System.out.println("goToCommunity Ended");
     }
 
     @Override
