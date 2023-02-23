@@ -5,14 +5,11 @@
 package frc.robot.subsystems.chassis;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.Pair;
@@ -250,7 +247,7 @@ public class Chassis extends SubsystemBase {
      *                   command
      * @return The path following command
      */
-    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
+    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory,
             boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
         var command = new SequentialCommandGroup(
                 new InstantCommand(() -> {
@@ -274,24 +271,12 @@ public class Chassis extends SubsystemBase {
                                         : new InstantCommand())
                                         .alongWith(onTrajectoryEnd)));
 
-        return new FollowPathWithEvents(command, trajectory.getMarkers(), events);
+        return command;
     }
 
-    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory, Map<String, Command> events,
+    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory,
             boolean resetPose, boolean keepPosition) {
-        return createPathFollowingCommand(trajectory, events, resetPose, keepPosition, new InstantCommand());
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param path   The path to follow
-     * @param events The events to run on the markers in the path
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(String path, Map<String, Command> events) {
-        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, false, true);
+        return createPathFollowingCommand(trajectory, resetPose, keepPosition, new InstantCommand());
     }
 
     /**
@@ -303,9 +288,9 @@ public class Chassis extends SubsystemBase {
      *                  command
      * @return the path following command
      */
-    public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose) {
+    public Command createPathFollowingCommand(String path, boolean resetPose) {
         var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, resetPose, true);
+        return createPathFollowingCommand(trajectory, resetPose, true);
     }
 
     /**
@@ -319,10 +304,10 @@ public class Chassis extends SubsystemBase {
      *                     the command
      * @return the path following command
      */
-    public Command createPathFollowingCommand(String path, Map<String, Command> events, boolean resetPose,
+    public Command createPathFollowingCommand(String path, boolean resetPose,
             boolean keepPosition) {
         var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, events, resetPose, keepPosition);
+        return createPathFollowingCommand(trajectory, resetPose, keepPosition);
     }
 
     /**
@@ -332,7 +317,7 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path) {
-        return createPathFollowingCommand(path, new HashMap<>());
+        return createPathFollowingCommand(path, true);
     }
 
     /**
@@ -345,7 +330,7 @@ public class Chassis extends SubsystemBase {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, new HashMap<>(), false, true);
+        return createPathFollowingCommand(trajectory, false, true);
     }
 
     /**
@@ -360,14 +345,14 @@ public class Chassis extends SubsystemBase {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, new HashMap<>(), false, keepPosition);
+        return createPathFollowingCommand(trajectory, false, keepPosition);
     }
 
     public Command createPathFollowingCommand(Command onTrajectoryEnd, PathPoint... points) {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, new HashMap<>(), false, true, onTrajectoryEnd);
+        return createPathFollowingCommand(trajectory, false, true, onTrajectoryEnd);
     }
 
     /**
