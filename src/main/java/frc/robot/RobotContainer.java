@@ -25,7 +25,6 @@ import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.LeaveCommunity.TopOrBottom;
 import frc.robot.commands.parallelogram.GoToAngle;
-import frc.robot.commands.parallelogram.PickUp;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
@@ -71,7 +70,6 @@ public class RobotContainer {
         buffer = new AddressableLEDBuffer(64);
         leds.start();
 
-        SmartDashboard.putData("pickup", new PickUp(parallelogram, chassis));
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
 

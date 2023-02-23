@@ -16,6 +16,8 @@ public class GoToHeight extends CommandBase{
     public GoToHeight(Parallelogram parallelogram, double desiredHeight, boolean isFront) {
         this.parallelogram = parallelogram;
         this.desiredAngle = ParallelogramUtils.calculateAngle(desiredHeight, isFront);
+
+        addRequirements(parallelogram);
     }
 
     @Override

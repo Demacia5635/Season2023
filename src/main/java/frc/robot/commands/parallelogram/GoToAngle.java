@@ -17,6 +17,8 @@ public class GoToAngle extends CommandBase {
     public GoToAngle(Parallelogram parallelogram, double desiredAngle) {
         this.parallelogram = parallelogram;
         this.desiredAngle = desiredAngle;
+
+        addRequirements(parallelogram);
     }
 
     @Override
