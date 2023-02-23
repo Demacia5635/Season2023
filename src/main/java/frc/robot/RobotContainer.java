@@ -107,9 +107,9 @@ public class RobotContainer {
                                 gripper.getOpenCommand()));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(parallelogram.getCalibrateCommad());
+                .andThen((new InstantCommand(()->parallelogram.getCalibrateCommad().schedule())));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(parallelogram.getCalibrateCommad());
+                .andThen(new InstantCommand(()->parallelogram.getCalibrateCommad().schedule()));
 
         main.leftBumper().onTrue(new InstantCommand(()-> gripper.getSwitchPositionCommand().schedule()));
         main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
