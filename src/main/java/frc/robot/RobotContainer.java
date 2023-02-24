@@ -125,7 +125,6 @@ public class RobotContainer {
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         main.povDown().onTrue(new InstantCommand(chassis::setRampPosition));
-        main.povLeft().onTrue(new InstantCommand(chassis::setDefaultNeutral));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -175,11 +174,6 @@ public class RobotContainer {
     }
 
     public void onTeleopInit() {
-        chassis.setDefaultNeutral();
         parallelogram.getCalibrateCommad().schedule();
-    }
-
-    public void onAutoInit() {
-        chassis.setNeutral(true);
     }
 }

@@ -74,7 +74,6 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public void initialize() {
-        chassis.forceUseVision();
         onEntryEnded = false;
         commandEnded = false;
         entered = false;

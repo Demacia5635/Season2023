@@ -41,7 +41,6 @@ public class LeaveCommunity extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        chassis.forceUseVision();
         command = new InstantCommand();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 

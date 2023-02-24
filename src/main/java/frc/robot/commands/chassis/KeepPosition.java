@@ -73,6 +73,6 @@ public class KeepPosition extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        chassis.softwareStop();
+        chassis.stop();
     }
 }

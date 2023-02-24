@@ -27,7 +27,6 @@ public class GotoRamp extends CommandBase {
 
     @Override
     public void initialize() {
-        chassis.forceUseVision();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
         generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(235)),
                 Rotation2d.fromDegrees(180));

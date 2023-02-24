@@ -139,7 +139,6 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public void initialize() {
-        chassis.forceUseVision();
         isScheduled = true;
         changeTarget(gridPosition, nodePosition);
     }

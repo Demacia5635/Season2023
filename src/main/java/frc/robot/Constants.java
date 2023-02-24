@@ -41,6 +41,7 @@ public final class Constants {
     public static final double LOADING_ANGLE = 38.5;
     public static final double DEPLOY_ANGLE = 20;
     public static final double AUTONOMOUS_CLIMB_SPEED = 1;
+    public static final int CYCLES_PER_SECOND = 50;
 
     /**
      * The Vision constants.

@@ -33,7 +33,6 @@ public class GotoCommunity extends CommandBase {
 
     @Override
     public void initialize() {
-        chassis.forceUseVision();
         command = new InstantCommand();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 

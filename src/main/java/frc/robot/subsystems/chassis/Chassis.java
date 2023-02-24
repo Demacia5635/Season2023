@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
@@ -72,7 +73,7 @@ public class Chassis extends SubsystemBase {
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.8, 0.8, 0.8),
                 VecBuilder.fill(0.2, 0.2, 0.2));
-        isBreak = false;
+        isBreak = true;
 
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
@@ -137,6 +138,22 @@ public class Chassis extends SubsystemBase {
     }
 
     /**
+     * Sets the velocities of the robot, but limits the acceleration
+     * 
+     * @param vx    The x velocity, in meters per second
+     * @param vy    The y velocity, in meters per second
+     * @param omega The angular velocity, in radians per second
+     */
+    public void setVelocitiesAcceleration(double vx, double vy, double omega) {
+        Translation2d targetV = new Translation2d(vx, vy);
+        targetV = UtilsGeneral
+                .normalizeTranslation(targetV.minus(getVelocity()),
+                        ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
+                .plus(targetV);
+        setVelocities(targetV.getX(), targetV.getY(), omega);
+    }
+
+    /**
      * Sets the velocities and the angle of the robot
      * 
      * @param vx    The x velocity, in meters per second
@@ -149,6 +166,21 @@ public class Chassis extends SubsystemBase {
         if (!angleController.atSetpoint())
             omega = angleController.calculate(UtilsGeneral.normalizeRadians(getRotation().getRadians()));
         setVelocities(vx, vy, omega);
+    }
+
+    /**
+     * Sets the velocities and the angle of the robot, but limits the acceleration
+     * @param vx    The x velocity, in meters per second
+     * @param vy    The y velocity, in meters per second
+     * @param angle The angle of the robot, in radians
+     */
+    public void setAngleVelocityWithAcceleration(double vx, double vy, double angle) {
+        Translation2d targetV = new Translation2d(vx, vy);
+        targetV = UtilsGeneral
+                .normalizeTranslation(targetV.minus(getVelocity()),
+                        ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
+                .plus(targetV);
+        setAngleAndVelocity(targetV.getX(), targetV.getY(), angle);
     }
 
     /**
@@ -191,21 +223,10 @@ public class Chassis extends SubsystemBase {
         Arrays.stream(modules).forEach(SwerveModule::stop);
     }
 
-    public void softwareStop() {
-        Arrays.stream(modules).forEach(SwerveModule::softwareStop);
-    }
-
     public void setRampPosition() {
         Arrays.stream(modules).forEach((module) -> {
             module.setAngle(90);
             module.setVelocity(0);
-            module.setNeutralMode(true);
-        });
-    }
-
-    public void setDefaultNeutral() {
-        Arrays.stream(modules).forEach((module) -> {
-            module.setDefaultNeutral();
         });
     }
 
@@ -230,11 +251,6 @@ public class Chassis extends SubsystemBase {
                 new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
     }
 
-    public void setNeutral(boolean isBreak) {
-        this.isBreak = isBreak;
-        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
-    }
-
     /**
      * Gets the positions of the modules
      * 
@@ -243,12 +259,6 @@ public class Chassis extends SubsystemBase {
      */
     private SwerveModulePosition[] getModulePositions() {
         return Arrays.stream(modules).map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
-    }
-
-    public void forceUseVision() {
-        // var input = VisionUtils.getVisionPose();
-        // if (input != null)
-        //     poseEstimator.resetPosition(getGyroRotation(), getModulePositions(), input.getFirst());
     }
 
     /**
