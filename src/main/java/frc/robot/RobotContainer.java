@@ -15,9 +15,11 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.GenerateAutonomous;
 import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
@@ -50,8 +52,9 @@ public class RobotContainer {
     private final Gripper gripper;
     private final AddressableLED leds;
     private final AddressableLEDBuffer buffer;
-    private final Command auto;
     private Color LedLastColor;
+    private GenerateAutonomous generateAutonomous;
+    private GotoNodes gotoNodes;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -63,6 +66,7 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
+        gotoNodes = new GotoNodes(chassis, secondary ,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
@@ -71,12 +75,9 @@ public class RobotContainer {
         buffer = new AddressableLEDBuffer(64);
         leds.start();
 
-        auto = new GotoNodes(chassis, secondary,
-                () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
-                .andThen(new LeaveCommunity(chassis)
-                        .alongWith(parallelogram.getCalibrateCommad()) , new GotoRamp(chassis)) ;
-
         SmartDashboard.putData(CommandScheduler.getInstance());
+
+        generateAutonomous = new GenerateAutonomous(gotoNodes, gripper, chassis);
     }
 
     /**
@@ -103,9 +104,9 @@ public class RobotContainer {
                 .andThen(gripper.getCloseCommand(), new WaitCommand(0.2));
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary, () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE))
+                .andThen(gotoNodes)
                         .andThen(
-                                gripper.getOpenCommand()));
+                                gripper.getOpenCommand());
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen((new InstantCommand(()->parallelogram.getCalibrateCommad().schedule())));
@@ -117,6 +118,7 @@ public class RobotContainer {
 
         load.setName("Load");
         unload.setName("Unload");
+    
 
         main.a().onTrue(load);
         main.x().onTrue(unload);
@@ -168,7 +170,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return auto;
+        return generateAutonomous.getAutonomous();
     }
 
     public void onTeleopInit() {
