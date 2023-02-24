@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.GenerateAutonomous;
 import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
@@ -44,7 +43,6 @@ import frc.robot.utils.UtilsGeneral;
  */
 public class RobotContainer {
     private static RobotContainer instance;
-
     private final CommandXboxController main = new CommandXboxController(0);
     private final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
@@ -55,6 +53,7 @@ public class RobotContainer {
     private Color LedLastColor;
     private GenerateAutonomous generateAutonomous;
     private GotoNodes gotoNodes;
+    private LeaveCommunity leaveCommunity;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,9 +66,10 @@ public class RobotContainer {
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
         gotoNodes = new GotoNodes(chassis, secondary ,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
-
+        
         leds = new AddressableLED(0);
         leds.setLength(64);
         buffer = new AddressableLEDBuffer(64);
@@ -77,7 +77,7 @@ public class RobotContainer {
 
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        generateAutonomous = new GenerateAutonomous(gotoNodes, gripper, chassis);
+        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, chassis);
     }
 
     /**
@@ -104,9 +104,8 @@ public class RobotContainer {
                 .andThen(gripper.getCloseCommand(), new WaitCommand(0.2));
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(gotoNodes)
-                        .andThen(
-                                gripper.getOpenCommand());
+                .andThen(new GotoNodes(chassis, secondary,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)))
+                        .andThen(gripper.getOpenCommand());
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen((new InstantCommand(()->parallelogram.getCalibrateCommad().schedule())));
