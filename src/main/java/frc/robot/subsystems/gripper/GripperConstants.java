@@ -1,7 +1,14 @@
 package frc.robot.subsystems.gripper;
 
-public final class GripperConstants {
-    public static final double CLOSE_POWER = -1;
-    public static final double OPEN_POWER = 1;
-    public static final int MOTOR_ID = 20;
+/**
+ * The gripper subsystem's constants.
+ */
+public class GripperConstants {
+    public static final int MOTOR_PORT = 9;
+    public static final double OPEN_CURRENT = 5;
+    public static final double CLOSE_CUBE_CURRENT = 5;
+    public static final double CLOSE_CONE_CURRENT = 15;
+
+    public static final double OPEN_PERCENT_OUTPUT = 1;
+    public static final double CLOSE_PERCENT_OUTPUT = -1;
 }
