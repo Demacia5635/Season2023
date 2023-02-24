@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
@@ -73,7 +74,7 @@ public class RobotContainer {
         auto = new GotoNodes(chassis, secondary,
                 () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)).andThen(gripper.getOpenCommand())
                 .andThen(new LeaveCommunity(chassis)
-                        .alongWith(parallelogram.getCalibrateCommad()), new GotoRamp(chassis));
+                        .alongWith(parallelogram.getCalibrateCommad()) , new GotoRamp(chassis)) ;
 
         SmartDashboard.putData(CommandScheduler.getInstance());
     }
@@ -99,7 +100,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand());
+                .andThen(gripper.getCloseCommand(), new WaitCommand(0.2));
 
         Command unload = new GotoCommunity(chassis)
                 .andThen(new GotoNodes(chassis, secondary, () -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE))
@@ -121,6 +122,9 @@ public class RobotContainer {
         main.x().onTrue(unload);
         main.b().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
+
+        main.povDown().onTrue(new InstantCommand(chassis::setRampPosition));
+        main.povLeft().onTrue(new InstantCommand(chassis::setDefaultNeutral));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -168,6 +172,11 @@ public class RobotContainer {
     }
 
     public void onTeleopInit() {
+        chassis.setDefaultNeutral();
         parallelogram.getCalibrateCommad().schedule();
+    }
+
+    public void onAutoInit() {
+        chassis.setNeutral(true);
     }
 }

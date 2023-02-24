@@ -51,10 +51,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(210.5859375 + 180, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(122.34375 + 180, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(46.142578125 + 180, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(288.720703125 + 180, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(30.5859375, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(302.6953125, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(226.93359375, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(108.544921875, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -67,10 +67,10 @@ public class ChassisConstants {
     public static final int GYRO_ID = 14;
 
     public static final double MAX_SPEED = 4.2; // meters per second
-    public static final double MAX_ACCELERATION = 2; // meters per second squared
-    public static final double MAX_AUTO_SPEED = 2;
+    public static final double MAX_ACCELERATION = 3.5; // meters per second squared
+    public static final double MAX_AUTO_SPEED = 3.5;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_ACCELERATION);
-    public static final double MAX_DRIVE_SPEED = 3.5;
+    public static final double MAX_DRIVE_SPEED = Math.PI;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     public static final double AUTO_TRANSLATION_KP = 2;
@@ -84,5 +84,5 @@ public class ChassisConstants {
     public static final double TELEOP_ANGLE_TOLERANCE = Math.PI / 120;
 
     public static final double AUTO_ANGLE_TOLERANCE = Math.PI / 180;
-    public static final double AUTO_TRANSLATION_TOLERANCE = 0.03;
+    public static final double AUTO_TRANSLATION_TOLERANCE = 0.02;
 }

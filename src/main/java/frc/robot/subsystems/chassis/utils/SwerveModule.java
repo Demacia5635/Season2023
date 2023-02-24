@@ -57,7 +57,7 @@ public class SwerveModule implements Sendable {
         angleMotor.configMaxIntegralAccumulator(0, SwerveModuleConstants.MAX_ACCUM_INTEGRAL);
 
         angleMotor.setNeutralMode(NeutralMode.Brake);
-        moveMotor.setNeutralMode(NeutralMode.Brake);
+        moveMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     /**
@@ -117,6 +117,15 @@ public class SwerveModule implements Sendable {
     public void setAngle(double angle) {
         desiredAngle = angle;
         angleMotor.set(ControlMode.Position, calculateTarget(angle));
+    }
+
+    public void softwareStop() {
+        moveMotor.set(ControlMode.Velocity, 0);
+    }
+
+    public void setDefaultNeutral() {
+        moveMotor.setNeutralMode(NeutralMode.Coast);
+        angleMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     /**

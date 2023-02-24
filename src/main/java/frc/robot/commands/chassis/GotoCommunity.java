@@ -33,6 +33,7 @@ public class GotoCommunity extends CommandBase {
 
     @Override
     public void initialize() {
+        chassis.forceUseVision();
         command = new InstantCommand();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 
@@ -45,7 +46,7 @@ public class GotoCommunity extends CommandBase {
             // Enter through the top
             switch (zone) {
                 case LOADING_ZONE:
-                    generator.add(new Pose2d(new Translation2d(10.98, 7.34), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(10.98, 7), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(180));
                 case OPEN_AREA:
                     generator.add(new Pose2d(new Translation2d(5.65, 4.735), Rotation2d.fromDegrees(180)),

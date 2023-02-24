@@ -14,6 +14,7 @@ import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -69,8 +70,9 @@ public class Chassis extends SubsystemBase {
         angleController.enableContinuousInput(0, 2 * Math.PI);
         angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
-                getModulePositions(), new Pose2d(0, 0, getGyroRotation()));
-        isBreak = true;
+                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.8, 0.8, 0.8),
+                VecBuilder.fill(0.2, 0.2, 0.2));
+        isBreak = false;
 
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
@@ -189,6 +191,24 @@ public class Chassis extends SubsystemBase {
         Arrays.stream(modules).forEach(SwerveModule::stop);
     }
 
+    public void softwareStop() {
+        Arrays.stream(modules).forEach(SwerveModule::softwareStop);
+    }
+
+    public void setRampPosition() {
+        Arrays.stream(modules).forEach((module) -> {
+            module.setAngle(90);
+            module.setVelocity(0);
+            module.setNeutralMode(true);
+        });
+    }
+
+    public void setDefaultNeutral() {
+        Arrays.stream(modules).forEach((module) -> {
+            module.setDefaultNeutral();
+        });
+    }
+
     /**
      * Swaps the neutral mode of the modules, between brake and coast
      */
@@ -210,6 +230,11 @@ public class Chassis extends SubsystemBase {
                 new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
     }
 
+    public void setNeutral(boolean isBreak) {
+        this.isBreak = isBreak;
+        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
+    }
+
     /**
      * Gets the positions of the modules
      * 
@@ -218,6 +243,12 @@ public class Chassis extends SubsystemBase {
      */
     private SwerveModulePosition[] getModulePositions() {
         return Arrays.stream(modules).map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
+    }
+
+    public void forceUseVision() {
+        // var input = VisionUtils.getVisionPose();
+        // if (input != null)
+        //     poseEstimator.resetPosition(getGyroRotation(), getModulePositions(), input.getFirst());
     }
 
     /**
@@ -270,8 +301,8 @@ public class Chassis extends SubsystemBase {
                                         new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
                                                 trajectory.getEndState().holonomicRotation))
                                         : new InstantCommand())
-                                        .alongWith(onTrajectoryEnd)),new InstantCommand(()-> System.out.println(("Trajectory ended"))));
-                                        
+                                        .alongWith(onTrajectoryEnd)),
+                new InstantCommand(() -> System.out.println(("Trajectory ended"))));
 
         return command;
     }

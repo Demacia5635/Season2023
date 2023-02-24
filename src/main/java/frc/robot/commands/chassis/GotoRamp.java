@@ -27,11 +27,12 @@ public class GotoRamp extends CommandBase {
 
     @Override
     public void initialize() {
+        chassis.forceUseVision();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
-        generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(180)),
+        generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(235)),
                 Rotation2d.fromDegrees(180));
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(0.5, ChassisConstants.MAX_ACCELERATION),
+        command = chassis.createPathFollowingCommand(new PathConstraints(2.5, ChassisConstants.MAX_ACCELERATION),
                 generator.generate(chassis.getPose()));
         command.initialize();
     }
@@ -49,6 +50,6 @@ public class GotoRamp extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         command.end(interrupted);
-        chassis.stop();
+        chassis.setRampPosition();
     }
 }

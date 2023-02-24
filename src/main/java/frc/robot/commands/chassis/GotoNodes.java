@@ -29,9 +29,9 @@ public class GotoNodes extends CommandBase {
     }; // All relative to blue alliance
 
     /** Distance the robot should be from the node of the cube */
-    private static final double DISTANCE_CUBE = 0.67;
+    private static final double DISTANCE_CUBE = 0.59;
     /** Distance the robot should be from the node of the cone */
-    private static final double DISTANCE_CONE = 0.67;
+    private static final double DISTANCE_CONE = 0.59;
 
     /**
      * The position of the robot on the grid.
@@ -86,15 +86,15 @@ public class GotoNodes extends CommandBase {
     public GotoNodes(Chassis chassis, CommandXboxController secondary, Supplier<Command> onPosition) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
-        secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
-        secondary.x().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
-        secondary.x().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
+        secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
+        secondary.x().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
+        secondary.x().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
         secondary.y().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.TOP)).ignoringDisable(true));
         secondary.y().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.MIDDLE)).ignoringDisable(true));
         secondary.y().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.MIDDLE, Position.BOTTOM)).ignoringDisable(true));
-        secondary.b().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
-        secondary.b().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
-        secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
+        secondary.b().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
+        secondary.b().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
+        secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
         this.chassis = chassis;
         this.onPosition = onPosition;
         command = new InstantCommand();
@@ -139,6 +139,7 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public void initialize() {
+        chassis.forceUseVision();
         isScheduled = true;
         changeTarget(gridPosition, nodePosition);
     }
@@ -178,7 +179,8 @@ public class GotoNodes extends CommandBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addStringProperty("Grid selected pos", ()->{
-            switch (gridPosition) {
+            Position t = Position.fromAllianceRelative(gridPosition);
+            switch (t) {
                 case BOTTOM:
                     return "3";
                     
@@ -194,15 +196,16 @@ public class GotoNodes extends CommandBase {
         }, null);
 
         builder.addStringProperty("Node selected pos", ()->{
-            switch (nodePosition) {
+            Position t = Position.fromAllianceRelative(nodePosition);
+            switch (t) {
                 case BOTTOM:
-                    return "A";
+                    return "C";
                     
                 case MIDDLE:
                     return "B";
                 
                 case TOP:
-                    return "C";
+                    return "A";
             
                 default:
                     return "NON SELECTED";

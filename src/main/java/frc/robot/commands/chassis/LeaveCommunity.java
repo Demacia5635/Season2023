@@ -41,6 +41,7 @@ public class LeaveCommunity extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        chassis.forceUseVision();
         command = new InstantCommand();
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
 
@@ -70,7 +71,7 @@ public class LeaveCommunity extends CommandBase {
                     break;
             }
         }
-        generator.add(new Pose2d(new Translation2d(5.6, 2.75), Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
+        generator.add(new Pose2d(new Translation2d(6.6, 2.75), Rotation2d.fromDegrees(235)), Rotation2d.fromDegrees(180));
         command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
         command.initialize();
     }
