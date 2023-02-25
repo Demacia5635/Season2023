@@ -47,9 +47,10 @@ public final class Constants {
      * The Vision constants.
      */
     public static final class VisionConstants {
-        public static final NetworkTable LIMELIGHT_TABLE = NetworkTableInstance.getDefault().getTable("limelight");
+        public static final NetworkTable LIMELIGHT_TABLE1 = NetworkTableInstance.getDefault().getTable("limelight");
+        public static final NetworkTable LIMELIGHT_TABLE2 = NetworkTableInstance.getDefault().getTable("limelight-iii");
 
-        public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE.getEntry("tv"); // double not boolean
+        public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE1.getEntry("tv"); // double not boolean
         
         /**
          * An array of doubles with the following values:<p>
@@ -60,7 +61,7 @@ public final class Constants {
          * [4] - pitch in degrees<p>
          * [5] - yaw in degrees
          */
-        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE.getEntry("botpose_wpiblue");
+        public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE1.getEntry("botpose_wpiblue");
 
         /**
          * An array of doubles with the following values:<p>
@@ -71,7 +72,7 @@ public final class Constants {
          * [4] - yaw from the camera to the april tag in degrees<p>
          * [5] - roll from the camera to the april tag in degrees
          */
-        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE.getEntry("targetpose_cameraspace");
+        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
 
         public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4.5;
     }

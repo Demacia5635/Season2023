@@ -21,7 +21,7 @@ import frc.robot.utils.UtilsGeneral.ControllerSide;
 public class Drive extends CommandBase {
     private final Chassis chassis;
     private final XboxController controller;
-    private double scaleVelocity = 2;
+    private double scaleVelocity = 1.5;
     private double scaleRotation = 2;
 
     /**

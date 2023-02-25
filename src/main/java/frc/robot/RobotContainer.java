@@ -26,6 +26,7 @@ import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.utils.GamePiece;
 import frc.robot.utils.UtilsGeneral;
@@ -64,7 +65,7 @@ public class RobotContainer {
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
-        gripper = new Gripper();
+        gripper = new Gripper(GripperConstants.MOTOR_ID);
         gotoNodes = new GotoNodes(chassis, secondary ,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
@@ -101,7 +102,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand(() -> gamePiece), new WaitCommand(0.2));
+                .andThen(gripper.getCloseCommand(), new WaitCommand(0.2));
 
         Command unload = new GotoCommunity(chassis)
                 .andThen(new GotoNodes(chassis, secondary,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)))
@@ -112,8 +113,9 @@ public class RobotContainer {
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen(new InstantCommand(()->parallelogram.getCalibrateCommad().schedule()));
 
-        main.leftBumper().onTrue(new InstantCommand(()-> gripper.getSwitchPositionCommand(() -> gamePiece).schedule()));
-        main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
+        main.leftBumper().onTrue(new InstantCommand(()-> gripper.Switch().schedule()));
+        main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
+        //main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
 
         load.setName("Load");
         unload.setName("Unload");
@@ -126,32 +128,29 @@ public class RobotContainer {
 
         main.povDown().onTrue(new InstantCommand(chassis::setRampPosition));
 
-        secondary.rightBumper().onTrue(new InstantCommand(() -> {
+        secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
                 for (int i = 0; i < 64; i++) {
                     buffer.setRGB(i, 168, 0, 230);
                 }
                 gamePiece = GamePiece.CUBE;
-                LedLastColor = new Color(168, 0, 230);
             } else {
                 for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, 255, 140, 0);
+                    buffer.setRGB(i, 0, 0, 0);
                 }
-                gamePiece = GamePiece.CONE;
-                LedLastColor = new Color(255, 140, 0);
             }
             leds.setData(buffer);
         }).ignoringDisable(true));
 
-        secondary.leftBumper().onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(0, 0, 0))) {
+        secondary.rightBumper().onTrue(new InstantCommand(() -> {
+            if (!buffer.getLED(0).equals(new Color(255, 140, 0))) {
                 for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
+                    buffer.setRGB(i, 255, 140, 0);
                 }
+                gamePiece = GamePiece.CONE;
             } else {
                 for (int i = 0; i < 64; i++) {
-                    buffer.setRGB(i, (int) (LedLastColor.red * 255), (int) (LedLastColor.green * 255),
-                            (int) (LedLastColor.blue * 255));
+                    buffer.setRGB(i, 0, 0, 0);
                 }
             }
 

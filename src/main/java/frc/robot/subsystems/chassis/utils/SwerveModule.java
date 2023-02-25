@@ -50,6 +50,7 @@ public class SwerveModule implements Sendable {
         absoluteEncoder.configFactoryDefault();
 
         moveMotor.config_kP(0, SwerveModuleConstants.VELOCITY_KP);
+        moveMotor.config_kI(0, SwerveModuleConstants.VELOCITY_KI);
 
         angleMotor.config_kP(0, SwerveModuleConstants.ANGLE_KP);
         angleMotor.config_kI(0, SwerveModuleConstants.ANGLE_KI);

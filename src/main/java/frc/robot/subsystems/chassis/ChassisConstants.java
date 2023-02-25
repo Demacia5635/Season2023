@@ -19,7 +19,8 @@ public class ChassisConstants {
         public final int angleMotorID;
         public final int absoluteEncoderID;
 
-        public static final double VELOCITY_KP = 0.36622;
+        public static final double VELOCITY_KP = 2e-5;
+        public static final double VELOCITY_KI = 6e-5;
         public static final double VELOCITY_KS = 0.0128;
         public static final double VELOCITY_KV = 0.227675;
         public static final SimpleMotorFeedforward VELOCITY_FF = new SimpleMotorFeedforward(VELOCITY_KS, VELOCITY_KV);
@@ -67,10 +68,10 @@ public class ChassisConstants {
     public static final int GYRO_ID = 14;
 
     public static final double MAX_SPEED = 4.2; // meters per second
-    public static final double MAX_ACCELERATION = 3.5; // meters per second squared
-    public static final double MAX_AUTO_SPEED = 3.5;
+    public static final double MAX_ACCELERATION = 6; // meters per second squared
+    public static final double MAX_AUTO_SPEED = 4;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_ACCELERATION);
-    public static final double MAX_DRIVE_SPEED = Math.PI;
+    public static final double MAX_DRIVE_SPEED = 4;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     public static final double AUTO_TRANSLATION_KP = 2;

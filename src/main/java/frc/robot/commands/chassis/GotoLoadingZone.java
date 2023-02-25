@@ -1,5 +1,7 @@
 package frc.robot.commands.chassis;
 
+import java.util.Random;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -72,6 +74,11 @@ public class GotoLoadingZone extends CommandBase {
         TOP, BOTTOM
     }
 
+    //TODO: DELETE THE RANDIMIZER
+    private double getRandomizedPos(double error, int options){
+        return new Random().nextInt(options) != 0 ? 0 : error;
+    }
+
     @Override
     public void initialize() {
         onEntryEnded = false;
@@ -81,13 +88,13 @@ public class GotoLoadingZone extends CommandBase {
         double endY = position == Position.TOP ? 7.5 : 6.25;
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
-
+        //TODO REMOCE RANDOMIZED COORDINETS
         if (zone == Zone.COMMUNITY_BOTTOM || zone == Zone.COMMUNITY_ENTRANCE_BOTTOM) {
             generator.add(new Pose2d(new Translation2d(5.3, 0.76), new Rotation2d()),
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.08, endY), new Rotation2d()),
+            generator.add(new Pose2d(new Translation2d(15.08, endY - getRandomizedPos(0.4, 2)), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -103,7 +110,7 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.08, endY), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.08, endY - getRandomizedPos(0.4, 2)), new Rotation2d()),
                             new Rotation2d());
             }
         }

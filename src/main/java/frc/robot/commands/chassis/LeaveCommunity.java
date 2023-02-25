@@ -61,10 +61,10 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(2.5, 0.7), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(5.6, 0.7), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(5.6, 0.5), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 default:
                     break;

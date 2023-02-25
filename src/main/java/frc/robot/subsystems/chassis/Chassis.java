@@ -53,6 +53,8 @@ public class Chassis extends SubsystemBase {
     private final double startRoll, startPitch;
     private boolean isBreak;
 
+    private Translation2d lastVel;
+
     /**
      * Creates a new Chassis.
      */
@@ -71,8 +73,8 @@ public class Chassis extends SubsystemBase {
         angleController.enableContinuousInput(0, 2 * Math.PI);
         angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
-                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.8, 0.8, 0.8),
-                VecBuilder.fill(0.2, 0.2, 0.2));
+                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.9, 0.9, 0.9),
+                VecBuilder.fill(0.5, 0.5, 0.5));
         isBreak = true;
 
         startPitch = gyro.getPitch();
@@ -80,6 +82,8 @@ public class Chassis extends SubsystemBase {
 
         setupVisionListener();
         setupPathDisplay();
+
+        lastVel = new Translation2d();
     }
 
     private void setupPathDisplay() {
@@ -132,9 +136,18 @@ public class Chassis extends SubsystemBase {
      * @param omega The angular velocity, in radians per second
      */
     public void setVelocities(double vx, double vy, double omega) {
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getRotation());
-        SwerveModuleState[] states = ChassisConstants.KINEMATICS.toSwerveModuleStates(speeds);
-        setModuleStates(states);
+        System.out.println("vx: " + vx + ", vy: " + vy + ", omega: " + omega);
+        SmartDashboard.putNumber("vx", vx);
+        SmartDashboard.putNumber("vy", vy);
+        SmartDashboard.putNumber("omega", omega);
+        lastVel = new Translation2d(vx, vy);
+        if (vx == 0 && vy == 0 && omega == 0)
+            stop();
+        else {
+            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getRotation());
+            SwerveModuleState[] states = ChassisConstants.KINEMATICS.toSwerveModuleStates(speeds);
+            setModuleStates(states);
+        }
     }
 
     /**
@@ -145,12 +158,11 @@ public class Chassis extends SubsystemBase {
      * @param omega The angular velocity, in radians per second
      */
     public void setVelocitiesAcceleration(double vx, double vy, double omega) {
-        Translation2d targetV = new Translation2d(vx, vy);
-        targetV = UtilsGeneral
-                .normalizeTranslation(targetV.minus(getVelocity()),
+        Translation2d vel = UtilsGeneral
+                .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
-                .plus(targetV);
-        setVelocities(targetV.getX(), targetV.getY(), omega);
+                .plus(lastVel);
+        setVelocities(vel.getX(), vel.getY(), omega);
     }
 
     /**
@@ -170,17 +182,17 @@ public class Chassis extends SubsystemBase {
 
     /**
      * Sets the velocities and the angle of the robot, but limits the acceleration
+     * 
      * @param vx    The x velocity, in meters per second
      * @param vy    The y velocity, in meters per second
      * @param angle The angle of the robot, in radians
      */
     public void setAngleVelocityWithAcceleration(double vx, double vy, double angle) {
-        Translation2d targetV = new Translation2d(vx, vy);
-        targetV = UtilsGeneral
-                .normalizeTranslation(targetV.minus(getVelocity()),
+        Translation2d vel = UtilsGeneral
+                .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
-                .plus(targetV);
-        setAngleAndVelocity(targetV.getX(), targetV.getY(), angle);
+                .plus(lastVel);
+        setAngleAndVelocity(vel.getX(), vel.getY(), angle);
     }
 
     /**
@@ -277,7 +289,7 @@ public class Chassis extends SubsystemBase {
      */
     public Translation2d getVelocity() {
         ChassisSpeeds speeds = ChassisConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
-        return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond).rotateBy(getRotation());
     }
 
     /**

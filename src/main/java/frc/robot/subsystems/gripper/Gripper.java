@@ -1,110 +1,111 @@
 package frc.robot.subsystems.gripper;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.gripper.Close;
-import frc.robot.commands.gripper.Open;
-import frc.robot.commands.gripper.SmartClose;
-import frc.robot.utils.GamePiece;
 
-/**
- * The gripper subsystem.
- */
 public class Gripper extends SubsystemBase {
-    private final TalonSRX motor;
-
-    private boolean isOpen;
-
-    /**
-     * Creates a new Gripper.
-     */
-    public Gripper() {
-        motor = new TalonSRX(GripperConstants.MOTOR_PORT);
+    public static enum OpenOrClose {
+        OPEN, CLOSE;
     }
 
-    /**
-     * Opens the gripper.
-     */
-    public void open() {
-        motor.set(ControlMode.PercentOutput, GripperConstants.OPEN_PERCENT_OUTPUT);
-        isOpen = true;
-    }
+    public static OpenOrClose openOrClose;
+    private TalonSRX motor;
 
-    /**
-     * Closes the gripper.
-     */
-    public void close() {
-        motor.set(ControlMode.PercentOutput, GripperConstants.CLOSE_PERCENT_OUTPUT);
-        isOpen = false;
-    }
+  /** Creates a new Gripper. */
+  public Gripper(int motorId) {
+    openOrClose = OpenOrClose.OPEN;
+    motor = new TalonSRX(motorId);
+    motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
+    motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
+  }
 
-    /**
-     * Stops the gripper.
-     */
-    public void stop() {
-        motor.set(ControlMode.PercentOutput, 0);
-    }
+  /**
+   * Sets gripper motor power.
+   * @param power
+   */
+  private void setPower(double power){
+    motor.set(TalonSRXControlMode.PercentOutput, power);
+  }
 
-    /**
-     * Gets the current of the gripper.
-     * 
-     * @return The current of the gripper.
-     */
-    public double getCurrent() {
-        return motor.getSupplyCurrent();
-    }
+  /**
+   * Returns the close motion activated limit switch`s state. true = pressed.
+   * @return Lim switch state
+   */
+  private boolean isLimitSwitchClose(){
+    return motor.isRevLimitSwitchClosed() == 1;
+  }
 
-    /**
-     * Gets the open command.
-     * 
-     * @return The command that opens the gripper.
-     */
-    public CommandBase getOpenCommand() {
-        return new Open(this);
-    }
+  /**
+   * Returns the open motion activated limit switch`s state. true = pressed.
+   * @return Lim switch state
+   */
+  private boolean isLimitSwitchOpen(){
+    return motor.isFwdLimitSwitchClosed() == 1;
+  }
 
-    /**
-     * Gets the close cube command.
-     * 
-     * @return The command that closes the gripper on a cube.
-     */
-    public CommandBase getCloseCubeCommand() {
-        return new Close(this, GripperConstants.CLOSE_CUBE_CURRENT);
-    }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 
-    /**
-     * Gets the close cone command.
-     * 
-     * @return The command that closes the gripper on a cone.
-     */
-    public CommandBase getCloseConeCommand() {
-        return new Close(this, GripperConstants.CLOSE_CONE_CURRENT);
-    }
+  
+  /**
+   * Opens the gripper when called.
+   */
+  private void open(){
+    motor.set(ControlMode.PercentOutput, GripperConstants.OPEN_POWER);
+    openOrClose = OpenOrClose.OPEN;
+  }
 
-    public CommandBase getCloseCommand(Supplier<GamePiece> currentSupplier) {
-        return new SmartClose(this, currentSupplier);
-    }
+  /** 
+   * Closes the gripper when called.
+   */
+  private void close(){
+    motor.set(ControlMode.PercentOutput, GripperConstants.CLOSE_POWER);
+    openOrClose = OpenOrClose.CLOSE;
+  }
+  
 
-    public CommandBase getSwitchPositionCommand(Supplier<GamePiece> gamePieceSupplier) {
-        if (isOpen) {
-            return getCloseCommand(gamePieceSupplier);
-        }
+  /**
+   * Creates a new StartEndCommand to open the gripper with the end condition of the limit switch being pressed
+   * @return Open COMMAND
+   */
+  public Command getOpenCommand(){
+    return new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen);
+  }
+
+  /**
+   * Creates a new StartEndCommand to Close the gripper with the end condition of the limit switch being pressed
+   * @return Close COMMAND
+   */
+  public Command getCloseCommand(){
+    return new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose);
+  }
+
+  public Command Switch(){
+    if(openOrClose == OpenOrClose.OPEN){
+        return getCloseCommand();
+    }else{
         return getOpenCommand();
     }
+  }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("Current", this::getCurrent, null);
 
-        SmartDashboard.putData("Open", getOpenCommand());
-        SmartDashboard.putData("Close Cube", getCloseCubeCommand());
-        SmartDashboard.putData("Close Cone", getCloseConeCommand());
-    }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.addBooleanProperty("Limit Switch close", this::isLimitSwitchClose, null);
+    builder.addBooleanProperty("Limit Switch open", this::isLimitSwitchOpen, null);
+    SmartDashboard.putData("Open Gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen));
+    SmartDashboard.putData("Close Gripper",  new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose));
+  }
 }

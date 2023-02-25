@@ -240,7 +240,7 @@ public final class UtilsGeneral {
 
     public static Translation2d normalizeTranslation(Translation2d translation, double max) {
         if (translation.getNorm() > max) {
-            return translation.times(max / translation.getNorm());
+            return new Translation2d(max, translation.getAngle());
         }
         return translation;
     }
