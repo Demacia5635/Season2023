@@ -54,6 +54,7 @@ public class Chassis extends SubsystemBase {
     private boolean isBreak;
 
     private Translation2d lastVel;
+    private boolean isSlowDown;
 
     /**
      * Creates a new Chassis.
@@ -84,6 +85,7 @@ public class Chassis extends SubsystemBase {
         setupPathDisplay();
 
         lastVel = new Translation2d();
+        isSlowDown = true;
     }
 
     private void setupPathDisplay() {
@@ -141,7 +143,7 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putNumber("vy", vy);
         SmartDashboard.putNumber("omega", omega);
         lastVel = new Translation2d(vx, vy);
-        if (vx == 0 && vy == 0 && omega == 0)
+        if (vx == 0 && vy == 0 && omega == 0 && getVelocity().getNorm() <= ChassisConstants.STOP_VELOCITY)
             stop();
         else {
             ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getRotation());
@@ -158,6 +160,12 @@ public class Chassis extends SubsystemBase {
      * @param omega The angular velocity, in radians per second
      */
     public void setVelocitiesAcceleration(double vx, double vy, double omega) {
+        if (!isSlowDown && vx == 0 && vy == 0 && omega == 0) {
+            lastVel = getVelocity();
+            isSlowDown = true;
+        } else if (isSlowDown) {
+            isSlowDown = false;
+        }
         Translation2d vel = UtilsGeneral
                 .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
@@ -188,6 +196,7 @@ public class Chassis extends SubsystemBase {
      * @param angle The angle of the robot, in radians
      */
     public void setAngleVelocityWithAcceleration(double vx, double vy, double angle) {
+        isSlowDown = false;
         Translation2d vel = UtilsGeneral
                 .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)

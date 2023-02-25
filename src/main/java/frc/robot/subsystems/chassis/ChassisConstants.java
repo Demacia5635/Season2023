@@ -86,4 +86,6 @@ public class ChassisConstants {
 
     public static final double AUTO_ANGLE_TOLERANCE = Math.PI / 180;
     public static final double AUTO_TRANSLATION_TOLERANCE = 0.02;
+
+    public static final double STOP_VELOCITY = 0.3;
 }
