@@ -439,7 +439,13 @@ public class Chassis extends SubsystemBase {
      *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
     private void addVisionInput(Pair<Pose2d, Double> visionInput) {
-        poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
+        updatePosition(visionInput);
+    }
+
+    private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {
+        if (visionInput != null)
+            addVisionInput(visionInput);
+        poseEstimator.update(getGyroRotation(), getModulePositions());
     }
 
     /**
@@ -518,7 +524,7 @@ public class Chassis extends SubsystemBase {
 
     @Override
     public void periodic() {
-        poseEstimator.update(getGyroRotation(), getModulePositions());
+        updatePosition(null);
         field.setRobotPose(getPose());
     }
 

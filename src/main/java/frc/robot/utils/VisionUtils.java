@@ -33,6 +33,7 @@ public class VisionUtils {
                         try {
                             listener.accept(pose);
                         } catch (ConcurrentModificationException e) {
+                            System.out.println("ConcurrentModificationException");
                         }
                     }
                 });
@@ -43,6 +44,7 @@ public class VisionUtils {
                         try {
                             listener.accept(pose);
                         } catch (ConcurrentModificationException e) {
+                            System.out.println("ConcurrentModificationException");
                         }
                     }
                 });
