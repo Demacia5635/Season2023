@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -127,6 +128,9 @@ public class RobotContainer {
         main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
 
         main.povDown().onTrue(new InstantCommand(chassis::setRampPosition));
+
+        //TODO : DELETE THIS TEST COMMAND
+            secondary.povDown().whileTrue(new StartEndCommand(()->chassis.setPowerToMotorTest(0.6), chassis::stop, chassis));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {

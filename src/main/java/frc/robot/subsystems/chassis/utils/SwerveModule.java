@@ -70,6 +70,10 @@ public class SwerveModule implements Sendable {
         return UtilsGeneral.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
     }
 
+    public void setPower(double power){
+        moveMotor.set(ControlMode.PercentOutput, power);
+    }
+
     /**
      * Gets the angle of the module as a Rotation2d
      * 

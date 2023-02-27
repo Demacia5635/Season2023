@@ -47,7 +47,7 @@ public final class Constants {
      * The Vision constants.
      */
     public static final class VisionConstants {
-        public static final NetworkTable LIMELIGHT_TABLE1 = NetworkTableInstance.getDefault().getTable("limelight");
+        public static final NetworkTable LIMELIGHT_TABLE1 = NetworkTableInstance.getDefault().getTable("limelight-ii");
         public static final NetworkTable LIMELIGHT_TABLE2 = NetworkTableInstance.getDefault().getTable("limelight-iii");
 
         public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE1.getEntry("tv"); // double not boolean

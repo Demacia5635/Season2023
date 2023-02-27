@@ -54,7 +54,6 @@ public class Chassis extends SubsystemBase {
     private boolean isBreak;
 
     private Translation2d lastVel;
-    private boolean isSlowDown;
 
     /**
      * Creates a new Chassis.
@@ -85,7 +84,6 @@ public class Chassis extends SubsystemBase {
         setupPathDisplay();
 
         lastVel = new Translation2d();
-        isSlowDown = true;
     }
 
     private void setupPathDisplay() {
@@ -101,6 +99,11 @@ public class Chassis extends SubsystemBase {
      */
     public double getGyroAngle() {
         return UtilsGeneral.normalizeDegrees(gyro.getFusedHeading());
+    }
+
+    //TODO: delete this test command
+    public void setPowerToMotorTest(double power){
+        modules[0].setPower(power);
     }
 
     /**
@@ -138,7 +141,6 @@ public class Chassis extends SubsystemBase {
      * @param omega The angular velocity, in radians per second
      */
     public void setVelocities(double vx, double vy, double omega) {
-        System.out.println("vx: " + vx + ", vy: " + vy + ", omega: " + omega);
         SmartDashboard.putNumber("vx", vx);
         SmartDashboard.putNumber("vy", vy);
         SmartDashboard.putNumber("omega", omega);
@@ -160,12 +162,6 @@ public class Chassis extends SubsystemBase {
      * @param omega The angular velocity, in radians per second
      */
     public void setVelocitiesAcceleration(double vx, double vy, double omega) {
-        if (!isSlowDown && vx == 0 && vy == 0 && omega == 0) {
-            lastVel = getVelocity();
-            isSlowDown = true;
-        } else if (isSlowDown) {
-            isSlowDown = false;
-        }
         Translation2d vel = UtilsGeneral
                 .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
@@ -196,7 +192,6 @@ public class Chassis extends SubsystemBase {
      * @param angle The angle of the robot, in radians
      */
     public void setAngleVelocityWithAcceleration(double vx, double vy, double angle) {
-        isSlowDown = false;
         Translation2d vel = UtilsGeneral
                 .normalizeTranslation(new Translation2d(vx, vy).minus(lastVel),
                         ChassisConstants.MAX_ACCELERATION / Constants.CYCLES_PER_SECOND)
@@ -444,8 +439,9 @@ public class Chassis extends SubsystemBase {
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {
         if (visionInput != null)
-            addVisionInput(visionInput);
-        poseEstimator.update(getGyroRotation(), getModulePositions());
+            poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
+        else
+            poseEstimator.update(getGyroRotation(), getModulePositions());
     }
 
     /**
