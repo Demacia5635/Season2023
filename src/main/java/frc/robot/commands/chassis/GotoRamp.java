@@ -31,7 +31,7 @@ public class GotoRamp extends CommandBase {
         generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(235)),
                 Rotation2d.fromDegrees(180));
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(2.5, ChassisConstants.MAX_ACCELERATION),
+        command = chassis.createPathFollowingCommand(new PathConstraints(2.5, ChassisConstants.MAX_AUTO_ACCELERATION),
                 generator.generate(chassis.getPose()));
         command.initialize();
     }
