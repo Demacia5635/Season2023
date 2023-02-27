@@ -23,11 +23,16 @@ import frc.robot.utils.UtilsGeneral;
  */
 public class GotoNodes extends CommandBase {
     //TODO : DEKET RANDOMIZED VALUES
+    // private static final Translation2d[][] NODES = {
+    //         { new Translation2d(1.38 + getRandomizedPos(0.2, 2), 0.51 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 1.07 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 1.63 + getRandomizedPos(0.2, 2)) },
+    //         { new Translation2d(1.38 + getRandomizedPos(0.2, 2), 2.19 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 2.75 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 3.31 + getRandomizedPos(0.2, 2)) },
+    //         { new Translation2d(1.38 + getRandomizedPos(0.2, 2) , 3.87 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 4.43 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 4.99 + getRandomizedPos(0.2, 2)) }
+    // }; // All relative to blue alliance
     private static final Translation2d[][] NODES = {
-            { new Translation2d(1.38 + getRandomizedPos(0.2, 2), 0.51 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 1.07 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 1.63 + getRandomizedPos(0.2, 2)) },
-            { new Translation2d(1.38 + getRandomizedPos(0.2, 2), 2.19 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 2.75 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 3.31 + getRandomizedPos(0.2, 2)) },
-            { new Translation2d(1.38 + getRandomizedPos(0.2, 2) , 3.87 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 4.43 + getRandomizedPos(0.2, 2)), new Translation2d(1.38 + getRandomizedPos(0.2, 2), 4.99 + getRandomizedPos(0.2, 2)) }
-    }; // All relative to blue alliance
+        { new Translation2d(1.38 , 0.51 ), new Translation2d(1.38 , 1.07 ), new Translation2d(1.38 , 1.63 ) },
+        { new Translation2d(1.38 , 2.19 ), new Translation2d(1.38 , 2.75 ), new Translation2d(1.38 , 3.31 ) },
+        { new Translation2d(1.38  , 3.87 ), new Translation2d(1.38 , 4.43 ), new Translation2d(1.38 , 4.99 ) }
+};
 
  //TODO: DELETE THE RANDIMIZER
  private static double getRandomizedPos(double error, int options){
@@ -35,9 +40,9 @@ public class GotoNodes extends CommandBase {
 }
 
     /** Distance the robot should be from the node of the cube */
-    private static final double DISTANCE_CUBE = 0.59;
+    private static final double DISTANCE_CUBE = 0.65;
     /** Distance the robot should be from the node of the cone */
-    private static final double DISTANCE_CONE = 0.59;
+    private static final double DISTANCE_CONE = 0.65;
 
     /**
      * The position of the robot on the grid.

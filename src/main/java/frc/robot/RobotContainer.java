@@ -79,7 +79,7 @@ public class RobotContainer {
 
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, chassis);
+        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper,parallelogram, chassis);
     }
 
     /**
@@ -114,7 +114,7 @@ public class RobotContainer {
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen(new InstantCommand(()->parallelogram.getCalibrateCommad().schedule()));
 
-        main.leftBumper().onTrue(new InstantCommand(()-> gripper.Switch().schedule()));
+        main.leftBumper().onTrue(new InstantCommand(()-> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
         //main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
 
@@ -124,13 +124,11 @@ public class RobotContainer {
 
         main.a().onTrue(load);
         main.x().onTrue(unload);
-        main.b().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
-        main.y().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
-
-        main.povDown().onTrue(new InstantCommand(chassis::setRampPosition));
-
-        //TODO : DELETE THIS TEST COMMAND
-            secondary.povDown().whileTrue(new StartEndCommand(()->chassis.setPowerToMotorTest(0.6), chassis::stop, chassis));
+        main.y().onTrue(new InstantCommand(()-> parallelogram.getCalibrateCommad().schedule()));
+        main.povRight().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        main.povUp().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
+        main.povDown().onTrue(new InstantCommand(()->chassis.setRampPosition()));
+        main.povLeft().whileTrue(new InstantCommand(()-> chassis.setCoast()));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {

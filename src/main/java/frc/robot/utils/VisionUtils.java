@@ -37,17 +37,17 @@ public class VisionUtils {
                         }
                     }
                 });
-        NetworkTableInstance.getDefault().addListener(VisionConstants.LIMELIGHT_TABLE2.getEntry("botpose_wpiblue"),
-                EnumSet.of(Kind.kValueAll), (event) -> {
-                    Pair<Pose2d, Double> pose = getVisionPose(VisionConstants.LIMELIGHT_TABLE2);
-                    if (pose != null) {
-                        try {
-                            listener.accept(pose);
-                        } catch (ConcurrentModificationException e) {
-                            System.out.println("ConcurrentModificationException");
-                        }
-                    }
-                });
+        // NetworkTableInstance.getDefault().addListener(VisionConstants.LIMELIGHT_TABLE2.getEntry("botpose_wpiblue"),
+        //         EnumSet.of(Kind.kValueAll), (event) -> {
+        //             Pair<Pose2d, Double> pose = getVisionPose(VisionConstants.LIMELIGHT_TABLE2);
+        //             if (pose != null) {
+        //                 try {
+        //                     listener.accept(pose);
+        //                 } catch (ConcurrentModificationException e) {
+        //                     System.out.println("ConcurrentModificationException");
+        //                 }
+        //             }
+        //         });
     }
 
     /**

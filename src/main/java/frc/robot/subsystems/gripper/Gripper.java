@@ -80,6 +80,7 @@ public class Gripper extends SubsystemBase {
    * @return Open COMMAND
    */
   public Command getOpenCommand(){
+    System.out.println("Gripper opened");
     return new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen);
   }
 

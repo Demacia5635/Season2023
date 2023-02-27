@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.UtilsGeneral;
@@ -94,7 +95,7 @@ public class GotoLoadingZone extends CommandBase {
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.08, endY - getRandomizedPos(0.4, 2)), new Rotation2d()),
+            generator.add(new Pose2d(new Translation2d(15.08, endY ), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -110,7 +111,7 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.08, endY - getRandomizedPos(0.4, 2)), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.08, endY), new Rotation2d()),
                             new Rotation2d());
             }
         }
@@ -134,20 +135,25 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (!onEntryEnded) {
-            onEntryEnded = onEntry.isFinished();
+        if (!onEntryEnded && onEntry.isFinished()) {
+            onEntryEnded = true;
+            onEntry.end(false);
         }
-        if (!commandEnded) {
-            commandEnded = command.isFinished();
+        if (!commandEnded && command.isFinished()) {
+            commandEnded = true;
+            command.end(false);
         }
         return commandEnded && onEntryEnded;
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.end(interrupted);
-        onEntry.end(interrupted);
+        if (interrupted) {
+            command.end(interrupted);
+            onEntry.end(interrupted);
+        }
         chassis.stop();
+        System.out.println("LOADING ZONE ENDEDDDDDDDDDDDDDDDD");
     }
 
     @Override

@@ -69,8 +69,8 @@ public class ChassisConstants {
 
     public static final double MAX_SPEED = 4.2; // meters per second
     public static final double MAX_ACCELERATION = 6; // meters per second squared
-    public static final double MAX_AUTO_ACCELERATION = 4; // meters per second squared
-    public static final double MAX_AUTO_SPEED = 4;
+    public static final double MAX_AUTO_ACCELERATION = 2; // meters per second squared
+    public static final double MAX_AUTO_SPEED = 0.5;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_AUTO_ACCELERATION);
     public static final double MAX_DRIVE_SPEED = 4;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second

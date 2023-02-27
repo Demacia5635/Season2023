@@ -6,6 +6,7 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 
 public class CalibrateParallelogram extends CommandBase {
     private Parallelogram parallelogram;
+    private double testAngle;
 
     /**
      * Command's constructor.
@@ -19,6 +20,7 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public void initialize() {
+        testAngle = parallelogram.getAngle();
         parallelogram.setBrake();
         parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
     }
@@ -26,6 +28,8 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        System.out.println("Activation Value: " + testAngle +  " Current Angle: " + parallelogram.getAngle() + " Desired Angle: " );
+
         return parallelogram.getDigitalInput();
     }
 
