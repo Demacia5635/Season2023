@@ -2,6 +2,8 @@ package frc.robot.commands.chassis;
 
 import java.util.Random;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.UtilsGeneral.Zone;
@@ -111,12 +114,12 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.08, endY), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
                             new Rotation2d());
             }
         }
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(new PathConstraints(1, ChassisConstants.MAX_AUTO_ACCELERATION),generator.generate(chassis.getPose()));
 
         command.initialize();
     }

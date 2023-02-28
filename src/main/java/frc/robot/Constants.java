@@ -74,6 +74,6 @@ public final class Constants {
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
 
-        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4.5;
+        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 3;
     }
 }

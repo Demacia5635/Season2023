@@ -40,9 +40,9 @@ public class GotoNodes extends CommandBase {
 }
 
     /** Distance the robot should be from the node of the cube */
-    private static final double DISTANCE_CUBE = 0.65;
+    private static final double DISTANCE_CUBE = 0.72;
     /** Distance the robot should be from the node of the cone */
-    private static final double DISTANCE_CONE = 0.65;
+    private static final double DISTANCE_CONE = 0.72;
 
     /**
      * The position of the robot on the grid.
