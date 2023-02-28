@@ -2,6 +2,7 @@ package frc.robot.commands.chassis;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * This command is used to go up the ramp.
@@ -19,7 +20,8 @@ public class GoUpRamp extends CommandBase {
     private static final double DEADBAND = 1;
     private static final double ROTATION_MINIMUM = 5; // the minimum angle to be on the ramp while not straight
     private static final int COUNT_MINIMUM = 50; // the minimum count to be on the ramp to stop the robot
-    private static final double VELOCITY_FACTOR = 3; // the factor to multiply the velocity by to go up the ramp
+    private static final double VELOCITY_FACTOR = 2; // the factor to multiply the velocity by to go up the ramp
+    private static final double MIN_VELOCITY = 0.4;
 
     /**
      * Creates a new GoUpRamp command.
@@ -78,12 +80,14 @@ public class GoUpRamp extends CommandBase {
     @Override
     public void execute() {
         double angle = chassis.getUpRotation();
-        chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, 0);
+        chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235));
 
         if (!onRamp && Math.abs(angle) > ROTATION_MINIMUM)
             onRamp = true;
         else if (onRamp && lastState.differentSign(angle))
             velocity /= -VELOCITY_FACTOR;
+            if (Math.abs(velocity) < MIN_VELOCITY)
+                velocity = MIN_VELOCITY * Math.signum(velocity);
 
         angleSign = Math.signum(deadbandAngle(angle));
         if (angleSign == 1)

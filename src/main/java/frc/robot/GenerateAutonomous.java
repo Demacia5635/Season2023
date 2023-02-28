@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -61,7 +63,7 @@ public class GenerateAutonomous {
         exitCommunity.getSelected().equals(true) ? leaveCommunity
             : new InstantCommand(() -> System.out.println("didnt leave")),
         climb.getSelected().equals(true) ?
-            (exitCommunity.getSelected().equals(true) ? new GoUpRamp(chassis,2)
+            (exitCommunity.getSelected().equals(true) ? new GoUpRamp(chassis,1)
                 : new InstantCommand(() -> System.out.println("wanted to climb but leave was false")))
             : new InstantCommand(() -> System.out.println("didnt climb")));
     return autonomous;

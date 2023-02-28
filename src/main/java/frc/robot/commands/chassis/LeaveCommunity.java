@@ -42,18 +42,19 @@ public class LeaveCommunity extends CommandBase {
     @Override
     public void initialize() {
         command = new InstantCommand();
-        TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
+        TrajectoryGenerator generator1 = new TrajectoryGenerator(Alliance.Blue);
+        TrajectoryGenerator generator2 = new TrajectoryGenerator(Alliance.Blue);
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
         if (chooser.getSelected() == TopOrBottom.TOP) {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(2.4, 4.89), Rotation2d.fromDegrees(180)),
+                    generator1.add(new Pose2d(new Translation2d(2.6, 4.89), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.6, 4.89), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(5.9, 4.85), Rotation2d.fromDegrees(180)),
-                            Rotation2d.fromDegrees(0));
+                    generator2.add(new Pose2d(new Translation2d(5.9, 4.85), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
@@ -61,19 +62,22 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)),
-                            Rotation2d.fromDegrees(0));
+                    generator1.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)));
+
                 case COMMUNITY_BOTTOM:
-                    generator.add(new Pose2d(new Translation2d(5.6, 0.5), Rotation2d.fromDegrees(180)),
+                    generator2.add(new Pose2d(new Translation2d(5.6, 0.5), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
                 default:
                     break;
             }
         }
-        generator.add(new Pose2d(new Translation2d(6.6, 2.75), Rotation2d.fromDegrees(235)), Rotation2d.fromDegrees(180));
-        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
+        generator2.add(new Pose2d(new Translation2d(6.6, 2.75), Rotation2d.fromDegrees(235)), Rotation2d.fromDegrees(180));
+        command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose())).andThen(chassis.createPathFollowingCommand(false, generator2.generate()));
         command.initialize();
     }
+
+
 
     @Override
     public void execute() {

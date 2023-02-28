@@ -20,10 +20,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
+import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
+import frc.robot.commands.chassis.GoUpRampNoBalance;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
@@ -127,8 +129,7 @@ public class RobotContainer {
         main.y().onTrue(new InstantCommand(()-> parallelogram.getCalibrateCommad().schedule()));
         main.povRight().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
-        main.povDown().onTrue(new InstantCommand(()->chassis.setRampPosition()));
-        main.povLeft().whileTrue(new InstantCommand(()-> chassis.setCoast()));
+        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).withTimeout(0.1));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -170,8 +171,11 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
+    //TODO : revove this test
     public Command getAutonomousCommand() {
-        return generateAutonomous.getAutonomous();
+        //return generateAutonomous.getAutonomous();
+        return new GoUpRampNoBalance(chassis, 1).andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
+        
     }
 
     public void onTeleopInit() {
