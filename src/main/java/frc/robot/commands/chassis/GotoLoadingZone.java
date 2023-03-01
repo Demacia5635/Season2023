@@ -114,7 +114,7 @@ public class GotoLoadingZone extends CommandBase {
             }
         }
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(1, ChassisConstants.MAX_AUTO_ACCELERATION),generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(new PathConstraints(1.5, ChassisConstants.MAX_AUTO_ACCELERATION), generator.generate(chassis.getPose()));
 
         command.initialize();
     }
