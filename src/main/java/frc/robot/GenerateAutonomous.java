@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.chassis.GoUpRamp;
+import frc.robot.commands.chassis.GoUpRampNoBalance;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
@@ -63,7 +65,7 @@ public class GenerateAutonomous {
         exitCommunity.getSelected().equals(true) ? leaveCommunity
             : new InstantCommand(() -> System.out.println("didnt leave")),
         climb.getSelected().equals(true) ?
-            (exitCommunity.getSelected().equals(true) ? new GoUpRamp(chassis,1)
+            (exitCommunity.getSelected().equals(true) ? new GoUpRamp(chassis, 1.5).andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis))
                 : new InstantCommand(() -> System.out.println("wanted to climb but leave was false")))
             : new InstantCommand(() -> System.out.println("didnt climb")));
     return autonomous;

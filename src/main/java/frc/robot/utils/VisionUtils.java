@@ -20,6 +20,7 @@ import frc.robot.Constants.VisionConstants;
  */
 public class VisionUtils {
 
+
     /**
      * Sets up a listener for the vision system
      * 

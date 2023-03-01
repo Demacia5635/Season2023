@@ -8,8 +8,6 @@ public class GoToAngle extends CommandBase {
     private Parallelogram parallelogram;
     private double desiredAngle;
     private boolean isFinished;
-    //TODO : REMOVE THIS TEST
-    private double testAngle;
 
     /**
      * Command's constructor.
@@ -25,7 +23,6 @@ public class GoToAngle extends CommandBase {
 
     @Override
     public void initialize() {
-        testAngle = parallelogram.getAngle();
         isFinished = false;
         parallelogram.setBrake();
     }
@@ -43,7 +40,6 @@ public class GoToAngle extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        System.out.println("Activation Value: " + testAngle +  " Current Angle: " + parallelogram.getAngle() + " Desired Angle: " + desiredAngle);
         if (!isFinished)
             isFinished = parallelogram.getAngle() - desiredAngle < ParallelConstants.TOLERANCE_DEGREES;
         return isFinished;
@@ -55,6 +51,7 @@ public class GoToAngle extends CommandBase {
 
     public void end(boolean interrupted) {
         parallelogram.setPower(0);
+        System.out.println("parallelogram Go To Angle Ended");
     }
 
 }

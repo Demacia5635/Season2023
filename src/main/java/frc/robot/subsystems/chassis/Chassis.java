@@ -101,9 +101,9 @@ public class Chassis extends SubsystemBase {
         return UtilsGeneral.normalizeDegrees(gyro.getFusedHeading());
     }
 
-    //TODO: delete this test command
+    //TODO: A reminder: A test function to test specific modules
     public void setPowerToMotorTest(double power){
-        modules[0].setPower(power);
+        modules[1].setPower(power);
     }
 
     /**
@@ -266,7 +266,7 @@ public class Chassis extends SubsystemBase {
      * Resets the angle of the robot, so the forward of the robot is the same as the
      * forward of the field
      */
-    private void resetAngle() {
+    public void resetAngle() {
         gyro.setYaw(0);
         gyro.setFusedHeading(0);
         while (Math.abs(gyro.getFusedHeading()) > 0.1)

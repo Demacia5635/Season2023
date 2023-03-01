@@ -82,8 +82,10 @@ public class GoUpRamp extends CommandBase {
         double angle = chassis.getUpRotation();
         chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235));
 
-        if (!onRamp && Math.abs(angle) > ROTATION_MINIMUM)
+        if (!onRamp && Math.abs(angle) > ROTATION_MINIMUM) {
             onRamp = true;
+            velocity /= VELOCITY_FACTOR;
+        }
         else if (onRamp && lastState.differentSign(angle))
             velocity /= -VELOCITY_FACTOR;
             if (Math.abs(velocity) < MIN_VELOCITY)

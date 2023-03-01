@@ -73,7 +73,10 @@ public class LeaveCommunity extends CommandBase {
             }
         }
         generator2.add(new Pose2d(new Translation2d(6.6, 2.75), Rotation2d.fromDegrees(235)), Rotation2d.fromDegrees(180));
-        command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose())).andThen(chassis.createPathFollowingCommand(false, generator2.generate()));
+        if (generator1.length() == 0)
+            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
+        else
+            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose())).andThen(chassis.createPathFollowingCommand(false, generator2.generate()));
         command.initialize();
     }
 

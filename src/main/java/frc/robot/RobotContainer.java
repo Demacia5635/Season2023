@@ -118,7 +118,6 @@ public class RobotContainer {
 
         main.leftBumper().onTrue(new InstantCommand(()-> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
-        //main.rightBumper().onTrue(parallelogram.getCalibrateCommad());
 
         load.setName("Load");
         unload.setName("Unload");
@@ -129,7 +128,8 @@ public class RobotContainer {
         main.y().onTrue(new InstantCommand(()-> parallelogram.getCalibrateCommad().schedule()));
         main.povRight().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
-        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).withTimeout(0.1));
+        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
+        main.povLeft().onTrue(new InstantCommand(chassis::resetAngle));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -159,11 +159,7 @@ public class RobotContainer {
 
             leds.setData(buffer);
         }).ignoringDisable(true));
-
-
-        // controller.leftBumper().onTrue(loadIfInPlace);
-        // controller.rightBumper().onTrue(unloadIfInPlace);
-
+        
     }
 
     /**
@@ -171,13 +167,9 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    //TODO : revove this test
     public Command getAutonomousCommand() {
-        //return generateAutonomous.getAutonomous();
-        return new GoUpRampNoBalance(chassis, 1).andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
-        
+       return generateAutonomous.getAutonomous();   
     }
-
     public void onTeleopInit() {
         parallelogram.getCalibrateCommad().schedule();
     }

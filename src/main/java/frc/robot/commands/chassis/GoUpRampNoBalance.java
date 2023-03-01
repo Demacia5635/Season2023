@@ -59,15 +59,16 @@ public class GoUpRampNoBalance extends CommandBase {
         angle = chassis.getUpRotation();
         chassis.setAngleAndVelocity(velocity, 0, Math.toRadians(Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235)));
         if(deadbandAngle(angle) != 0){
-            count++;
+            count++;                                                                                      
         }
 
         System.out.println(count);
     }
-
+//      //
     @Override
     public boolean isFinished() {
-        return count > 92;
+        System.out.println("Vel: " + velocity + " cur vel: " + chassis.getVelocity() + " time: " + count);
+        return count > 35;
     }
 
     @Override
