@@ -63,8 +63,7 @@ public class LeaveCommunity extends CommandBase {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
                     generator1.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)),
-                            Rotation2d.fromDegrees(0));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)));
                 case COMMUNITY_TOP:
                     generator2.add(new Pose2d(new Translation2d(5.8, 4.55), Rotation2d.fromDegrees(180)));
                 default:
