@@ -171,6 +171,7 @@ public class RobotContainer {
        return generateAutonomous.getAutonomous();   
     }
     public void onTeleopInit() {
+        chassis.getDefaultCommand().schedule();
         parallelogram.getCalibrateCommad().schedule();
     }
 }
