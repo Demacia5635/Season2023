@@ -62,30 +62,43 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
+<<<<<<< HEAD
                     generator1.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)));
                     generator2.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(0));
+=======
+                    generator1.add(new Pose2d(new Translation2d(2.5, 4.89), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.5, 4.89), Rotation2d.fromDegrees(180)));
+>>>>>>> 3e1bbd49e326513d36b651bb8859a9cfe28e8ce6
                 case COMMUNITY_TOP:
                     generator2.add(new Pose2d(new Translation2d(5.8, 4.55), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
+<<<<<<< HEAD
             if (chooserExitOrRamp.getSelected() == ExitOrRamp.TO_EXIT) {
                 generator2.add(new Pose2d(new Translation2d(5.8, 4.55), Rotation2d.fromDegrees(0)));
             } else {
                 generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(235)));
             }
+=======
+            
+>>>>>>> 3e1bbd49e326513d36b651bb8859a9cfe28e8ce6
         } else {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator1.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.5, 0.5), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 0.8), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 0.8), Rotation2d.fromDegrees(180)));
 
                 case COMMUNITY_BOTTOM:
                     generator2.add(new Pose2d(new Translation2d(5.6, 0.5), Rotation2d.fromDegrees(180)));
                 default:
                     break;
+            }
+            if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
+                generator2.add(new Pose2d(new Translation2d(5.8, 0.5), Rotation2d.fromDegrees(180)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(180)));
             }
         }
         if (generator1.length() == 0)
@@ -94,8 +107,6 @@ public class LeaveCommunity extends CommandBase {
             command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose())).andThen(chassis.createPathFollowingCommand(false, generator2.generate()));
         command.initialize();
     }
-
-
 
     @Override
     public void execute() {
