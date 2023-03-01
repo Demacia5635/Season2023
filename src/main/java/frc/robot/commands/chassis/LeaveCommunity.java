@@ -83,13 +83,14 @@ public class LeaveCommunity extends CommandBase {
                     generator2.add(new Pose2d(new Translation2d(2.2, 0.8), Rotation2d.fromDegrees(180)));
 
                 case COMMUNITY_BOTTOM:
-                    generator2.add(new Pose2d(new Translation2d(5.6, 0.5), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
             if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
-                generator2.add(new Pose2d(new Translation2d(5.8, 0.5), Rotation2d.fromDegrees(180)));
-                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(180)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(235)));
+            } else {
+                generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(0)));
             }
         }
         if (generator1.length() == 0)
