@@ -25,16 +25,28 @@ public class LeaveCommunity extends CommandBase {
         TOP, BOTTOM;
     }
 
+    public static enum ExitOrRamp {
+        TO_EXIT , TO_RAMP;
+    }
 
-    private SendableChooser<TopOrBottom> chooser;
+
+    private SendableChooser<TopOrBottom> chooserTopOrBottom;
+    private SendableChooser<TopOrBottom> chooserExitOrRamp;
+
 
     /** Creates a new LeaveCommunity. */
     public LeaveCommunity(Chassis chassis) {
         this.chassis = chassis;
-        chooser = new SendableChooser<>();
-        chooser.setDefaultOption("Top", TopOrBottom.TOP);
-        chooser.addOption("Bottom", TopOrBottom.BOTTOM);
-        SmartDashboard.putData(chooser);
+        chooserTopOrBottom = new SendableChooser<>();
+        chooserTopOrBottom.setDefaultOption("Top", TopOrBottom.TOP);
+        chooserTopOrBottom.addOption("Bottom", TopOrBottom.BOTTOM);
+        SmartDashboard.putData(chooserTopOrBottom);
+
+        chooserExitOrRamp = new SendableChooser<>();
+        chooserExitOrRamp.setDefaultOption("To Exit", ExitOrRamp.TO_EXIT);
+        chooserExitOrRamp.addOption("To Ramp", ExitOrRamp.TO_RAMP);
+        SmartDashboard.putData(chooserExitOrRamp);
+
         addRequirements(chassis);
     }
 
@@ -46,7 +58,7 @@ public class LeaveCommunity extends CommandBase {
         TrajectoryGenerator generator2 = new TrajectoryGenerator(Alliance.Blue);
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
-        if (chooser.getSelected() == TopOrBottom.TOP) {
+        if (chooserTopOrBottom.getSelected() == TopOrBottom.TOP) {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
