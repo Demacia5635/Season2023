@@ -62,17 +62,17 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.2, 4.89), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 4.7), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 4.7), Rotation2d.fromDegrees(180)));
                 case COMMUNITY_TOP:
-                    generator2.add(new Pose2d(new Translation2d(5.8, 4.55), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 4.7), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
-            if (chooserExitOrRamp.getSelected() == ExitOrRamp.TO_EXIT) {
-                generator2.add(new Pose2d(new Translation2d(5.8, 4.55), Rotation2d.fromDegrees(0)));
+            if (chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP) {
+                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(0)));
             } else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(235)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 4.7), Rotation2d.fromDegrees(235)));
             }
         } else {
             switch (zone) {
