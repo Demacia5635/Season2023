@@ -73,8 +73,8 @@ public class Chassis extends SubsystemBase {
         angleController.enableContinuousInput(0, 2 * Math.PI);
         angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
-                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.4, 0.4, 0.4),
-                VecBuilder.fill(0.6, 0.6, 0.6));
+                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.6, 0.6, 0.6),
+                VecBuilder.fill(0.4, 0.4, 0.4));
         isBreak = true;
 
         startPitch = gyro.getPitch();

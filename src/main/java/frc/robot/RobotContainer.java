@@ -105,7 +105,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand(), new WaitCommand(0.2));
+                .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
                 .andThen(new GotoNodes(chassis, secondary,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)))
@@ -120,6 +120,7 @@ public class RobotContainer {
         main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
 
         load.setName("Load");
+
         unload.setName("Unload");
     
 
@@ -130,6 +131,7 @@ public class RobotContainer {
         main.povUp().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(new InstantCommand(chassis::resetAngle));
+
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
@@ -168,7 +170,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-       return generateAutonomous.getAutonomous();   
+       //return generateAutonomous.getAutonomous();  
+       return new GoUpRampNoBalance(chassis, 1.5);
     }
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();

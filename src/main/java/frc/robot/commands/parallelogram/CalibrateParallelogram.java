@@ -29,7 +29,6 @@ public class CalibrateParallelogram extends CommandBase {
     @Override
     public boolean isFinished() {
         System.out.println("Activation Value: " + testAngle +  " Current Angle: " + parallelogram.getAngle() + " Desired Angle: " );
-
         return parallelogram.getDigitalInput();
     }
 

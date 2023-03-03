@@ -16,9 +16,11 @@ public class GoUpRampNoBalance extends CommandBase {
     private double velocity;
     private int count;
     private double angle;
+    private double lastAngle;
+    private boolean balanced = false;
 
     private static final double DEADBAND = 4;
-    private static final int COUNT_MINIMUM = 50; // the minimum count to be on the ramp to stop the robot
+    private static final double MIN_ANGLE_FOR_ON_RAMP = 15;
 
     /**
      * Creates a new GoUpRamp command.
@@ -29,6 +31,7 @@ public class GoUpRampNoBalance extends CommandBase {
     public GoUpRampNoBalance(Chassis chassis, double velocity) {
         this.chassis = chassis;
         this.startVelocity = velocity;
+        count = 0;
 
         addRequirements(chassis);
     }
@@ -58,17 +61,24 @@ public class GoUpRampNoBalance extends CommandBase {
     public void execute() {
         angle = chassis.getUpRotation();
         chassis.setAngleAndVelocity(velocity, 0, Math.toRadians(Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235)));
-        if(deadbandAngle(angle) != 0){
-            count++;                                                                                      
+        if(angle > MIN_ANGLE_FOR_ON_RAMP){
+            count++;
+            System.out.println("counted");
         }
-
-        System.out.println(count);
+        if(angle > MIN_ANGLE_FOR_ON_RAMP && count > 45){
+            velocity = 0.2;
+        }
+        if(lastAngle - angle > 1){
+            velocity = 0;
+            chassis.setRampPosition();
+            balanced = true;
+        }
+        lastAngle = angle;
     }
 //      //
     @Override
     public boolean isFinished() {
-        System.out.println("Vel: " + velocity + " cur vel: " + chassis.getVelocity() + " time: " + count);
-        return count > 35;
+        return balanced;
     }
 
     @Override

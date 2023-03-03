@@ -13,9 +13,7 @@ public class ResetCalibrate extends CommandBase {
      */
     public ResetCalibrate(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
-
         addRequirements(parallelogram);
-        parallelogram.resetPosition();
     }
 
 

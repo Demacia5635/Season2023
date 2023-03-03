@@ -40,12 +40,12 @@ public class LeaveCommunity extends CommandBase {
         chooserTopOrBottom = new SendableChooser<>();
         chooserTopOrBottom.setDefaultOption("Top", TopOrBottom.TOP);
         chooserTopOrBottom.addOption("Bottom", TopOrBottom.BOTTOM);
-        SmartDashboard.putData(chooserTopOrBottom);
+        SmartDashboard.putData("Leave topOtBottom", chooserTopOrBottom);
 
         chooserExitOrRamp = new SendableChooser<>();
         chooserExitOrRamp.setDefaultOption("To Exit", ExitOrRamp.TO_EXIT);
         chooserExitOrRamp.addOption("To Ramp", ExitOrRamp.TO_RAMP);
-        SmartDashboard.putData(chooserExitOrRamp);
+        SmartDashboard.putData("Leave ExitOrRamp",chooserExitOrRamp);
 
         addRequirements(chassis);
     }
@@ -70,9 +70,9 @@ public class LeaveCommunity extends CommandBase {
                     break;
             }
             if (chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP) {
-                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(0)));
+                generator2.add(new Pose2d(new Translation2d(6.55, 3.15), Rotation2d.fromDegrees(235)));
             } else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 4.7), Rotation2d.fromDegrees(235)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 4.7)   , Rotation2d.fromDegrees(0)));
             }
         } else {
             switch (zone) {
@@ -87,7 +87,7 @@ public class LeaveCommunity extends CommandBase {
                     break;
             }
             if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
-                generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(235)));
+                generator2.add(new Pose2d(new Translation2d(6.55, 2.3), Rotation2d.fromDegrees(235)));
             } else {
                 generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(0)));
             }

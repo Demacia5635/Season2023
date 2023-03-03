@@ -1,6 +1,8 @@
 package frc.robot.commands.chassis;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.utils.UtilsGeneral;
 
@@ -16,12 +18,15 @@ public class GoUpRamp extends CommandBase {
     private State lastState;
     private boolean onRamp;
     private int count;
+    private double VEL_MIN_COUNTER;
+
 
     private static final double DEADBAND = 1;
     private static final double ROTATION_MINIMUM = 5; // the minimum angle to be on the ramp while not straight
     private static final int COUNT_MINIMUM = 50; // the minimum count to be on the ramp to stop the robot
-    private static final double VELOCITY_FACTOR = 2; // the factor to multiply the velocity by to go up the ramp
-    private static final double MIN_VELOCITY = 0.4;
+    private static final double VELOCITY_FACTOR = 4; // the factor to multiply the velocity by to go up the ramp
+    private static final double MIN_VELOCITY = 0;
+    private static final double FIRST_ROTATION_MINIMUM = 10;
 
     /**
      * Creates a new GoUpRamp command.
@@ -31,7 +36,8 @@ public class GoUpRamp extends CommandBase {
      */
     public GoUpRamp(Chassis chassis, double velocity) {
         this.chassis = chassis;
-        this.startVelocity = velocity;
+        this.startVelocity = UtilsGeneral.isRedAlliance() ? velocity : -velocity;
+        VEL_MIN_COUNTER = 0;
 
         addRequirements(chassis);
     }
@@ -82,9 +88,9 @@ public class GoUpRamp extends CommandBase {
         double angle = chassis.getUpRotation();
         chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235));
 
-        if (!onRamp && Math.abs(angle) > ROTATION_MINIMUM) {
+        if (!onRamp && Math.abs(angle) > FIRST_ROTATION_MINIMUM) {
             onRamp = true;
-            velocity /= VELOCITY_FACTOR;
+            velocity /= 3.5;
         }
         else if (onRamp && lastState.differentSign(angle))
             velocity /= -VELOCITY_FACTOR;
@@ -102,6 +108,14 @@ public class GoUpRamp extends CommandBase {
         } else {
             count = 0;
         }
+        if(velocity == MIN_VELOCITY){
+            VEL_MIN_COUNTER++;
+        }
+        if(VEL_MIN_COUNTER > 90){
+            velocity = 0;
+            new StartEndCommand(chassis::setRampPosition, ()-> System.out.println("climb ended"), chassis).schedule(); 
+        }
+
     }
 
     @Override
