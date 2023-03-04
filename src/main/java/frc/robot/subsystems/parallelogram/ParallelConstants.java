@@ -21,8 +21,8 @@ public final class ParallelConstants {
     public static final double PULI_RADIUS = 1;
     public static final double PULI_PERIMETER = 2 * PULI_RADIUS * Math.PI;
 
-    public static final double KS_VELOCITY = 0; //TODO: find. again, not sure if it should be arm or simple motor ff
-    public static final double KV_VELOCITY = 0;
+    public static final double KS_VELOCITY = 0.0819816846419529; //TODO: find. again, not sure if it should be arm or simple motor ff
+    public static final double KV_VELOCITY = 0.00505432515029668;
 
     public static final double DIGITAL_INPUT_ANGLE = 125.76;
     public static final int PORT_DIGITAL_INPUT = 0;
@@ -31,11 +31,11 @@ public final class ParallelConstants {
     public static final double KI_POSITION = 0;
     public static final double KD_POSITION = 0;
 
-    public static final double KP_VELOCITY = 0; //TODO: find
+    public static final double KP_VELOCITY = 0.1; //TODO: find
     public static final double KI_VELOCITY = 0;
-    public static final double KD_VELOCITY = 0;
+    public static final double KD_VELOCITY = 0.0;
 
-    public static final double CALIBRATION_POWER = 0.3;
+    public static final double CALIBRATION_POWER = 0.2;
     public static final double BACKWARDS_CALIBRATION_POWER = -0.15;
 
     public static final double ARM_FEED_FORWARD_KS = 0; //TODO: find (sysid)
@@ -47,8 +47,8 @@ public final class ParallelConstants {
     public static final double TOLERANCE_DEGREES = 1;
 
     //TODO: find the best values
-    public static final double MAX_VELOCITY = 60; //degrees per sec
-    public static final double MAX_ACCELERATION = 60;
+    public static final double MAX_VELOCITY = 120; //degrees per sec
+    public static final double MAX_ACCELERATION = 85;
     // public static final TrapezoidProfile.State ZERO_STATE = new TrapezoidProfile.State(0, 0);
     // public static final TrapezoidProfile.State END_STATE = new TrapezoidProfile.State(0, 0);
     public static final TrapezoidProfile.Constraints CONSTRAINTS =

@@ -12,28 +12,35 @@ public class TrapezoidGoToAngle extends CommandBase {
     private TrapezoidProfile trapezoidProfile;
     private TrapezoidProfile.State setPoint;
     private double desiredAngle;
+    private double seconds;
     
     public TrapezoidGoToAngle(Parallelogram parallelogram, double desiredAngle) {
         this.parallelogram = parallelogram;
         this.desiredAngle = desiredAngle;
         trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
-        new TrapezoidProfile.State(ParallelConstants.DIGITAL_INPUT_ANGLE, 0),
-        new TrapezoidProfile.State(desiredAngle, 0));
+        new TrapezoidProfile.State(desiredAngle, 0),
+        new TrapezoidProfile.State(parallelogram.getAngle(), 0));
     }
 
     @Override
     public void initialize() {
+        seconds = 0;
         parallelogram.setBrake();
-        desiredAngle = SmartDashboard.getNumber("desired angle", 90);
+        desiredAngle = SmartDashboard.getNumber("wan angle", 90);
         trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
-        new TrapezoidProfile.State(ParallelConstants.DIGITAL_INPUT_ANGLE, 0),
-        new TrapezoidProfile.State(desiredAngle, 0));
-        //lines 27-31 should be deleted when testing is over.
+        new TrapezoidProfile.State(desiredAngle, 0),
+        new TrapezoidProfile.State(parallelogram.getAngle(), 0));
+        
     }
 
     @Override
     public void execute() {
-        setPoint = trapezoidProfile.calculate(Timer.getFPGATimestamp());
+        seconds=seconds+0.02;
+        SmartDashboard.putNumber("seconds of timer", Timer.getFPGATimestamp());
+        SmartDashboard.putNumber("seconds", seconds);
+        setPoint = trapezoidProfile.calculate(seconds);
+        SmartDashboard.putNumber("setPoint", setPoint.velocity);
+        SmartDashboard.putNumber("setPointPstn", setPoint.position);
         parallelogram.setVelocity(setPoint.velocity);
     }
 

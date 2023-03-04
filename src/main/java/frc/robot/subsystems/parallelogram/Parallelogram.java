@@ -13,8 +13,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.GoToAngle;
@@ -38,7 +40,9 @@ public class Parallelogram extends SubsystemBase {
      */
     public Parallelogram() {
 
-        SmartDashboard.putNumber("desired angle", 0);
+        SmartDashboard.putNumber("wan angle", 90);
+        SmartDashboard.putNumber("wan velocity", -60);
+        SmartDashboard.putNumber("wanted power", 0);
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
@@ -54,15 +58,20 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
+        SmartDashboard.putData("set power+print",
+        new InstantCommand(()-> setPower(SmartDashboard.getNumber("wanted power", 0)), this)
+        .andThen(new WaitCommand(1), new InstantCommand(()-> SmartDashboard.putNumber("vel", getVelocity()))));
+        
+        
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                new CalibrateParallelogram(this));
+                new CalibrateParallelogram(this).andThen(new ResetCalibrate(this)));
         SmartDashboard.putData("Parallelogram/Go to angle",
                 new GoToAngle(this, 90));
         SmartDashboard.putData("Parallelogram/trapezoid",
                 new TrapezoidGoToAngle(this, 90));
 
-        SmartDashboard.putData("Parallelogram/Go to height",
-                new GoToHeight(this, ParallelConstants.PARALLEL_LENGTH, true));
+        SmartDashboard.putData("Parallelogram/set velocity",
+                new InstantCommand(()-> setVelocity(SmartDashboard.getNumber("wanted velocity", 0)), this));
 
         SmartDashboard.putData(this);
     }
@@ -153,15 +162,22 @@ public class Parallelogram extends SubsystemBase {
     }
 
     /**
-     * Sets the current position/angle of the arm as the digital input angle (max
-     * angle?).
+     * Sets the current position/angle of the arm as the digital input angle
      */
     public void resetPosition() {
         motor.setSelectedSensorPosition(ParallelConstants.DIGITAL_INPUT_ANGLE * ParallelConstants.PULSE_PER_ANGLE);
     }
-
+     /**
+      * @param angle current angle
+     * Sets the current position/angle of the arm as the digital input angle
+     */
     public void resetPosition(double angle) {
         motor.setSelectedSensorPosition(angle * ParallelConstants.PULSE_PER_ANGLE);
+    }
+
+    public Command getCalibrationCommand() {
+        return new TrapezoidGoToAngle(this, 120).andThen(new CalibrateParallelogram(this)
+        , new ResetCalibrate(this));
     }
 
     /**
@@ -185,6 +201,7 @@ public class Parallelogram extends SubsystemBase {
 
         SmartDashboard.putNumber("parallelogram/Arm angle", getAngle());
         SmartDashboard.putNumber("parallelogram/arm velocity", getVelocity());
+        System.out.println(getVelocity());
 
         SmartDashboard.putNumber("parallelogram/sensot position", motor.getSelectedSensorPosition());
 
