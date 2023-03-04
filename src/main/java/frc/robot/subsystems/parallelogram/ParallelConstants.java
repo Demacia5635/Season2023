@@ -9,6 +9,9 @@ public final class ParallelConstants {
     public static final double PARALLEL_LENGTH = 0.7; // In meters
     public static final double ROBOT_HEIGHT = 0.58;
 
+    public static final double PARALLELOGRAM_GOTOANGLE_END_POWER = 0.3;
+    public static final double PARALLELOGRAM_CALIBRATION_END_POWER = 0.15;
+
     public static final int GYRO_PORT_NUMBER = -4;
     public static final double GYRO_OFFSET = 0;
 

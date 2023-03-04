@@ -170,8 +170,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-       //return generateAutonomous.getAutonomous();  
-       return new GoUpRampNoBalance(chassis, 1.5);
+       return generateAutonomous.getAutonomous();
     }
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();

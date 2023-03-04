@@ -77,8 +77,8 @@ public class ChassisConstants {
 
     public static final double AUTO_TRANSLATION_KP = 2;
     public static final double AUTO_TRANSLATION_KI = 0.4;
-    public static final double AUTO_ROTATION_KP = 1.25;
-    public static final double AUTO_ROTATION_KI = 0.5;
+    public static final double AUTO_ROTATION_KP = 1.3;
+    public static final double AUTO_ROTATION_KI = 0.65;
 
     public static final double TELEOP_ROTATION_KP = 4;
     public static final double TELEOP_ROTATION_KI = 0.3;

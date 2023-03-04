@@ -1,6 +1,7 @@
 package frc.robot.commands.parallelogram;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 
@@ -30,8 +31,8 @@ public class GoToAngle extends CommandBase {
     @Override
     public void execute() {
         double diff = desiredAngle - parallelogram.getAngle();
-        if (Math.abs(diff) < 5) {
-            parallelogram.setPower(Math.signum(diff) * 0.1);
+        if (Math.abs(diff) < 10) {
+            parallelogram.setPower(Math.signum(diff) * 0.3);
         } else {
             parallelogram.setPower(Math.signum(diff) * ParallelConstants.GOTOANGLE_MOTOR_POWER);
         }
