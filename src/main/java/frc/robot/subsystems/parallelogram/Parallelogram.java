@@ -175,6 +175,10 @@ public class Parallelogram extends SubsystemBase {
         motor.setSelectedSensorPosition(angle * ParallelConstants.PULSE_PER_ANGLE);
     }
 
+    /**
+     * Creates and returns calibration command.
+     * @return calibration command.
+     */
     public Command getCalibrationCommand() {
         return new TrapezoidGoToAngle(this, 120).andThen(new CalibrateParallelogram(this)
         , new ResetCalibrate(this));
