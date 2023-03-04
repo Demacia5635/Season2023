@@ -17,16 +17,12 @@ public class TrapezoidGoToAngle extends CommandBase {
     public TrapezoidGoToAngle(Parallelogram parallelogram, double desiredAngle) {
         this.parallelogram = parallelogram;
         this.desiredAngle = desiredAngle;
-        trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
-        new TrapezoidProfile.State(desiredAngle, 0),
-        new TrapezoidProfile.State(parallelogram.getAngle(), 0));
     }
 
     @Override
     public void initialize() {
         seconds = 0;
         parallelogram.setBrake();
-        desiredAngle = SmartDashboard.getNumber("wan angle", 90);
         trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
         new TrapezoidProfile.State(desiredAngle, 0),
         new TrapezoidProfile.State(parallelogram.getAngle(), 0));
@@ -50,6 +46,7 @@ public class TrapezoidGoToAngle extends CommandBase {
     }
 
     public void end(boolean interrupted) {
+        SmartDashboard.putNumber("cehck", 50);
         parallelogram.setPower(0);
     }
     
