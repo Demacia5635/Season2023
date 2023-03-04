@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -64,7 +65,8 @@ public class Parallelogram extends SubsystemBase {
         
         
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                new CalibrateParallelogram(this).andThen(new ResetCalibrate(this)));
+        new TrapezoidGoToAngle(this, 120).andThen(new CalibrateParallelogram(this)
+        , new ResetCalibrate(this)));
         SmartDashboard.putData("Parallelogram/Go to angle",
                 new GoToAngle(this, 90));
         SmartDashboard.putData("Parallelogram/trapezoid",
@@ -179,7 +181,7 @@ public class Parallelogram extends SubsystemBase {
      * Creates and returns calibration command.
      * @return calibration command.
      */
-    public Command getCalibrationCommand() {
+    public CommandBase getCalibrationCommand() {
         return new TrapezoidGoToAngle(this, 120).andThen(new CalibrateParallelogram(this)
         , new ResetCalibrate(this));
     }
