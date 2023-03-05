@@ -69,7 +69,7 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        gotoNodes = new GotoNodes(chassis, secondary ,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
+        gotoNodes = new GotoNodes(chassis, secondary ,() -> parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
@@ -104,11 +104,11 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
-                new GoToAngle(parallelogram, Constants.LOADING_ANGLE)))
+        parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary,() -> new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE)))
+                .andThen(new GotoNodes(chassis, secondary,() -> parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE)))
                         .andThen(gripper.getOpenCommand());
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
@@ -127,8 +127,8 @@ public class RobotContainer {
         main.a().onTrue(load);
         main.x().onTrue(unload);
         main.y().onTrue(new InstantCommand(()-> parallelogram.getCalibrateCommad().schedule()));
-        main.povRight().onTrue(new GoToAngle(parallelogram, Constants.DEPLOY_ANGLE));
-        main.povUp().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
+        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
+        main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(new InstantCommand(chassis::resetAngle));
 

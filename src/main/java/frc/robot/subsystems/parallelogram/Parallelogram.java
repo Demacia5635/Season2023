@@ -139,6 +139,17 @@ public class Parallelogram extends SubsystemBase {
     }
 
     /**
+     * Creates and returns go to angle command.
+     * @param angle the desired angle of the parallelogram.
+     * @return go to angle command.
+     */
+    public CommandBase getGoToAngleCommand(double angle) {
+        return new GoToAngle(this, angle +
+        ParallelConstants.PRECENTAGE_GOTOANGLE*(ParallelConstants.DIGITAL_INPUT_ANGLE-angle))
+        .andThen(new GoToAngle(this, angle));
+    }
+
+    /**
      * Gets the digital input from the magnet on the parallelogram.
      * 
      * @return whether the arm reached the magnet or not (boolean).
