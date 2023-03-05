@@ -51,6 +51,7 @@ public final class ParallelConstants {
     public static final double MAX_ACCELERATION = 85;
     public static final TrapezoidProfile.Constraints CONSTRAINTS =
     new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION);
+    public static final double PRECENTAGE_GOTOANGLE = 0.1;
 
 
 

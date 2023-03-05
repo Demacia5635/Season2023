@@ -67,11 +67,8 @@ public class Parallelogram extends SubsystemBase {
         new InstantCommand(()-> setPower(SmartDashboard.getNumber("wanted power", 0)), this)
         .andThen(new WaitCommand(1), new InstantCommand(()-> SmartDashboard.putNumber("vel", getVelocity()))));
 
-
         SmartDashboard.putData("Parallelogram/trapezoid",
-                new TrapezoidGoToAngle(this, 90));
-        SmartDashboard.putData("Parallelogram/trapezoid",
-                new TrapezoidGoToAngle(this, 30));
+                getGoToAngleCommand(30));
 
         SmartDashboard.putData("Parallelogram/set velocity",
                 new InstantCommand(()-> setVelocity(SmartDashboard.getNumber("wanted velocity", 0)), this));
@@ -184,6 +181,12 @@ public class Parallelogram extends SubsystemBase {
      */
     public CommandBase getCalibrationCommand() {
         return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
+    }
+
+    public CommandBase getGoToAngleCommand(double angle) {
+        return new TrapezoidGoToAngle(this, angle +
+        ParallelConstants.PRECENTAGE_GOTOANGLE*(ParallelConstants.DIGITAL_INPUT_ANGLE-angle))
+        .andThen(new TrapezoidGoToAngle(this, angle));
     }
 
     /**
