@@ -20,7 +20,7 @@ public class ParallelogramUtils {
             angle = 2 * Math.PI - angle;
         }
 
-        return toDegrees(angle) - ParallelConstants.HEIGHT_ANGLE_ERROR;
+        return toDegrees(angle);
     }
 
     /**
