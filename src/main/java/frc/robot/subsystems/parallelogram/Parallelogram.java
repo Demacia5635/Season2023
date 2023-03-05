@@ -61,15 +61,17 @@ public class Parallelogram extends SubsystemBase {
         isBrake = false;
 
         SmartDashboard.putData("parallelogram/calibrate", getCalibrationCommand());
+        SmartDashboard.putData("parallelogram/go back", getGoBackCommand());
 
         SmartDashboard.putData("set power+print",
         new InstantCommand(()-> setPower(SmartDashboard.getNumber("wanted power", 0)), this)
         .andThen(new WaitCommand(1), new InstantCommand(()-> SmartDashboard.putNumber("vel", getVelocity()))));
 
-        SmartDashboard.putData("Parallelogram/Go to angle",
-                new GoToAngle(this, 90));
+
         SmartDashboard.putData("Parallelogram/trapezoid",
-                new TrapezoidGoToAngle(this, 20));
+                new TrapezoidGoToAngle(this, 90));
+        SmartDashboard.putData("Parallelogram/trapezoid",
+                new TrapezoidGoToAngle(this, 30));
 
         SmartDashboard.putData("Parallelogram/set velocity",
                 new InstantCommand(()-> setVelocity(SmartDashboard.getNumber("wanted velocity", 0)), this));
@@ -128,15 +130,6 @@ public class Parallelogram extends SubsystemBase {
         return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
 
-    // public double getOffset(){
-    // return gyro.getPitch() - 90 ;
-    // }
-
-    /*
-     * Resets the offset for the gyro.
-     */
-
-
     /**
      * Sets motor neutral mode to brake.
      */
@@ -177,12 +170,20 @@ public class Parallelogram extends SubsystemBase {
     }
 
     /**
+     * Creates and returns go back command.
+     * @return go back command.
+     */
+    public CommandBase getGoBackCommand() {
+        return new SequentialCommandGroup(new TrapezoidGoToAngle(this, 120),
+        new CalibrateParallelogram(this), new ResetCalibrate(this));
+    }
+
+    /**
      * Creates and returns calibration command.
      * @return calibration command.
      */
     public CommandBase getCalibrationCommand() {
-        return new SequentialCommandGroup(new TrapezoidGoToAngle(this, 120), new CalibrateParallelogram(this)
-        , new ResetCalibrate(this));
+        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
     }
 
     /**
