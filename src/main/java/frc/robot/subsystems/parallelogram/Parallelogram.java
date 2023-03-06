@@ -129,7 +129,7 @@ public class Parallelogram extends SubsystemBase {
      * @return go back command.
      */
     public CommandBase getGoBackCommand() {
-        return new SequentialCommandGroup(new GoToAngle(this, 120),
+        return new SequentialCommandGroup(new GoToAngle(this, 110),
         new CalibrateParallelogram(this), new ResetCalibrate(this));
     }
 

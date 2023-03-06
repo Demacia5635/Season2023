@@ -24,7 +24,7 @@ import frc.robot.utils.UtilsGeneral;
 public class GotoNodes extends CommandBase {
     private static final Translation2d[][] NODES = {
         { new Translation2d(1.38 , 0.51 ), new Translation2d(1.38 , 1.07 ), new Translation2d(1.38 , 1.63 ) },
-        { new Translation2d(1.38 , 2.17 ), new Translation2d(1.38 , 2.75 ), new Translation2d(1.38 , 3.38 ) },
+        { new Translation2d(1.38 , 2.17 ), new Translation2d(1.38 , 2.75 ), new Translation2d(1.38 , 3.3 ) },
         { new Translation2d(1.38  , 3.87 ), new Translation2d(1.38 , 4.43 ), new Translation2d(1.38 , 4.99 ) }
 };
 
