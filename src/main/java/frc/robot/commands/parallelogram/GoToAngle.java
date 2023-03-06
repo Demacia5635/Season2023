@@ -13,6 +13,7 @@ public class GoToAngle extends CommandBase {
     private TrapezoidProfile.State setPoint;
     private double desiredAngle;
     private double seconds;
+    private Timer timer;
     
     public GoToAngle(Parallelogram parallelogram, double desiredAngle) {
         this.parallelogram = parallelogram;
@@ -22,6 +23,7 @@ public class GoToAngle extends CommandBase {
     @Override
     public void initialize() {
         seconds = 0;
+        timer = new Timer();
         parallelogram.setBrake();
         trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
         new TrapezoidProfile.State(desiredAngle, 0),
@@ -32,17 +34,14 @@ public class GoToAngle extends CommandBase {
     @Override
     public void execute() {
         seconds=seconds+0.02;
-        SmartDashboard.putNumber("seconds of timer", Timer.getFPGATimestamp());
-        SmartDashboard.putNumber("seconds", seconds);
         setPoint = trapezoidProfile.calculate(seconds);
-        SmartDashboard.putNumber("setPoint", setPoint.velocity);
-        SmartDashboard.putNumber("setPointPstn", setPoint.position);
         parallelogram.setVelocity(setPoint.velocity);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(parallelogram.getAngle() - desiredAngle) < ParallelConstants.TOLERANCE_DEGREES;
+        return Math.abs(parallelogram.getAngle() - desiredAngle)
+        < ParallelConstants.TOLERANCE_DEGREES || trapezoidProfile.isFinished(seconds);
     }
 
     public void end(boolean interrupted) {

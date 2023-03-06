@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
+import frc.robot.commands.parallelogram.EndGoToAngle;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.ResetCalibrate;
 
@@ -51,9 +52,11 @@ public class Parallelogram extends SubsystemBase {
         SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
                 getCalibrationCommand());
         SmartDashboard.putData("Parallelogram/Go to angle",
-                new GoToAngle(this, 30));
+                getGoToAngleCommand(30));
         SmartDashboard.putData("Parallelogram/go back",
                 getGoBackCommand());
+        SmartDashboard.putData("Parallelogram/check",
+                getGoToAngleCommand(120));
     }
 
     /**
@@ -146,7 +149,7 @@ public class Parallelogram extends SubsystemBase {
     public CommandBase getGoToAngleCommand(double angle) {
         return new GoToAngle(this, angle +
         ParallelConstants.PRECENTAGE_GOTOANGLE*(ParallelConstants.DIGITAL_INPUT_ANGLE-angle))
-        .andThen(new GoToAngle(this, angle));
+        .andThen(new EndGoToAngle(this, angle));
     }
 
     /**
