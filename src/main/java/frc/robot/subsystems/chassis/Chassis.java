@@ -336,7 +336,7 @@ public class Chassis extends SubsystemBase {
                                                 trajectory.getEndState().holonomicRotation))
                                         : new InstantCommand())
                         //TODO : CHANGED THIS ANDTHEN TO ALONGWITH FOR
-                                        .alongWith(onTrajectoryEnd)),
+                                        .andThen(onTrajectoryEnd)),
                 new InstantCommand(() -> System.out.println(("Trajectory ended"))));
 
         return command;
