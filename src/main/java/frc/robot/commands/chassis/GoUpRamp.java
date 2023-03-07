@@ -24,8 +24,9 @@ public class GoUpRamp extends CommandBase {
     private static final double DEADBAND = 1;
     private static final double ROTATION_MINIMUM = 5; // the minimum angle to be on the ramp while not straight
     private static final int COUNT_MINIMUM = 50; // the minimum count to be on the ramp to stop the robot
-    private static final double VELOCITY_FACTOR = 4; // the factor to multiply the velocity by to go up the ramp
+    private static final double VELOCITY_FACTOR = 2; // the factor to multiply the velocity by to go up the ramp
     private static final double MIN_VELOCITY = 0;
+    private static final double MIN_VEL_FOR_COUNT = 0.08;
     private static final double FIRST_ROTATION_MINIMUM = 10;
 
     /**
@@ -86,7 +87,8 @@ public class GoUpRamp extends CommandBase {
     @Override
     public void execute() {
         double angle = chassis.getUpRotation();
-        chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, Math.toRadians(UtilsGeneral.isRedAlliance() ? 45 : 235));
+        System.out.println(angle);
+        chassis.setAngleAndVelocity((onRamp && angleSign == 0) ? 0 : velocity, 0, 0);
 
         if (!onRamp && Math.abs(angle) > FIRST_ROTATION_MINIMUM) {
             onRamp = true;
@@ -103,7 +105,7 @@ public class GoUpRamp extends CommandBase {
         else if (angleSign == -1)
             lastState = State.NEGATIVE;
 
-        if (angleSign == 0 && onRamp) {
+        if (velocity <= MIN_VEL_FOR_COUNT && onRamp) {
             count++;
         } else {
             count = 0;
@@ -115,12 +117,11 @@ public class GoUpRamp extends CommandBase {
             velocity = 0;
             new StartEndCommand(chassis::setRampPosition, ()-> System.out.println("climb ended"), chassis).schedule(); 
         }
-
     }
 
     @Override
     public boolean isFinished() {
-        return count >= COUNT_MINIMUM;
+        return VEL_MIN_COUNTER >= COUNT_MINIMUM;
     }
 
     @Override

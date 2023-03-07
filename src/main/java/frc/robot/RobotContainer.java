@@ -25,6 +25,7 @@ import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
+import frc.robot.commands.chassis.RampTest;
 import frc.robot.commands.chassis.GoUpRampNoBalance;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
@@ -69,7 +70,7 @@ public class RobotContainer {
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        gotoNodes = new GotoNodes(chassis, secondary ,() -> parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
+        gotoNodes = new GotoNodes(chassis, secondary ,parallelogram);
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
@@ -108,8 +109,8 @@ public class RobotContainer {
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary,() -> parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE)))
-                        .andThen(gripper.getOpenCommand());
+                .andThen(new GotoNodes(chassis, secondary, parallelogram)
+                        .andThen(gripper.getOpenCommand()));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen((new InstantCommand(()->parallelogram.getGoBackCommand().schedule())));
@@ -127,11 +128,10 @@ public class RobotContainer {
         main.a().onTrue(load);
         main.x().onTrue(unload);
         main.y().onTrue(new InstantCommand(()-> parallelogram.getGoBackCommand().schedule()));
-        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
+        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
-        main.povLeft().onTrue(new InstantCommand(chassis::resetAngle));
-
+        main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 230, 0))) {
@@ -169,8 +169,10 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
+    //TODO: return noraml auto command
     public Command getAutonomousCommand() {
-       return generateAutonomous.getAutonomous();
+       //return generateAutonomous.getAutonomous();
+       return new RampTest(chassis).andThen(new StartEndCommand(chassis::setRampPosition, () -> {}, chassis));
     }
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();

@@ -39,7 +39,10 @@ public final class Constants {
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
     public static final double LOADING_ANGLE = 38.5;
-    public static final double DEPLOY_ANGLE = 20;
+    public static final double DEPLOY_ANGLE1 = 20;
+    //public static final double DEPLOY_ANGLE2 = 20;
+    public static final double DEPLOY_HIGH_CUBES1 = 33.5;
+    //public static final double DEPLOY_HIGH_CUBES2 = 33.5;
     public static final double AUTONOMOUS_CLIMB_SPEED = 1;
     public static final int CYCLES_PER_SECOND = 50;
 

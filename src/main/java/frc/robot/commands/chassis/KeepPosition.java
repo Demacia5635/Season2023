@@ -73,6 +73,8 @@ public class KeepPosition extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        Pose2d currentPose = chassis.getPose();
+        System.out.println("KP X Error" + (currentPose.getX()-position.getX()) + "KP Y Error" + (currentPose.getY() - position.getY()) + "KP Degrees Error" + (UtilsGeneral.getAngleDifference(position.getRotation().getDegrees(), currentPose.getRotation().getDegrees())));
         chassis.stop();
     }
 }

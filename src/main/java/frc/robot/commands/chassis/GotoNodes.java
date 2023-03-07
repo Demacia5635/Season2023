@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
+import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.utils.UtilsGeneral;
 
 /**
@@ -31,6 +33,8 @@ public class GotoNodes extends CommandBase {
 
     /** Distance the robot should be from the node of the cube */
     private static final double DISTANCE_CUBE = 0.72;
+    /** Distance the robot should be from the node of the HIGH cube */
+    private static final double DISTANCE_CUBE_HIGH = 0.37;
     /** Distance the robot should be from the node of the cone */
     private static final double DISTANCE_CONE = 0.72;
 
@@ -68,15 +72,26 @@ public class GotoNodes extends CommandBase {
         }
     }
 
+    public static enum Level{
+        HIGH, LOW;
+        
+    }
+
     private final Chassis chassis;
+
     private Command command;
 
     private Position gridPosition;
 
     private Position nodePosition;
 
+    private Level level;
+
+    private Parallelogram parallelogram;
+
     private boolean isScheduled;
-    private final Supplier<Command> onPosition;
+
+    private Supplier<Command> onPosition;
 
     /**
      * Constructor for the GotoNodes command.
@@ -84,9 +99,10 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param secondary
      */
-    public GotoNodes(Chassis chassis, CommandXboxController secondary, Supplier<Command> onPosition) {
+    public GotoNodes(Chassis chassis, CommandXboxController secondary, Parallelogram parallelogram) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
+        level = Level.LOW;
         secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         secondary.x().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
         secondary.x().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
@@ -96,8 +112,10 @@ public class GotoNodes extends CommandBase {
         secondary.b().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.TOP)).ignoringDisable(true));
         secondary.b().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.MIDDLE)).ignoringDisable(true));
         secondary.b().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.BOTTOM, Position.BOTTOM)).ignoringDisable(true));
+        secondary.povDown().onTrue(new InstantCommand(()->level = changeLevel(level)).ignoringDisable(true));
         this.chassis = chassis;
-        this.onPosition = onPosition;
+        this.parallelogram = parallelogram;
+        onPosition = (()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
         command = new InstantCommand();
         isScheduled = false;
 
@@ -106,15 +124,25 @@ public class GotoNodes extends CommandBase {
         SmartDashboard.putData(this);
     }
 
+    public Level changeLevel(Level level){
+        if(level == Level.HIGH){
+            System.out.println("changed to low");
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
+            return Level.LOW;
+        }else {
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1);
+            System.out.println("changed to High");
+            return Level.HIGH;
+        }
+    }
+
+
     /**
      * Constructor for the GotoNodes command.
      * 
      * @param chassis
      * @param controller
      */
-    public GotoNodes(Chassis chassis, CommandXboxController secondary) {   
-        this(chassis, secondary, () -> new InstantCommand());
-    }
 
     private void doChangeTarget(Position grid, Position node){
         changeTarget(Position.fromAllianceRelative(grid), Position.fromAllianceRelative(node));
@@ -126,7 +154,11 @@ public class GotoNodes extends CommandBase {
     private void initCommand() {
         Translation2d node = NODES[gridPosition.getValue()][nodePosition.getValue()];
         if (nodePosition == Position.MIDDLE) {
-            node = node.plus(new Translation2d(DISTANCE_CUBE, 0));
+            if(level == Level.HIGH){
+                node = node.plus(new Translation2d(DISTANCE_CUBE_HIGH, 0));
+            }else{
+                node = node.plus(new Translation2d(DISTANCE_CUBE, 0));
+            }
         } else {
             node = node.plus(new Translation2d(DISTANCE_CONE, 0));
         }
@@ -173,6 +205,7 @@ public class GotoNodes extends CommandBase {
     
     @Override
     public void execute() {
+        System.out.println(level.toString());
         command.execute();
     }
 
@@ -211,5 +244,17 @@ public class GotoNodes extends CommandBase {
                     return "NON SELECTED";
             }
         }, null);
+
+        builder.addStringProperty("Level", (()->{
+            switch(this.level){
+                case HIGH:
+                    return "HIGH";
+                case LOW:
+                    return "LOW";
+                default:
+                    return "NON SELECTED";
+
+            }
+        }), null);
     }
 }

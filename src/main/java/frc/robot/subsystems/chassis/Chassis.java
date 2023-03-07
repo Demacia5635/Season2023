@@ -335,7 +335,8 @@ public class Chassis extends SubsystemBase {
                                         new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
                                                 trajectory.getEndState().holonomicRotation))
                                         : new InstantCommand())
-                                        .andThen(onTrajectoryEnd)),
+                        //TODO : CHANGED THIS ANDTHEN TO ALONGWITH FOR
+                                        .alongWith(onTrajectoryEnd)),
                 new InstantCommand(() -> System.out.println(("Trajectory ended"))));
 
         return command;
