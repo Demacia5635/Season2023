@@ -5,6 +5,7 @@ package frc.robot.subsystems.chassis.utils;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
@@ -56,6 +57,11 @@ public class SwerveModule implements Sendable {
         angleMotor.config_kI(0, SwerveModuleConstants.ANGLE_KI);
         angleMotor.config_kD(0, SwerveModuleConstants.ANGLE_KD);
         angleMotor.configMaxIntegralAccumulator(0, SwerveModuleConstants.MAX_ACCUM_INTEGRAL);
+
+        SupplyCurrentLimitConfiguration config = new SupplyCurrentLimitConfiguration();
+        config.enable = true;
+        config.currentLimit = 20;
+        angleMotor.configSupplyCurrentLimit(config);
 
         angleMotor.setNeutralMode(NeutralMode.Brake);
         moveMotor.setNeutralMode(NeutralMode.Brake);
