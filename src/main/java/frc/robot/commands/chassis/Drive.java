@@ -47,7 +47,7 @@ public class Drive extends CommandBase {
         double omega = UtilsGeneral.getScaledTriggerDiff(controller, ControllerSide.LEFT, scaleRotation)
                 * ChassisConstants.MAX_ANGULAR_SPEED;
         Rotation2d angle = UtilsGeneral.getStickRotation(controller, ControllerSide.RIGHT);
-
+//TODO: change back to setVel with acceleration
         if (angle == null)
             chassis.setVelocitiesAcceleration(vx, vy, omega);
         else

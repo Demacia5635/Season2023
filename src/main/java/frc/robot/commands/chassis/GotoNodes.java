@@ -126,12 +126,10 @@ public class GotoNodes extends CommandBase {
 
     public Level changeLevel(Level level){
         if(level == Level.HIGH){
-            System.out.println("changed to low");
             onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
             return Level.LOW;
         }else {
             onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1);
-            System.out.println("changed to High");
             return Level.HIGH;
         }
     }
@@ -205,7 +203,6 @@ public class GotoNodes extends CommandBase {
     
     @Override
     public void execute() {
-        System.out.println(level.toString());
         command.execute();
     }
 
