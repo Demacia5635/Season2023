@@ -28,6 +28,13 @@ public class ChassisConstants {
         public static final double ANGLE_KI = 0.002;
         public static final double ANGLE_KD = 5;
         public static final double MAX_ACCUM_INTEGRAL = 80000;
+        public static final double MAX_CURRENT_ANGLE = 20;
+        
+        // TODO: Motion Magic Stuff, just find the right values (you might need to change the PID values too)
+        public static final double ANGLE_KF = -1;
+        public static final double MAX_VELOCITY_ANGLE = -1;
+        public static final double MAX_ACCELERATION_ANGLE = -1;
+        public static final int S_CURVE_STRENGTH_ANGLE = 3;
 
         public static final double PPR_FALCON = 2048;
         public static final double WHEEL_PERIMITER = 0.1016 * Math.PI; // meters
