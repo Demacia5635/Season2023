@@ -35,8 +35,9 @@ public final class ParallelConstants {
     public static final double KI_VELOCITY = 0;
     public static final double KD_VELOCITY = 0.0;
 
-    public static final double CALIBRATION_POWER = 0.2;
-    public static final double BACKWARDS_CALIBRATION_POWER = -0.2;
+    public static final double CALIBRATION_POWER = 0.15;
+    public static final double END_POWER = -0.2;
+    public static final double BACKWARDS_CALIBRATION_POWER = -0.15;
 
     public static final double ARM_FEED_FORWARD_KS = 0; //TODO: find (sysid)
     public static final double ARM_FEED_FORWARD_KG = 0;
@@ -47,8 +48,8 @@ public final class ParallelConstants {
     public static final double TOLERANCE_DEGREES = 1;
 
     //TODO: find the best values
-    public static final double MAX_VELOCITY = 152; //degrees per sec
-    public static final double MAX_ACCELERATION = 80;
+    public static final double MAX_VELOCITY = 160; //degrees per sec
+    public static final double MAX_ACCELERATION = 90;
     public static final TrapezoidProfile.Constraints CONSTRAINTS =
     new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION);
     

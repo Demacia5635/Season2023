@@ -23,7 +23,7 @@ public class EndGoToAngle extends CommandBase{
 
     @Override
     public void execute(){
-        parallelogram.setPower(-ParallelConstants.CALIBRATION_POWER);
+        parallelogram.setPower(ParallelConstants.END_POWER);
     }
 
     @Override
