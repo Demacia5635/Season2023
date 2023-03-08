@@ -6,8 +6,6 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 
 public class CalibrateParallelogram extends CommandBase {
     private Parallelogram parallelogram;
-    private double testAngle;
-    private double diff;
     
     /**
      * Command's constructor.

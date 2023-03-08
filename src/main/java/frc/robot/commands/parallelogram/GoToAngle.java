@@ -2,7 +2,6 @@ package frc.robot.commands.parallelogram;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.parallelogram.ParallelConstants;
 import frc.robot.subsystems.parallelogram.Parallelogram;
@@ -12,7 +11,6 @@ public class GoToAngle extends CommandBase {
     private TrapezoidProfile trapezoidProfile;
     private TrapezoidProfile.State setPoint;
     private double desiredAngle;
-    private double seconds;
     private Timer timer;
     
     public GoToAngle(Parallelogram parallelogram, double desiredAngle) {
@@ -24,8 +22,8 @@ public class GoToAngle extends CommandBase {
 
     @Override
     public void initialize() {
-        seconds = 0;
         timer = new Timer();
+        timer.start();
         parallelogram.setBrake();
         trapezoidProfile = new TrapezoidProfile(ParallelConstants.CONSTRAINTS,
         new TrapezoidProfile.State(desiredAngle, 0),
@@ -35,15 +33,14 @@ public class GoToAngle extends CommandBase {
 
     @Override
     public void execute() {
-        seconds=seconds+0.02;
-        setPoint = trapezoidProfile.calculate(seconds);
+        setPoint = trapezoidProfile.calculate(timer.get());
         parallelogram.setVelocity(setPoint.velocity);
     }
 
     @Override
     public boolean isFinished() {
         return Math.abs(parallelogram.getAngle() - desiredAngle)
-        < ParallelConstants.TOLERANCE_DEGREES || trapezoidProfile.isFinished(seconds);
+        < ParallelConstants.TOLERANCE_DEGREES || trapezoidProfile.isFinished(timer.get());
     }
 
     public void end(boolean interrupted) {
