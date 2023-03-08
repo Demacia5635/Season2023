@@ -4,17 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.chassis.GoUpRamp;
-import frc.robot.commands.chassis.GoUpRampNoBalance;
 import frc.robot.commands.chassis.GotoNodes;
-import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.subsystems.chassis.Chassis;

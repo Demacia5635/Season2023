@@ -16,18 +16,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
-import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.RampTest;
-import frc.robot.commands.chassis.GoUpRampNoBalance;
-import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
@@ -46,7 +42,7 @@ import frc.robot.utils.UtilsGeneral;
  */
 public class RobotContainer {
     private static RobotContainer instance;
-    private final CommandXboxController main = new CommandXboxController(0);
+    public static final CommandXboxController main = new CommandXboxController(0);
     private final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private final Parallelogram parallelogram;
