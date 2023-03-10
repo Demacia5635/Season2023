@@ -8,7 +8,7 @@ import frc.robot.utils.UtilsGeneral;
 
 public class RampTest extends CommandBase {
     private final Chassis chassis;
-    private final static double START_VEL = 1;
+    private final static double START_VEL = 1.8;
     private final static double MIN_ANGLE = 10;
     private double velocity;
     private boolean onRamp;
@@ -41,16 +41,16 @@ public class RampTest extends CommandBase {
         } else if (onRamp && timer.get() >= 1 && phase == 1) {
             System.out.println("phase 1");
             phase = 2;
-            velocity /= 2;
+            velocity /= 3;
         } else if (onRamp && timer.get() >= 2 && phase == 2) {
             System.out.println("phase 2");
             phase = 3;
-            velocity /= 2;
-        }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 10) {
+            velocity /= 3;
+        }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 15) {
             System.out.println("phase 3");
             timer2.start();
             phase = 4;
-            velocity /= -1;
+            velocity = 0;
         }
         if (timer != null)
             SmartDashboard.putNumber("Ramp/Timer", timer.get());
@@ -63,7 +63,7 @@ public class RampTest extends CommandBase {
     
     @Override
     public boolean isFinished() {
-        return onRamp && timer2.get() > 0.35 && chassis.getUpAngularVel() * sign >= 15 && phase == 4;
+        return onRamp && phase == 4;
     }
 
     @Override

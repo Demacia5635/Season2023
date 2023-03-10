@@ -16,6 +16,7 @@ import frc.robot.commands.chassis.GoUpRampNoBalance;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.GotoRamp;
 import frc.robot.commands.chassis.LeaveCommunity;
+import frc.robot.commands.chassis.RampTest;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
@@ -61,11 +62,11 @@ public class GenerateAutonomous {
         placeGamePeace.getSelected().equals(true) ? gotoNodes.andThen(gripper.getOpenCommand())
             : new InstantCommand(() -> System.out.println("didnt place Game Peace")),
         new InstantCommand(() -> System.out.println("Auto test EEEE")),
-        new CalibrateParallelogram(parallelogram),
+        parallelogram.getGoBackCommand(),
         exitCommunity.getSelected().equals(true) ? leaveCommunity
             : new InstantCommand(() -> System.out.println("didnt leave")),
         climb.getSelected().equals(true) ?
-            (exitCommunity.getSelected().equals(true) ? new GoUpRamp(chassis, 2)
+            (exitCommunity.getSelected().equals(true) ? new RampTest(chassis)
               .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis))
                 : new InstantCommand(() -> System.out.println("wanted to climb but leave was false")))
             : new InstantCommand(() -> System.out.println("didnt climb")));

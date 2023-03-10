@@ -171,8 +171,7 @@ public class RobotContainer {
      */
     //TODO: return noraml auto command
     public Command getAutonomousCommand() {
-       //return generateAutonomous.getAutonomous();
-       return new RampTest(chassis).andThen(new StartEndCommand(chassis::setRampPosition, () -> {}, chassis));
+       return generateAutonomous.getAutonomous();
     }
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();
