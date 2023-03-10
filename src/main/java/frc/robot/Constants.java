@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.utils.IntPair;
 import frc.robot.utils.Rectangle;
 
 /**
@@ -78,5 +79,15 @@ public final class Constants {
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
 
         public static final double MAX_DISTANCE_FOR_LIMELIGHT = 2;
+    }
+
+    public static final class LedConstants {
+        public static final IntPair[] LED_STRIPS = {
+            new IntPair(0, 60),
+            new IntPair(1, 60),
+            new IntPair(2, 30),
+            new IntPair(3, 30),
+            new IntPair(4, 10)
+        };
     }
 }

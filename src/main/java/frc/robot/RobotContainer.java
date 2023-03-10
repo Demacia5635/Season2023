@@ -16,21 +16,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.RollyPolly;
 import frc.robot.commands.chassis.Drive;
-import frc.robot.commands.chassis.GoUpRamp;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
-import frc.robot.commands.chassis.RampTest;
-import frc.robot.commands.chassis.GoUpRampNoBalance;
-import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
+import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.utils.GamePiece;
 import frc.robot.utils.UtilsGeneral;
@@ -58,13 +55,18 @@ public class RobotContainer {
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
 
+    private final SubStrip strip;
+
     private GamePiece gamePiece = GamePiece.CUBE;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
+        strip = new SubStrip(0, 100);
         chassis = new Chassis();
+        
+        new RollyPolly(strip, chassis).schedule();
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
