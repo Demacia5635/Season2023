@@ -26,6 +26,8 @@ public class RampTest extends CommandBase {
         velocity = UtilsGeneral.isRedAlliance() ? START_VEL : -START_VEL;
         onRamp = false;
         phase = 0;
+        timer = new Timer();
+        timer2 = new Timer();
     }
 
     @Override
@@ -33,8 +35,6 @@ public class RampTest extends CommandBase {
         if (!onRamp && Math.abs(chassis.getUpRotation()) > MIN_ANGLE) {
             onRamp = true;
             velocity /= 1.5;
-            timer = new Timer();
-            timer2 = new Timer();
             timer.start();
             sign = Math.signum(chassis.getUpAngularVel());
             phase = 1;
@@ -46,9 +46,9 @@ public class RampTest extends CommandBase {
             System.out.println("phase 2");
             phase = 3;
             velocity /= 3;
+            timer2.start();
         }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 15) {
             System.out.println("phase 3");
-            timer2.start();
             phase = 4;
             velocity = 0;
         }
@@ -63,7 +63,7 @@ public class RampTest extends CommandBase {
     
     @Override
     public boolean isFinished() {
-        return (onRamp && phase == 4) || (onRamp && timer.get() > 0.5);
+        return (onRamp && phase == 4) || (onRamp && timer2.get() > 0.5);
     }
 
     @Override

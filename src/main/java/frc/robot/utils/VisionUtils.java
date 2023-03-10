@@ -76,7 +76,7 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT)
+        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT && distance != 0)
             return null;
 
         return new Pair<Pose2d, Double>(
