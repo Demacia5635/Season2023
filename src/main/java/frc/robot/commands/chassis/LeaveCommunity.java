@@ -70,26 +70,26 @@ public class LeaveCommunity extends CommandBase {
                     break;
             }
             if (chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP) {
-                generator2.add(new Pose2d(new Translation2d(6.55, 3.15), Rotation2d.fromDegrees(235)));
+                generator2.add(new Pose2d(new Translation2d(6.55, 3.05), Rotation2d.fromDegrees(180)));
             } else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 4.7)   , Rotation2d.fromDegrees(0)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 4.7)   , Rotation2d.fromDegrees(180)));
             }
         } else {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 0.8), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.2, 0.8), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 0.4), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 0.4), Rotation2d.fromDegrees(180)));
 
                 case COMMUNITY_BOTTOM:
-                    generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 0.4), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
             if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
-                generator2.add(new Pose2d(new Translation2d(6.55, 2.3), Rotation2d.fromDegrees(235)));
+                generator2.add(new Pose2d(new Translation2d(6.55, 2.3), Rotation2d.fromDegrees(180)));
             } else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(0)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(180)));
             }
         }
         if (generator1.length() == 0)

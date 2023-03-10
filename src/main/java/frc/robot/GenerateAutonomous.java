@@ -62,9 +62,8 @@ public class GenerateAutonomous {
         placeGamePeace.getSelected().equals(true) ? gotoNodes.andThen(gripper.getOpenCommand())
             : new InstantCommand(() -> System.out.println("didnt place Game Peace")),
         new InstantCommand(() -> System.out.println("Auto test EEEE")),
-        parallelogram.getGoBackCommand(),
-        exitCommunity.getSelected().equals(true) ? leaveCommunity
-            : new InstantCommand(() -> System.out.println("didnt leave")),
+        (exitCommunity.getSelected().equals(true) ? leaveCommunity
+            : new InstantCommand(() -> System.out.println("didnt leave"))).alongWith(parallelogram.getGoBackCommand()),
         climb.getSelected().equals(true) ?
             (exitCommunity.getSelected().equals(true) ? new RampTest(chassis)
               .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis))
