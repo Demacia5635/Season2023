@@ -66,7 +66,6 @@ public class GenerateAutonomous {
             : new InstantCommand(() -> System.out.println("didnt leave"))).alongWith(parallelogram.getGoBackCommand()),
         climb.getSelected().equals(true) ?
             (exitCommunity.getSelected().equals(true) ? new RampTest(chassis)
-              .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis))
                 : new InstantCommand(() -> System.out.println("wanted to climb but leave was false")))
             : new InstantCommand(() -> System.out.println("didnt climb")));
     return autonomous;

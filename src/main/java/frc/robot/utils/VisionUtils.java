@@ -76,9 +76,10 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT && distance != 0)
+        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT && distance != 0){
             return null;
-
+        }
+        System.out.println("IN RANGE - UPDATED");
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
                 Timer.getFPGATimestamp() - (latency / 1000));

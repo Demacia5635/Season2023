@@ -30,7 +30,6 @@ public class ChassisConstants {
         public static final double MAX_ACCUM_INTEGRAL = 80000;
         public static final double MAX_CURRENT_ANGLE = 20;
         
-        // TODO: Motion Magic Stuff, just find the right values (you might need to change the PID values too)
         public static final double ANGLE_KF = 0;
         public static final double MAX_VELOCITY_ANGLE = 20000;
         public static final double MAX_ACCELERATION_ANGLE = 15000;
