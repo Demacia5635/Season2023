@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 
 /**
@@ -77,18 +78,18 @@ public class VisionUtils {
 
         double[] camTran = limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
         double distance = Math.hypot(camTran[0], camTran[2]);
-        double cameraYaw = limelight == LimeLight.LimeLight3 ? VisionConstants.LIMELIGHT3_YAW : VisionConstants.LIMELIGHT2_YAW;
+        double ta = limelightTable.getEntry("ta").getDouble(0);
+        //double cameraYaw = limelight == LimeLight.LimeLight3 ? VisionConstants.LIMELIGHT3_YAW : VisionConstants.LIMELIGHT2_YAW;
         double tx = Math.abs(limelightTable.getEntry("tx").getDouble(0));
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        if (distance < 1.85 && tx <= cameraYaw && tx >= cameraYaw - 10) {
+        if ( tx <= VisionConstants.VISION_TX_LIMIT) {
             return null;
         }
-        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT && distance != 0) {
+        if (ta < VisionConstants.VISION_TA_LIMIT) {
             return null;
         }
-        System.out.println("IN RANGE - UPDATED");
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
                 Timer.getFPGATimestamp() - (latency / 1000));
