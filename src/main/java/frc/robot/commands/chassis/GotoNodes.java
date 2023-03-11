@@ -30,8 +30,10 @@ public class GotoNodes extends CommandBase {
 };
 
 
-    /** Distance the robot should be from the node of the cube */
-    private static final double DISTANCE_CUBE = 0.72;
+    /** Distance the robot should be from the node of the MIDDLE cube */
+    private static final double DISTANCE_CUBE_MIDDLE = 0.72;
+    /** Distance the robot should be from the node of the LOW cube */
+    private static final double DISTANCE_CUBE_LOW = 0.9;
     /** Distance the robot should be from the node of the HIGH cube */
     private static final double DISTANCE_CUBE_HIGH = 0.50;
     /** Distance the robot should be from the node of the cone */
@@ -72,7 +74,7 @@ public class GotoNodes extends CommandBase {
     }
 
     public static enum Level{
-        HIGH, LOW;
+        HIGH, MIDDLE, LOW;
         
     }
 
@@ -101,7 +103,7 @@ public class GotoNodes extends CommandBase {
     public GotoNodes(Chassis chassis, CommandXboxController secondary, Parallelogram parallelogram) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
-        level = Level.LOW;
+        level = Level.MIDDLE;
         secondary.x().and(secondary.povLeft()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.TOP)).ignoringDisable(true));
         secondary.x().and(secondary.povUp()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.MIDDLE)).ignoringDisable(true));
         secondary.x().and(secondary.povRight()).onTrue(new InstantCommand(()->doChangeTarget(Position.TOP, Position.BOTTOM)).ignoringDisable(true));
@@ -127,7 +129,11 @@ public class GotoNodes extends CommandBase {
         if(level == Level.HIGH){
             onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
             return Level.LOW;
-        }else {
+        }else if (level == Level.LOW) {
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
+            return Level.MIDDLE;
+        }
+        else {
             onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1);
             return Level.HIGH;
         }
@@ -153,8 +159,11 @@ public class GotoNodes extends CommandBase {
         if (nodePosition == Position.MIDDLE) {
             if(level == Level.HIGH){
                 node = node.plus(new Translation2d(DISTANCE_CUBE_HIGH, 0));
-            }else{
-                node = node.plus(new Translation2d(DISTANCE_CUBE, 0));
+            }else if(level == Level.MIDDLE){
+                node = node.plus(new Translation2d(DISTANCE_CUBE_MIDDLE, 0));
+            }
+            else {
+                node = node.plus(new Translation2d(DISTANCE_CUBE_LOW, 0));
             }
         } else {
             node = node.plus(new Translation2d(DISTANCE_CONE, 0));
@@ -247,6 +256,8 @@ public class GotoNodes extends CommandBase {
                     return "HIGH";
                 case LOW:
                     return "LOW";
+                case MIDDLE:
+                    return "MIDDLE";
                 default:
                     return "NON SELECTED";
 

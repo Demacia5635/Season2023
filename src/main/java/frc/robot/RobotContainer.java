@@ -63,6 +63,12 @@ public class RobotContainer {
 
     private GamePiece gamePiece = GamePiece.CUBE;
 
+    public static class LedConstants {
+        public static final int LENGTH = 126;
+        public static final int PORT = 1;
+
+    }
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -78,12 +84,13 @@ public class RobotContainer {
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
-        leds = new AddressableLED(0);
-        leds.setLength(126);
-        buffer = new AddressableLEDBuffer(126);
+        leds = new AddressableLED(LedConstants.PORT);
+        leds.setLength(LedConstants.LENGTH);
+        buffer = new AddressableLEDBuffer(LedConstants.LENGTH);
         leds.start();
 
         SmartDashboard.putData(CommandScheduler.getInstance());
+        SmartDashboard.putBoolean("is left led", false);
 
         generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
     }
@@ -139,12 +146,12 @@ public class RobotContainer {
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 230, 0))) {
-                for (int i = 0; i < 126; i++) {
-                    buffer.setRGB(i, 168, 230, 0);
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
+                    buffer.setRGB(i, 168, 150, 0);
                 }
-                gamePiece = GamePiece.CUBE;
+                gamePiece = GamePiece.CONE;
             } else {
-                for (int i = 0; i < 126; i++) {
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 0, 0, 0);
                 }
             }
@@ -153,16 +160,15 @@ public class RobotContainer {
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(255, 0, 140))) {
-                for (int i = 0; i < 126; i++) {
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 255, 0, 140);
                 }
-                gamePiece = GamePiece.CONE;
+                gamePiece = GamePiece.CUBE;
             } else {
-                for (int i = 0; i < 126; i++) {
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 0, 0, 0);
                 }
             }
-
             leds.setData(buffer);
         }).ignoringDisable(true));
 

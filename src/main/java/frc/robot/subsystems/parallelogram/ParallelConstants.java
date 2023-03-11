@@ -35,9 +35,9 @@ public final class ParallelConstants {
     public static final double KI_VELOCITY = 0;
     public static final double KD_VELOCITY = 0.0;
 
-    public static final double CALIBRATION_POWER = 0.15;
+    public static final double CALIBRATION_POWER = 0.2;
     public static final double END_POWER = -0.2;
-    public static final double BACKWARDS_CALIBRATION_POWER = -0.15;
+    public static final double BACKWARDS_CALIBRATION_POWER = -0.2;
 
     public static final double ARM_FEED_FORWARD_KS = 0;
     public static final double ARM_FEED_FORWARD_KG = 0;
