@@ -30,7 +30,6 @@ public class ChassisConstants {
         public static final double MAX_ACCUM_INTEGRAL = 80000;
         public static final double MAX_CURRENT_ANGLE = 20;
         
-        // TODO: Motion Magic Stuff, just find the right values (you might need to change the PID values too)
         public static final double ANGLE_KF = 0;
         public static final double MAX_VELOCITY_ANGLE = 20000;
         public static final double MAX_ACCELERATION_ANGLE = 15000;
@@ -59,10 +58,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(317.8125, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(301.2890625, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(300.673828125, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(108.544921875, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(285.7324, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(302.7832, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(225.4394, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(214.8925, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -87,7 +86,7 @@ public class ChassisConstants {
     public static final double AUTO_ROTATION_KP = 1.35;
     public static final double AUTO_ROTATION_KI = 0.8;
 
-    public static final double TELEOP_ROTATION_KP = 4;
+    public static final double TELEOP_ROTATION_KP = 3;
     public static final double TELEOP_ROTATION_KI = 0.3;
 
     public static final double TELEOP_ANGLE_TOLERANCE = Math.PI / 120;

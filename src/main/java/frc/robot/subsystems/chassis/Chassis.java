@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
@@ -99,11 +101,6 @@ public class Chassis extends SubsystemBase {
      */
     public double getGyroAngle() {
         return UtilsGeneral.normalizeDegrees(gyro.getFusedHeading());
-    }
-
-    //TODO: A reminder: A test function to test specific modules
-    public void setPowerToMotorTest(double power){
-        modules[1].setPower(power);
     }
 
     /**
@@ -335,7 +332,6 @@ public class Chassis extends SubsystemBase {
                                         new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
                                                 trajectory.getEndState().holonomicRotation))
                                         : new InstantCommand())
-                        //TODO : CHANGED THIS ANDTHEN TO ALONGWITH FOR
                                         .andThen(onTrajectoryEnd)),
                 new InstantCommand(() -> System.out.println(("Trajectory ended"))));
 
@@ -443,7 +439,8 @@ public class Chassis extends SubsystemBase {
      *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
     private void addVisionInput(Pair<Pose2d, Double> visionInput) {
-        updatePosition(visionInput);
+        if (Math.abs(visionInput.getFirst().getRotation().minus(getRotation()).getDegrees()) <= VisionConstants.VISION_ANGLE_TOLERANCE || DriverStation.isDisabled())
+            updatePosition(visionInput);
     }
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {

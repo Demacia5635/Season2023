@@ -24,6 +24,7 @@ public class Gripper extends SubsystemBase {
   public Gripper(int motorId) {
     openOrClose = OpenOrClose.OPEN;
     motor = new TalonSRX(motorId);
+    motor.setInverted(true);
     motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
     motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, motorId);
   }

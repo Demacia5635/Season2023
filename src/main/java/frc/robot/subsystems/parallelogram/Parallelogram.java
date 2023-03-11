@@ -129,9 +129,9 @@ public class Parallelogram extends SubsystemBase {
      * Creates and returns go back command.
      * @return go back command.
      */
-    public CommandBase getGoBackCommand( Chassis chassis) {
-        return new SequentialCommandGroup(new GoToAngle(this, 110),
-        new CalibrateParallelogram(this, chassis), new ResetCalibrate(this, chassis));
+    public CommandBase getGoBackCommand() {
+        return new SequentialCommandGroup(new GoToAngle(this, 115),
+        new CalibrateParallelogram(this), new ResetCalibrate(this));
     }
 
     /**
@@ -139,7 +139,7 @@ public class Parallelogram extends SubsystemBase {
      * @return calibration command.
      */
     public CommandBase getCalibrationCommand(Chassis chassis) {
-        return new CalibrateParallelogram(this, chassis).andThen(new ResetCalibrate(this, chassis));
+        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
     }
 
     /**

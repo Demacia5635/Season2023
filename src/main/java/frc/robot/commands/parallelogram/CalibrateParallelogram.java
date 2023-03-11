@@ -8,15 +8,13 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 
 public class CalibrateParallelogram extends CommandBase {
     private Parallelogram parallelogram;
-    private Chassis chassis;
     
     /**
      * Command's constructor.
      * @param parallelogram
      */
-    public CalibrateParallelogram(Parallelogram parallelogram, Chassis chassis) {
+    public CalibrateParallelogram(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
-        this.chassis = chassis;
         addRequirements(parallelogram);
     }
 
@@ -29,14 +27,7 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public void execute(){
-        double rawVelocity = -chassis.getVelocity().getX();
-        if (rawVelocity>2.5) {
-            SmartDashboard.putBoolean("yes", true);
-            parallelogram.setPower(ParallelConstants.CALIBRATION_POWER - 0.1);
-        }
-        else {
-            parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
-        }
+        parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
     }
 
 

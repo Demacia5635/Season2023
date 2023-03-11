@@ -9,15 +9,13 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 
 public class ResetCalibrate extends CommandBase {
     private Parallelogram parallelogram;
-    private Chassis chassis;
 
     /**
      * Command's constructor.
      * @param parallelogram
      */
-    public ResetCalibrate(Parallelogram parallelogram, Chassis chassis) {
+    public ResetCalibrate(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
-        this.chassis = chassis;
         addRequirements(parallelogram);
     }
 
@@ -29,14 +27,7 @@ public class ResetCalibrate extends CommandBase {
 
     @Override
     public void execute() {
-        double rawVelocity = -chassis.getVelocity().getX();
-        if (rawVelocity>2.5) {
-            SmartDashboard.putBoolean("yes", true);
-            parallelogram.setPower(ParallelConstants.BACKWARDS_CALIBRATION_POWER + 0.1);
-        }
-        else {
-            parallelogram.setPower(ParallelConstants.BACKWARDS_CALIBRATION_POWER);
-        }
+        parallelogram.setPower(ParallelConstants.BACKWARDS_CALIBRATION_POWER);
     }
 
     @Override
