@@ -145,9 +145,9 @@ public class RobotContainer {
         main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
         secondary.leftBumper().onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(168, 230, 0))) {
+            if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 168, 150, 0);
+                    buffer.setRGB(i, 168, 0, 230);
                 }
                 gamePiece = GamePiece.CONE;
             } else {
@@ -159,9 +159,9 @@ public class RobotContainer {
         }).ignoringDisable(true));
 
         secondary.rightBumper().onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(255, 0, 140))) {
+            if (!buffer.getLED(0).equals(new Color(255, 140, 0))) {
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 255, 0, 140);
+                    buffer.setRGB(i, 255, 140, 0);
                 }
                 gamePiece = GamePiece.CUBE;
             } else {
