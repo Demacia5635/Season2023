@@ -113,9 +113,9 @@ public class RobotContainer {
                         .andThen(gripper.getOpenCommand()));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen((new InstantCommand(()->parallelogram.getGoBackCommand().schedule())));
+                .andThen((new InstantCommand(()->parallelogram.getGoBackCommand(chassis).schedule())));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new InstantCommand(()->parallelogram.getGoBackCommand().schedule()));
+                .andThen(new InstantCommand(()->parallelogram.getGoBackCommand(chassis).schedule()));
 
         main.leftBumper().onTrue(new InstantCommand(()-> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
@@ -127,7 +127,7 @@ public class RobotContainer {
 
         main.a().onTrue(load);
         main.x().onTrue(unload);
-        main.y().onTrue(new InstantCommand(()-> parallelogram.getGoBackCommand().schedule()));
+        main.y().onTrue(new InstantCommand(()-> parallelogram.getGoBackCommand(chassis).schedule()));
         main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
@@ -176,6 +176,6 @@ public class RobotContainer {
     }
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();
-        parallelogram.getCalibrateCommad().schedule();
+        parallelogram.getCalibrationCommand(chassis).schedule();
     }
 }

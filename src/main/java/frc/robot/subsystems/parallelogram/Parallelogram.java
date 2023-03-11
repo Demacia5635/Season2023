@@ -18,6 +18,7 @@ import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.EndGoToAngle;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.ResetCalibrate;
+import frc.robot.subsystems.chassis.Chassis;
 
 /**
  * Paralellogram subsystem.
@@ -49,12 +50,12 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                getCalibrationCommand());
+        // SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
+        //         getCalibrationCommand());
         SmartDashboard.putData("Parallelogram/Go to angle",
                 getGoToAngleCommand(30));
-        SmartDashboard.putData("Parallelogram/go back",
-                getGoBackCommand());
+        // SmartDashboard.putData("Parallelogram/go back",
+        //         getGoBackCommand());
         SmartDashboard.putData("Parallelogram/check",
                 getGoToAngleCommand(120));
     }
@@ -128,17 +129,17 @@ public class Parallelogram extends SubsystemBase {
      * Creates and returns go back command.
      * @return go back command.
      */
-    public CommandBase getGoBackCommand() {
+    public CommandBase getGoBackCommand( Chassis chassis) {
         return new SequentialCommandGroup(new GoToAngle(this, 110),
-        new CalibrateParallelogram(this), new ResetCalibrate(this));
+        new CalibrateParallelogram(this, chassis), new ResetCalibrate(this, chassis));
     }
 
     /**
      * Creates and returns calibration command.
      * @return calibration command.
      */
-    public CommandBase getCalibrationCommand() {
-        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
+    public CommandBase getCalibrationCommand(Chassis chassis) {
+        return new CalibrateParallelogram(this, chassis).andThen(new ResetCalibrate(this, chassis));
     }
 
     /**
@@ -187,9 +188,6 @@ public class Parallelogram extends SubsystemBase {
         builder.addDoubleProperty("encoder", motor::getSelectedSensorPosition, null);
     }
 
-    public Command getCalibrateCommad() {
-        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
-    }
 
     @Override
     public void periodic() {
