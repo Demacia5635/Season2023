@@ -33,7 +33,7 @@ public class GotoNodes extends CommandBase {
     /** Distance the robot should be from the node of the MIDDLE cube */
     private static final double DISTANCE_CUBE_MIDDLE = 0.72;
     /** Distance the robot should be from the node of the LOW cube */
-    private static final double DISTANCE_CUBE_LOW = 0.9;
+    private static final double DISTANCE_CUBE_LOW = 1;
     /** Distance the robot should be from the node of the HIGH cube */
     private static final double DISTANCE_CUBE_HIGH = 0.50;
     /** Distance the robot should be from the node of the cone */
@@ -116,7 +116,7 @@ public class GotoNodes extends CommandBase {
         secondary.povDown().onTrue(new InstantCommand(()->level = changeLevel(level)).ignoringDisable(true));
         this.chassis = chassis;
         this.parallelogram = parallelogram;
-        onPosition = (()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
+        onPosition = (()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         command = new InstantCommand();
         isScheduled = false;
 
@@ -127,10 +127,10 @@ public class GotoNodes extends CommandBase {
 
     public Level changeLevel(Level level){
         if(level == Level.HIGH){
-            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE_LOW);
             return Level.LOW;
         }else if (level == Level.LOW) {
-            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1);
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE);
             return Level.MIDDLE;
         }
         else {

@@ -58,10 +58,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(285.7324, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(302.7832, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(225.4394, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(214.8925, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(283.359375, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(303.134765625, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(229.833984375, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(212.16796875, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(

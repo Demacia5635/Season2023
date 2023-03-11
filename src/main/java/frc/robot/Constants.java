@@ -39,7 +39,8 @@ public final class Constants {
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
     public static final double LOADING_ANGLE = 38.5;
-    public static final double DEPLOY_ANGLE1 = 20;
+    public static final double DEPLOY_ANGLE = 20;
+    public static final double DEPLOY_ANGLE_LOW = 35;
     //public static final double DEPLOY_ANGLE2 = 20;
     public static final double DEPLOY_HIGH_CUBES1 = 33.5;
     //public static final double DEPLOY_HIGH_CUBES2 = 33.5;
@@ -51,7 +52,7 @@ public final class Constants {
      */
     public static final class VisionConstants {
         public static final NetworkTable LIMELIGHT_TABLE1 = NetworkTableInstance.getDefault().getTable("limelight-ii");
-        public static final NetworkTable LIMELIGHT_TABLE2 = NetworkTableInstance.getDefault().getTable("limelight-iii");
+        public static final NetworkTable LIMELIGHT3_TABLE = NetworkTableInstance.getDefault().getTable("limelight-iii");
 
         public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE1.getEntry("tv"); // double not boolean
         
@@ -77,8 +78,12 @@ public final class Constants {
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
 
-        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4.5;
+        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4;
 
         public static final double VISION_ANGLE_TOLERANCE = 5;
+
+        public static final double LIMELIGHT2_YAW = 22.5;
+
+        public static final double LIMELIGHT3_YAW = 32.2;
     }
 }

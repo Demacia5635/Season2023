@@ -55,6 +55,7 @@ public class GotoLoadingZone extends CommandBase {
             } else {
                 this.position = Position.TOP;
             }
+            
         }).ignoringDisable(true));
 
         addRequirements(onEntry.getRequirements().toArray(Subsystem[]::new));

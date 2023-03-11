@@ -138,7 +138,7 @@ public class RobotContainer {
         main.a().onTrue(load);
         main.x().onTrue(unload);
         main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
-        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
+        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis)
                 .until(() -> UtilsGeneral.hasInput(main.getHID())));
@@ -165,6 +165,7 @@ public class RobotContainer {
                 }
                 gamePiece = GamePiece.CUBE;
             } else {
+
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 0, 0, 0);
                 }
