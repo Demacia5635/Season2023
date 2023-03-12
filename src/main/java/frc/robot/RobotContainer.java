@@ -144,7 +144,7 @@ public class RobotContainer {
                 .until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
-        secondary.leftBumper().onTrue(new InstantCommand(() -> {
+        secondary.leftBumper().and(secondary.rightBumper().negate()).onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 168, 0, 230);
@@ -158,7 +158,7 @@ public class RobotContainer {
             leds.setData(buffer);
         }).ignoringDisable(true));
 
-        secondary.rightBumper().onTrue(new InstantCommand(() -> {
+        secondary.rightBumper().and(secondary.leftBumper().negate()).onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(255, 140, 0))) {
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 255, 140, 0);
@@ -173,8 +173,22 @@ public class RobotContainer {
             leds.setData(buffer);
         }).ignoringDisable(true));
 
+        secondary.rightBumper().and(secondary.leftBumper()).onTrue(new InstantCommand(()->{
+            if (!buffer.getLED(0).equals(new Color(255, 0, 0))) {
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
+                    buffer.setRGB(i, 255, 0, 0);
+                }
+                gamePiece = GamePiece.CUBE;
+            } else {
+
+                for (int i = 0; i < LedConstants.LENGTH; i++) {
+                    buffer.setRGB(i, 0, 0, 0);
+                }
+            }
+            leds.setData(buffer);
+        }).ignoringDisable(true));
+
         secondary.back().and(secondary.start()).whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
-        main.a().whileTrue(new StartEndCommand(() -> main.getHID().setRumble(RumbleType.kBothRumble, 1), () -> main.getHID().setRumble(RumbleType.kBothRumble, 0)).ignoringDisable(true));
         
     }
 
