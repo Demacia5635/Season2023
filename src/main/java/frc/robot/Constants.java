@@ -85,5 +85,7 @@ public final class Constants {
         public static final double LIMELIGHT2_YAW = 22.5;
 
         public static final double LIMELIGHT3_YAW = 32.2;
+
+        public static final double MAX_SIDES_RATIO = 1.2;
     }
 }
