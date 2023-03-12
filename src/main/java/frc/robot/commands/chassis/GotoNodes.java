@@ -22,18 +22,19 @@ import frc.robot.utils.UtilsGeneral;
 /**
  * This command is used to go to the nodes on the field from the community.
  */
+//TODO: Changed Y values. prev values were 1.38
 public class GotoNodes extends CommandBase {
     private static final Translation2d[][] NODES = {
-        { new Translation2d(1.38 , 0.51 ), new Translation2d(1.38 , 1.07 ), new Translation2d(1.38 , 1.63 ) },
-        { new Translation2d(1.38 , 2.17 ), new Translation2d(1.38 , 2.75 ), new Translation2d(1.38 , 3.3 ) },
-        { new Translation2d(1.38  , 3.87 ), new Translation2d(1.38 , 4.43 ), new Translation2d(1.38 , 4.99 ) }
+        { new Translation2d(1.34 , 0.51 ), new Translation2d(1.34 , 1.07 ), new Translation2d(1.34 , 1.63 ) },
+        { new Translation2d(1.34 , 2.17 ), new Translation2d(1.34 , 2.75 ), new Translation2d(1.34 , 3.3 ) },
+        { new Translation2d(1.34  , 3.87 ), new Translation2d(1.34 , 4.43 ), new Translation2d(1.34 , 4.99 ) }
 };
 
 
     /** Distance the robot should be from the node of the MIDDLE cube */
     private static final double DISTANCE_CUBE_MIDDLE = 0.72;
     /** Distance the robot should be from the node of the LOW cube */
-    private static final double DISTANCE_CUBE_LOW = 1.2;
+    private static final double DISTANCE_CUBE_LOW = 1.3;
     /** Distance the robot should be from the node of the HIGH cube */
     private static final double DISTANCE_CUBE_HIGH = 0.50;
     /** Distance the robot should be from the node of the cone */
