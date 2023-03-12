@@ -87,5 +87,9 @@ public final class Constants {
         public static final double LIMELIGHT3_YAW = 32.2;
 
         public static final double MAX_SIDES_RATIO = 1.2;
+        
+        public static final double VISION_TX_LIMIT = 10;
+
+        public static final double VISION_TA_LIMIT = 0.5;
     }
 }

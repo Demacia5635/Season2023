@@ -77,20 +77,20 @@ public class VisionUtils {
 
         double[] camTran = limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
         double distance = Math.hypot(camTran[0], camTran[2]);
-        double cameraYaw = limelight == LimeLight.LimeLight3 ? VisionConstants.LIMELIGHT3_YAW : VisionConstants.LIMELIGHT2_YAW;
+        double ta = limelightTable.getEntry("ta").getDouble(0);
+        //double cameraYaw = limelight == LimeLight.LimeLight3 ? VisionConstants.LIMELIGHT3_YAW : VisionConstants.LIMELIGHT2_YAW;
         double tx = Math.abs(limelightTable.getEntry("tx").getDouble(0));
         double horizontalLength = limelightTable.getEntry("thor").getDouble(0);
         double verticalLength = limelightTable.getEntry("tvert").getDouble(0);
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        if (distance < 1.85 && tx <= cameraYaw && tx >= cameraYaw - 10 && horizontalLength / verticalLength < VisionConstants.MAX_SIDES_RATIO) {
+        if ( tx <= VisionConstants.VISION_TX_LIMIT && horizontalLength / verticalLength < VisionConstants.MAX_SIDES_RATIO) {
             return null;
         }
-        if (distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT && distance != 0) {
+        if (ta < VisionConstants.VISION_TA_LIMIT) {
             return null;
         }
-        System.out.println("IN RANGE - UPDATED");
         return new Pair<Pose2d, Double>(
                 new Pose2d(robotTranslation, robotRotation),
                 Timer.getFPGATimestamp() - (latency / 1000));
