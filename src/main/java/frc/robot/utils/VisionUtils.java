@@ -85,7 +85,7 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
-        if ( tx <= VisionConstants.VISION_TX_LIMIT && horizontalLength / verticalLength < VisionConstants.MAX_SIDES_RATIO) {
+        if (tx <= VisionConstants.VISION_TX_LIMIT && horizontalLength / verticalLength < VisionConstants.MAX_SIDES_RATIO) {
             return null;
         }
         if (ta < VisionConstants.VISION_TA_LIMIT) {
