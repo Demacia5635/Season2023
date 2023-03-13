@@ -73,8 +73,11 @@ public class Chassis extends SubsystemBase {
         angleController.enableContinuousInput(0, 2 * Math.PI);
         angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
-                getModulePositions(), new Pose2d(0, 0, getGyroRotation()), VecBuilder.fill(0.3, 0.3, 0.3),
-                VecBuilder.fill(0.7, 0.7, 0.7));
+                getModulePositions(), new Pose2d(0, 0, getGyroRotation()),
+                VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
+                        Constants.LIMELIGHT_TRUST_VALUE),
+                VecBuilder.fill(Constants.ODOMETRY_TRUST_VALUE, Constants.ODOMETRY_TRUST_VALUE,
+                        Constants.ODOMETRY_TRUST_VALUE));
         isBreak = true;
 
         startPitch = gyro.getPitch();
@@ -248,14 +251,13 @@ public class Chassis extends SubsystemBase {
         isBreak = !isBreak;
         Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
     }
-    
 
-    public void setCoast(){
-        Arrays.stream(modules).forEach((module)-> module.setNeutralMode(false));
+    public void setCoast() {
+        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(false));
     }
 
-    public void setBreak(){
-        Arrays.stream(modules).forEach((module)-> module.setNeutralMode(true));
+    public void setBreak() {
+        Arrays.stream(modules).forEach((module) -> module.setNeutralMode(true));
     }
 
     /**
@@ -434,7 +436,7 @@ public class Chassis extends SubsystemBase {
      *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
     private void addVisionInput(Pair<Pose2d, Double> visionInput) {
-         updatePosition(visionInput);
+        updatePosition(visionInput);
     }
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {
@@ -540,14 +542,14 @@ public class Chassis extends SubsystemBase {
         UtilsGeneral.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
         UtilsGeneral.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
 
-        //UtilsGeneral.putData("Change Neutral", "Change",
-         //       new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+        // UtilsGeneral.putData("Change Neutral", "Change",
+        // new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
 
-        UtilsGeneral.putData("setCoast", "setBreak", 
-            new InstantCommand(this::setCoast).ignoringDisable(true));
+        UtilsGeneral.putData("setCoast", "setBreak",
+                new InstantCommand(this::setCoast).ignoringDisable(true));
 
-        UtilsGeneral.putData("setBreak", "setBreak", 
-            new InstantCommand(this::setBreak).ignoringDisable(true));
+        UtilsGeneral.putData("setBreak", "setBreak",
+                new InstantCommand(this::setBreak).ignoringDisable(true));
 
         UtilsGeneral.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
 
