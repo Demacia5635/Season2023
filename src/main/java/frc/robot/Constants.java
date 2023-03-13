@@ -46,6 +46,7 @@ public final class Constants {
     //public static final double DEPLOY_HIGH_CUBES2 = 33.5;
     public static final double AUTONOMOUS_CLIMB_SPEED = 1;
     public static final int CYCLES_PER_SECOND = 50;
+    public static final double AUTO_NODES_MAX_TIME = 5;
 
     /**
      * The Vision constants.
