@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Robot;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
@@ -55,7 +57,7 @@ public class GotoLoadingZone extends CommandBase {
             } else {
                 this.position = Position.TOP;
             }
-            
+
         }).ignoringDisable(true));
 
         addRequirements(onEntry.getRequirements().toArray(Subsystem[]::new));
@@ -66,7 +68,7 @@ public class GotoLoadingZone extends CommandBase {
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Position position) {
         this(chassis, secondary, new InstantCommand(), position);
     }
-    
+
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Command onEntry) {
         this(chassis, secondary, onEntry, Position.BOTTOM);
     }
@@ -93,7 +95,7 @@ public class GotoLoadingZone extends CommandBase {
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.12, endY ), new Rotation2d()),
+            generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -111,11 +113,12 @@ public class GotoLoadingZone extends CommandBase {
                 default:
                     generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
                             new Rotation2d());
+
             }
         }
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION), generator.generate(chassis.getPose()));
-
+        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION),
+                generator.generate(chassis.getPose()));
         command.initialize();
     }
 

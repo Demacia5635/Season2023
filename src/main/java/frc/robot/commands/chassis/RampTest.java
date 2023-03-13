@@ -41,11 +41,11 @@ public class RampTest extends CommandBase {
         } else if (onRamp && timer.get() >= 1 && phase == 1) {
             System.out.println("phase 1");
             phase = 2;
-            velocity /= 2.5;
+            velocity /= 3;
         } else if (onRamp && timer.get() >= 2 && phase == 2) {
             System.out.println("phase 2");
             phase = 3;
-            velocity /= 3;
+            velocity /= 4;
             timer2.start();
         }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 15) {
             System.out.println("phase 3");

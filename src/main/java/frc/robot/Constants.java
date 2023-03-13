@@ -78,7 +78,7 @@ public final class Constants {
          */
         public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
 
-        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 4;
+        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 2.5;
 
         public static final double VISION_ANGLE_TOLERANCE = 5;
 
@@ -88,7 +88,7 @@ public final class Constants {
 
         public static final double MAX_SIDES_RATIO = 1.2;
         
-        public static final double VISION_TX_LIMIT = 10;
+        public static final double VISION_TX_LIMIT = 5;
 
         public static final double VISION_TA_LIMIT = 0.5;
     }

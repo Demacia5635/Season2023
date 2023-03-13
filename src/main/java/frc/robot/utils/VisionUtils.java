@@ -85,10 +85,14 @@ public class VisionUtils {
         SmartDashboard.putNumber("OurLimeLight/Distance", distance);
         SmartDashboard.putNumber("OurLimeLight/X", robotTranslation.getX());
         SmartDashboard.putNumber("OurLimeLight/Y", robotTranslation.getY());
+        //TODO: removed limelight tx limitation
         if (tx <= VisionConstants.VISION_TX_LIMIT && horizontalLength / verticalLength < VisionConstants.MAX_SIDES_RATIO) {
-            return null;
+             //return null;
         }
         if (ta < VisionConstants.VISION_TA_LIMIT) {
+           // return null;
+        }
+        if(distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT){
             return null;
         }
         return new Pair<Pose2d, Double>(

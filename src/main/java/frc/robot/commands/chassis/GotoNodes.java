@@ -36,7 +36,7 @@ public class GotoNodes extends CommandBase {
     /** Distance the robot should be from the node of the LOW cube */
     private static final double DISTANCE_CUBE_LOW = 1.3;
     /** Distance the robot should be from the node of the HIGH cube */
-    private static final double DISTANCE_CUBE_HIGH = 0.50;
+    private static final double DISTANCE_CUBE_HIGH = 0.54;
     /** Distance the robot should be from the node of the cone */
     private static final double DISTANCE_CONE = 0.72;
 

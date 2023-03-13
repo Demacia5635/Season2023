@@ -248,6 +248,7 @@ public class Chassis extends SubsystemBase {
         isBreak = !isBreak;
         Arrays.stream(modules).forEach((module) -> module.setNeutralMode(isBreak));
     }
+    
 
     public void setCoast(){
         Arrays.stream(modules).forEach((module)-> module.setNeutralMode(false));
@@ -543,8 +544,14 @@ public class Chassis extends SubsystemBase {
         UtilsGeneral.addDoubleProperty(builder, "UpAngle", this::getUpRotation, 2);
         UtilsGeneral.addDoubleProperty(builder, "UpAngularVel", this::getUpAngularVel, 2);
 
-        UtilsGeneral.putData("Change Neutral", "Change",
-                new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+        //UtilsGeneral.putData("Change Neutral", "Change",
+         //       new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
+
+        UtilsGeneral.putData("setCoast", "setBreak", 
+            new InstantCommand(this::setCoast).ignoringDisable(true));
+
+        UtilsGeneral.putData("setBreak", "setBreak", 
+            new InstantCommand(this::setBreak).ignoringDisable(true));
 
         UtilsGeneral.putData("Zero Angle", "Zero", new InstantCommand(this::resetAngle).ignoringDisable(true));
 

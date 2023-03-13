@@ -62,10 +62,10 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_BOTTOM:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 4.7), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.2, 4.7), Rotation2d.fromDegrees(180)));
                 case COMMUNITY_TOP:
-                    generator2.add(new Pose2d(new Translation2d(5.8, 4.7), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 4.75), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 4.75), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 4.75), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
@@ -78,25 +78,25 @@ public class LeaveCommunity extends CommandBase {
             switch (zone) {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 0.4), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(2.2, 0.4), Rotation2d.fromDegrees(180)));
-
                 case COMMUNITY_BOTTOM:
-                    generator2.add(new Pose2d(new Translation2d(5.8, 0.4), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 0.6), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(2.2, 0.6), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 0.6), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
             if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
                 generator2.add(new Pose2d(new Translation2d(6.55, 2.3), Rotation2d.fromDegrees(180)));
             } else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 0.8), Rotation2d.fromDegrees(180)));
+                generator2.add(new Pose2d(new Translation2d(5.8, 0.6), Rotation2d.fromDegrees(180)));
             }
         }
         if (generator1.length() == 0)
             command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
         else
             command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose())).andThen(chassis.createPathFollowingCommand(false, generator2.generate()));
-        command.initialize();
+        
+            command.initialize();
     }
 
     @Override

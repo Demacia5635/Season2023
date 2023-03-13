@@ -173,7 +173,7 @@ public class RobotContainer {
             leds.setData(buffer);
         }).ignoringDisable(true));
 
-        secondary.rightBumper().and(secondary.leftBumper()).onTrue(new InstantCommand(()->{
+        secondary.rightBumper().and(secondary.leftBumper()).onTrue(new InstantCommand(() -> {
             if (!buffer.getLED(0).equals(new Color(255, 0, 0))) {
                 for (int i = 0; i < LedConstants.LENGTH; i++) {
                     buffer.setRGB(i, 255, 0, 0);
@@ -188,17 +188,17 @@ public class RobotContainer {
             leds.setData(buffer);
         }).ignoringDisable(true));
 
-        secondary.back().and(secondary.start()).whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
-        
-    }
+        secondary.back().and(secondary.start())
+                .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
-    
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
+    // TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
         return generateAutonomous.getAutonomous().withTimeout(14.5)
                 .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
