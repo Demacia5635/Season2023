@@ -312,10 +312,6 @@ public class Chassis extends SubsystemBase {
     public Command createPathFollowingCommand(PathPlannerTrajectory trajectory,
             boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
         var command = new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    if (resetPose)
-                        resetPose(trajectory.getInitialPose());
-                }),
                 new PPSwerveControllerCommand(
                         trajectory,
                         this::getPose,
