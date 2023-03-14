@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
@@ -74,10 +76,10 @@ public class Chassis extends SubsystemBase {
         angleController.setTolerance(ChassisConstants.TELEOP_ANGLE_TOLERANCE);
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()),
-                VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
-                        Constants.LIMELIGHT_TRUST_VALUE),
                 VecBuilder.fill(Constants.ODOMETRY_TRUST_VALUE, Constants.ODOMETRY_TRUST_VALUE,
-                        Constants.ODOMETRY_TRUST_VALUE));
+                        Constants.ODOMETRY_TRUST_VALUE),
+                VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
+                        Constants.LIMELIGHT_TRUST_VALUE));
         isBreak = true;
 
         startPitch = gyro.getPitch();
@@ -440,11 +442,16 @@ public class Chassis extends SubsystemBase {
     }
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {
-        if (visionInput != null)
+       if(visionInput != null){
+        if ((Math.abs(visionInput.getFirst().getRotation().minus(getRotation()).getDegrees()) < 15 
+        || RobotContainer.getInstance().secondary.getHID().getYButton())
+        || DriverStation.isDisabled())
             poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
+       }
         else
             poseEstimator.update(getGyroRotation(), getModulePositions());
     }
+
 
     /**
      * Gets the roll of the robot

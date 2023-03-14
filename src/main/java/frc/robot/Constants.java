@@ -46,15 +46,15 @@ public final class Constants {
     // public static final double DEPLOY_HIGH_CUBES2 = 33.5;
     public static final double AUTONOMOUS_CLIMB_SPEED = 1;
     public static final int CYCLES_PER_SECOND = 50;
-    public static final double AUTO_NODES_MAX_TIME = 5;
+    public static final double AUTO_NODES_MAX_TIME = 4;
 
     // ok technically this is not the right names for these constants,
     // the first is the limelight value and the second is the odometry value.
     // but how it works is the lower the number is the more it trusts the input so
     // for it to make more sense, (i.e. 0.7 is more trust than 0.3), we flipped the
     // names
-    public static final double ODOMETRY_TRUST_VALUE = 0.7;
-    public static final double LIMELIGHT_TRUST_VALUE = 0.3;
+    public static final double ODOMETRY_TRUST_VALUE = 0.4;
+    public static final double LIMELIGHT_TRUST_VALUE = 0.6;
 
     /**
      * The Vision constants.

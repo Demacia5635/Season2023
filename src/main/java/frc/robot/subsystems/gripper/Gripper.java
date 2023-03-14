@@ -99,9 +99,9 @@ public class Gripper extends SubsystemBase {
    */
   public Command getCloseCommand() {
     return new SequentialCommandGroup(
-        new StartEndCommand(this::close, () -> setPower(0), this).until(this::isLimitSwitchClose),
+        new StartEndCommand(this::close, () -> {}, this).until(this::isLimitSwitchClose)/*,
         new WaitCommand(0.4),
-        new StartEndCommand(this::close, () -> setPower(0), this).until(this::isLimitSwitchClose));
+        new StartEndCommand(this::close, () -> setPower(0), this).until(this::isLimitSwitchClose)*/);
   }
 
   public Command Switch() {

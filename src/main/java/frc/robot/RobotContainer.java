@@ -43,7 +43,7 @@ import frc.robot.utils.UtilsGeneral;
 public class RobotContainer {
     private static RobotContainer instance;
     private final CommandXboxController main = new CommandXboxController(0);
-    private final CommandXboxController secondary = new CommandXboxController(1);
+    public final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
