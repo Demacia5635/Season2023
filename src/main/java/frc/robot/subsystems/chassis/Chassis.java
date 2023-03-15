@@ -352,7 +352,7 @@ public class Chassis extends SubsystemBase {
      * @return the path following command
      */
     public Command createPathFollowingCommand(String path, boolean resetPose) {
-        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS_REGULAR);
         return createPathFollowingCommand(trajectory, resetPose, true);
     }
 
@@ -369,7 +369,7 @@ public class Chassis extends SubsystemBase {
      */
     public Command createPathFollowingCommand(String path, boolean resetPose,
             boolean keepPosition) {
-        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
+        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS_REGULAR);
         return createPathFollowingCommand(trajectory, resetPose, keepPosition);
     }
 
@@ -392,7 +392,7 @@ public class Chassis extends SubsystemBase {
     public Command createPathFollowingCommand(PathPoint... points) {
         if (points.length < 2)
             return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS_REGULAR, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, false, true);
     }
 
@@ -420,14 +420,21 @@ public class Chassis extends SubsystemBase {
     public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
         if (points.length < 2)
             return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS_REGULAR, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, false, keepPosition);
+    }
+
+    public Command createPathFollowingCommand(boolean keepPosition, PathConstraints constraints, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(constraints, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, false, keepPosition);
     }
 
     public Command createPathFollowingCommand(Command onTrajectoryEnd, PathPoint... points) {
         if (points.length < 2)
             return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS_REGULAR, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, false, true, onTrajectoryEnd);
     }
 
