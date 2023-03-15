@@ -203,4 +203,13 @@ public class RobotContainer {
         chassis.getDefaultCommand().schedule();
         parallelogram.getCalibrationCommand(chassis).schedule();
     }
+
+    public void onEnable(){
+        chassis.setBreak();
+    }
+
+    public void onRobotinit(){
+        chassis.setCoast();
+    }
+
 }
