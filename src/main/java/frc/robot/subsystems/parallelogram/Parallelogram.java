@@ -102,9 +102,6 @@ public class Parallelogram extends SubsystemBase {
      * @return the arm's angle (after calculating with offset).
      */
     public double getAngle() {
-        if (getDigitalInput()) {
-            resetPosition();
-        }
         return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
 

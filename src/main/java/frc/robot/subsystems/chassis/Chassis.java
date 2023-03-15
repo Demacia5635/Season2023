@@ -77,9 +77,9 @@ public class Chassis extends SubsystemBase {
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()),
                 VecBuilder.fill(Constants.ODOMETRY_TRUST_VALUE, Constants.ODOMETRY_TRUST_VALUE,
-                        Constants.ODOMETRY_TRUST_VALUE),
+                        0),
                 VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
-                        Constants.LIMELIGHT_TRUST_VALUE));
+                        1));
         isBreak = true;
 
         startPitch = gyro.getPitch();

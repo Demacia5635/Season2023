@@ -4,6 +4,7 @@
 
 package frc.robot.commands.chassis;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -21,6 +22,7 @@ import frc.robot.utils.UtilsGeneral.ControllerSide;
 public class Drive extends CommandBase {
     private final Chassis chassis;
     private final XboxController controller;
+    private final SlewRateLimiter limiter;
     private double scaleVelocity = 2;
     private double scaleRotation = 2;
 
@@ -35,6 +37,7 @@ public class Drive extends CommandBase {
         this.chassis = chassis;
         this.controller = controller;
         addRequirements(chassis);
+        limiter = new SlewRateLimiter(1, 1, 0);
     }
 
     @Override
