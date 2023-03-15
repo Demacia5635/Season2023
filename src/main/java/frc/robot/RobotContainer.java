@@ -183,8 +183,10 @@ public class RobotContainer {
 
         secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
-
+                
+        secondary.start().onTrue(new InstantCommand(()->{chassis.resetAngle();}));
     }
+
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
