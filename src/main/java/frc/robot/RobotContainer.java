@@ -195,7 +195,7 @@ public class RobotContainer {
      */
     // TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-        return generateAutonomous.getAutonomous().withTimeout(14.5)
+        return generateAutonomous.getAutonomous().withTimeout(14.7)
                 .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
     }
 
