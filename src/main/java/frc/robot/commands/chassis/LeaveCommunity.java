@@ -109,20 +109,13 @@ public class LeaveCommunity extends CommandBase {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
                 case COMMUNITY_BOTTOM:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 0.6), Rotation2d.fromDegrees(180))); //TODO: change values to fit "before ramp", "on ramp" and "after ramp"
-                    generator2.add(new Pose2d(new Translation2d(2.2, 0.6), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(5.8, 0.6), Rotation2d.fromDegrees(180)));
+                    generator1.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180))); //TODO: change values to fit "before ramp", "on ramp" and "after ramp"
+                    generator2.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.8, 2.75), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
 
-            if(chooserExitOrRamp.getSelected() == ExitOrRamp.TO_RAMP){
-                generator2.add(new Pose2d(new Translation2d(6.55, 2.3), Rotation2d.fromDegrees(180))); //TODO: change values to fit climbing on ramp
-                pathConstraints = ChassisConstants.PATH_CONSTRAINTS_CLIMBEMIDDLE;
-            }
-            else {
-                generator2.add(new Pose2d(new Translation2d(5.8, 0.6), Rotation2d.fromDegrees(180)));
-            }
         }
 
 
