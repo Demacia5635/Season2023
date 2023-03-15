@@ -52,9 +52,9 @@ public class GenerateAutonomous {
     }
 
     public SequentialCommandGroup getAutonomous() {
-        boolean isClimb = climb.getSelected().equals(true);
-        boolean isPlace = placeGamePeace.getSelected().equals(true);
-        boolean isLeave = exitCommunity.getSelected().equals(true);
+        boolean isClimb = climb.getSelected();
+        boolean isPlace = placeGamePeace.getSelected();
+        boolean isLeave = exitCommunity.getSelected();
         SequentialCommandGroup autonomous = new SequentialCommandGroup(
                 isPlace ? gotoNodes.andThen(gripper.getOpenCommand())
                         .withTimeout(isClimb ? Constants.AUTO_NODES_MAX_TIME : 15)
