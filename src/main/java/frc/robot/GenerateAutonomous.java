@@ -56,7 +56,7 @@ public class GenerateAutonomous {
         boolean isPlace = placeGamePeace.getSelected();
         boolean isLeave = exitCommunity.getSelected();
         SequentialCommandGroup autonomous = new SequentialCommandGroup(
-                isPlace ? gotoNodes.andThen(gripper.getOpenCommand())
+                isPlace ? parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1).andThen(gripper.getOpenCommand())
                         .withTimeout(isClimb ? Constants.AUTO_NODES_MAX_TIME : 15)
                         : new InstantCommand(() -> System.out.println("didnt place Game Peace")),
                 new InstantCommand(() -> System.out.println("Auto test EEEE")),
