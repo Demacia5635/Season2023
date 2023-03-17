@@ -57,7 +57,7 @@ public class RobotContainer {
     private GamePiece gamePiece = GamePiece.CUBE;
 
     public static class LedConstants {
-        public static final int LENGTH = 126;
+        public static final int LENGTH = 140;
         public static final int PORT = 1;
 
     }
@@ -184,7 +184,7 @@ public class RobotContainer {
         secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
                 
-        secondary.start().onTrue(new InstantCommand(()->{chassis.resetAngle();}));
+        main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
     }
 
 

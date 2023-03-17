@@ -269,8 +269,15 @@ public class Chassis extends SubsystemBase {
     public void resetAngle() {
         gyro.setYaw(0);
         gyro.setFusedHeading(0);
-        while (Math.abs(gyro.getFusedHeading()) > 0.1)
+        while (Math.abs(gyro.getFusedHeading()) > 10)
             ;
+        poseEstimator.resetPosition(getGyroRotation(), getModulePositions(),
+                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
+    }
+
+    public void setAngleTo180(){
+        gyro.setYaw(180);
+        gyro.setFusedHeading(180);
         poseEstimator.resetPosition(getGyroRotation(), getModulePositions(),
                 new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
     }
@@ -536,6 +543,7 @@ public class Chassis extends SubsystemBase {
 
     @Override
     public void periodic() {
+        System.out.println(gyro.getFusedHeading() + " " + gyro.getYaw());
         updatePosition(null);
         field.setRobotPose(getPose());
     }
