@@ -14,6 +14,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.utils.UtilsGeneral;
 
@@ -82,7 +86,8 @@ public class SwerveModule implements Sendable {
         return UtilsGeneral.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
     }
 
-    public void setPower(double power){
+    private ControlMode mode = ControlMode.MotionMagic;
+        public void setPower(double power) {
         moveMotor.set(ControlMode.PercentOutput, power);
     }
 
@@ -133,7 +138,7 @@ public class SwerveModule implements Sendable {
      */
     public void setAngle(double angle) {
         desiredAngle = angle;
-        angleMotor.set(ControlMode.MotionMagic, calculateTarget(angle));
+        angleMotor.set(mode, calculateTarget(angle));
     }
 
     /**
@@ -156,6 +161,16 @@ public class SwerveModule implements Sendable {
     public void stop() {
         stopAngleMotor();
         stopMoveMotor();
+    }
+
+    private void changeMode(XboxController controller) {
+        if (mode == ControlMode.MotionMagic) {
+            mode = ControlMode.Position;
+            controller.setRumble(RumbleType.kBothRumble, 1);
+        } else {
+            mode = ControlMode.MotionMagic;
+            controller.setRumble(RumbleType.kBothRumble, 0);
+        }
     }
 
     /**
@@ -228,6 +243,9 @@ public class SwerveModule implements Sendable {
         builder.addDoubleProperty("Angle Offset", () -> angleOffset, null);
 
         builder.addDoubleProperty("Desired Velocity", () -> desiredVelocity, null);
+        RobotContainer.main.back().onTrue(
+                new InstantCommand(() -> changeMode(RobotContainer.main.getHID()))
+                .ignoringDisable(true));
         builder.addDoubleProperty("Desired Angle", () -> desiredAngle, null);
     }
 }

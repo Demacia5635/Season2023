@@ -42,7 +42,7 @@ import frc.robot.utils.UtilsGeneral;
  */
 public class RobotContainer {
     private static RobotContainer instance;
-    private final CommandXboxController main = new CommandXboxController(0);
+    public static final CommandXboxController main = new CommandXboxController(0);
     public final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private final Parallelogram parallelogram;
@@ -193,7 +193,6 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    // TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
         return generateAutonomous.getAutonomous().withTimeout(14.7)
                 .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
