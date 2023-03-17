@@ -90,7 +90,8 @@ public class GotoLoadingZone extends CommandBase {
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.14, endY), new Rotation2d()),
+            //last final point X Value was 15.14. changed it to 15.18
+            generator.add(new Pose2d(new Translation2d(15.18, endY), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -106,7 +107,8 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.14, endY), new Rotation2d()),
+                            //last final point X Value was 15.14. changed it to 15.18
+                    generator.add(new Pose2d(new Translation2d(15.18, endY), new Rotation2d()),
                             new Rotation2d());
 
             }
