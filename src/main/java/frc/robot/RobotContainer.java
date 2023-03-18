@@ -5,8 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,10 +13,15 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.LedConstants;
+import frc.robot.commands.Flicker;
+import frc.robot.commands.RollyPolly;
 import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
@@ -27,8 +30,8 @@ import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
+import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.subsystems.parallelogram.Parallelogram;
-import frc.robot.utils.GamePiece;
 import frc.robot.utils.UtilsGeneral;
 
 /**
@@ -47,26 +50,39 @@ public class RobotContainer {
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
-    private final AddressableLED leds;
-    private final AddressableLEDBuffer buffer;
     private Color LedLastColor;
     private GenerateAutonomous generateAutonomous;
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
 
-    private GamePiece gamePiece = GamePiece.CUBE;
-
-    public static class LedConstants {
-        public static final int LENGTH = 140;
-        public static final int PORT = 1;
-
-    }
+    private final SubStrip rollStrip;
+    private final SubStrip pitchStrip;
+    private final SubStrip allStrip;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
         chassis = new Chassis();
+        rollStrip = new SubStrip(0, 20);
+        Command rollCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
+                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow),
+                        new Flicker(rollStrip)))
+                .ignoringDisable(true);
+        rollStrip.setDefaultCommand(rollCommand);
+        rollCommand.schedule();
+        pitchStrip = new SubStrip(21, 41);
+        Command pitchCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
+                        .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen),
+                                new Flicker(pitchStrip)))
+                .ignoringDisable(true);
+        pitchStrip.setDefaultCommand(pitchCommand);
+        pitchCommand.schedule();
+
+        allStrip = new SubStrip(0, 126);
+
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
@@ -76,11 +92,6 @@ public class RobotContainer {
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
-
-        leds = new AddressableLED(LedConstants.PORT);
-        leds.setLength(LedConstants.LENGTH);
-        buffer = new AddressableLEDBuffer(LedConstants.LENGTH);
-        leds.start();
 
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putBoolean("is left led", false);
@@ -137,58 +148,20 @@ public class RobotContainer {
                 .until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
-        secondary.leftBumper().and(secondary.rightBumper().negate()).onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(168, 0, 230))) {
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 168, 0, 230);
-                }
-                gamePiece = GamePiece.CONE;
-            } else {
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-            leds.setData(buffer);
-        }).ignoringDisable(true));
-
-        secondary.rightBumper().and(secondary.leftBumper().negate()).onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(255, 140, 0))) {
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 255, 140, 0);
-                }
-                gamePiece = GamePiece.CUBE;
-            } else {
-
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-            leds.setData(buffer);
-        }).ignoringDisable(true));
-
-        secondary.rightBumper().and(secondary.leftBumper()).onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(255, 0, 0))) {
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 255, 0, 0);
-                }
-                gamePiece = GamePiece.CUBE;
-            } else {
-
-                for (int i = 0; i < LedConstants.LENGTH; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-            leds.setData(buffer);
-        }).ignoringDisable(true));
-
         secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
                 
         main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
+        secondary.leftBumper().and(secondary.rightBumper()).onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 0))).ignoringDisable(true));
+        secondary.leftBumper().and(secondary.rightBumper().negate())
+                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(168, 0, 230))).ignoringDisable(true));
+        secondary.rightBumper().and(secondary.leftBumper().negate())
+                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 140, 0))).ignoringDisable(true));
+
     }
 
 
-    /**
+    /*
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous

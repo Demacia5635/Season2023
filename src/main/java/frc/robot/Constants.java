@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.utils.IntPair;
 import frc.robot.utils.Rectangle;
 
 /**
@@ -114,5 +115,13 @@ public final class Constants {
         public static final double VISION_TX_LIMIT = 5;
 
         public static final double VISION_TA_LIMIT = 0.5;
+    }
+
+    public static final class LedConstants {
+        public static final IntPair[] LED_STRIPS = {
+            new IntPair(0, 126)
+        };
+        public static final double MAX_ANGLE = 50;
+        public static final double EPSILON = 3;
     }
 }
