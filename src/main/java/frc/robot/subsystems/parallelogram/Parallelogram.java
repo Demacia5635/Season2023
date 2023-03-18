@@ -10,7 +10,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +17,7 @@ import frc.robot.commands.parallelogram.CalibrateParallelogram;
 import frc.robot.commands.parallelogram.EndGoToAngle;
 import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.commands.parallelogram.ResetCalibrate;
+import frc.robot.subsystems.chassis.Chassis;
 
 /**
  * Paralellogram subsystem.
@@ -49,12 +49,12 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                getCalibrationCommand());
+        // SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
+        //         getCalibrationCommand());
         SmartDashboard.putData("Parallelogram/Go to angle",
                 getGoToAngleCommand(30));
-        SmartDashboard.putData("Parallelogram/go back",
-                getGoBackCommand());
+        // SmartDashboard.putData("Parallelogram/go back",
+        //         getGoBackCommand());
         SmartDashboard.putData("Parallelogram/check",
                 getGoToAngleCommand(120));
     }
@@ -137,7 +137,7 @@ public class Parallelogram extends SubsystemBase {
      * Creates and returns calibration command.
      * @return calibration command.
      */
-    public CommandBase getCalibrationCommand() {
+    public CommandBase getCalibrationCommand(Chassis chassis) {
         return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
     }
 
@@ -187,9 +187,6 @@ public class Parallelogram extends SubsystemBase {
         builder.addDoubleProperty("encoder", motor::getSelectedSensorPosition, null);
     }
 
-    public Command getCalibrateCommad() {
-        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
-    }
 
     @Override
     public void periodic() {

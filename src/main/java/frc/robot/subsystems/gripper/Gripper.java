@@ -10,15 +10,18 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class Gripper extends SubsystemBase {
-    public static enum OpenOrClose {
-        OPEN, CLOSE;
-    }
+  public static enum OpenOrClose {
+    OPEN, CLOSE;
+  }
 
-    public static OpenOrClose openOrClose;
-    private TalonSRX motor;
+  public static OpenOrClose openOrClose;
+  private TalonSRX motor;
 
   /** Creates a new Gripper. */
   public Gripper(int motorId) {
@@ -31,25 +34,28 @@ public class Gripper extends SubsystemBase {
 
   /**
    * Sets gripper motor power.
+   * 
    * @param power
    */
-  private void setPower(double power){
+  private void setPower(double power) {
     motor.set(TalonSRXControlMode.PercentOutput, power);
   }
 
   /**
    * Returns the close motion activated limit switch`s state. true = pressed.
+   * 
    * @return Lim switch state
    */
-  private boolean isLimitSwitchClose(){
+  private boolean isLimitSwitchClose() {
     return motor.isFwdLimitSwitchClosed() == 1;
   }
 
   /**
    * Returns the open motion activated limit switch`s state. true = pressed.
+   * 
    * @return Lim switch state
    */
-  private boolean isLimitSwitchOpen(){
+  private boolean isLimitSwitchOpen() {
     return motor.isRevLimitSwitchClosed() == 1;
   }
 
@@ -58,57 +64,61 @@ public class Gripper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  
   /**
    * Opens the gripper when called.
    */
-  private void open(){
+  private void open() {
     motor.set(ControlMode.PercentOutput, GripperConstants.OPEN_POWER);
     openOrClose = OpenOrClose.OPEN;
   }
 
-  /** 
+  /**
    * Closes the gripper when called.
    */
-  private void close(){
+  private void close() {
     motor.set(ControlMode.PercentOutput, GripperConstants.CLOSE_POWER);
     openOrClose = OpenOrClose.CLOSE;
   }
-  
 
   /**
-   * Creates a new StartEndCommand to open the gripper with the end condition of the limit switch being pressed
+   * Creates a new StartEndCommand to open the gripper with the end condition of
+   * the limit switch being pressed
+   * 
    * @return Open COMMAND
    */
-  public Command getOpenCommand(){
+  public Command getOpenCommand() {
     System.out.println("Gripper opened");
-    return new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen);
+    return new StartEndCommand(this::open, () -> setPower(0), this).until(this::isLimitSwitchOpen);
   }
 
   /**
-   * Creates a new StartEndCommand to Close the gripper with the end condition of the limit switch being pressed
+   * Creates a new StartEndCommand to Close the gripper with the end condition of
+   * the limit switch being pressed
+   * 
    * @return Close COMMAND
    */
-  public Command getCloseCommand(){
-    return new StartEndCommand(this::close, ()-> setPower(0) , this).until(this::isLimitSwitchClose);
+  public Command getCloseCommand() {
+        return new StartEndCommand(this::close, ()->{}, this).until(this::isLimitSwitchClose);
   }
 
-  public Command Switch(){
-    if(openOrClose == OpenOrClose.OPEN){
-        return getCloseCommand();
-    }else{
-        return getOpenCommand();
+  public Command Switch() {
+    if (openOrClose == OpenOrClose.OPEN) {
+      return getCloseCommand();
+    } else {
+      return getOpenCommand();
     }
   }
 
-
-
   @Override
-  public void initSendable(SendableBuilder builder){
+  public void initSendable(SendableBuilder builder) {
     builder.addBooleanProperty("Limit Switch close", this::isLimitSwitchClose, null);
     builder.addBooleanProperty("Limit Switch open", this::isLimitSwitchOpen, null);
-    builder.addStringProperty("gripper State", () -> {return openOrClose.toString();}, null);
-    SmartDashboard.putData("Open Gripper",  new StartEndCommand(this::open, ()-> setPower(0) , this).until(this::isLimitSwitchOpen));
-    SmartDashboard.putData("Close Gripper",  new StartEndCommand(this::close, ()-> setPower(0.2) , this).until(this::isLimitSwitchClose));
+    builder.addStringProperty("gripper State", () -> {
+      return openOrClose.toString();
+    }, null);
+    SmartDashboard.putData("Open Gripper",
+        new StartEndCommand(this::open, () -> setPower(0), this).until(this::isLimitSwitchOpen));
+    SmartDashboard.putData("Close Gripper",
+        new StartEndCommand(this::close, () -> setPower(0.2), this).until(this::isLimitSwitchClose));
   }
 }

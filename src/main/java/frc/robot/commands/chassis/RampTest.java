@@ -9,7 +9,7 @@ import frc.robot.utils.UtilsGeneral;
 public class RampTest extends CommandBase {
     private final Chassis chassis;
     private final static double START_VEL = 1.8;
-    private final static double MIN_ANGLE = 15;
+    private final static double MIN_ANGLE = 12;
     private double velocity;
     private boolean onRamp;
     private Timer timer;
@@ -41,14 +41,15 @@ public class RampTest extends CommandBase {
         } else if (onRamp && timer.get() >= 1 && phase == 1) {
             System.out.println("phase 1");
             phase = 2;
-            velocity /= 2.5;
+            velocity /= 3.5;
         } else if (onRamp && timer.get() >= 2 && phase == 2) {
             System.out.println("phase 2");
             phase = 3;
-            velocity /= 3;
+            velocity /= 4.5;
             timer2.start();
-        }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 15) {
+        }else if ( phase == 3 && -chassis.getUpAngularVel() * sign >= 5) {
             System.out.println("phase 3");
+            System.out.println("CLIMB ENDED WITH ANGLE");
             phase = 4;
             velocity = 0;
         }
@@ -63,7 +64,7 @@ public class RampTest extends CommandBase {
     
     @Override
     public boolean isFinished() {
-        return (onRamp && phase == 4) || (onRamp && timer2.get() > 0.5);
+        return (onRamp && phase == 4) || (onRamp && timer2.get() > 1);
     }
 
     @Override

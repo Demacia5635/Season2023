@@ -39,46 +39,81 @@ public final class Constants {
     public static final double FIELD_WIDTH = 16.54; // in meters
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
-    public static final double LOADING_ANGLE = 38.5;
-    public static final double DEPLOY_ANGLE1 = 20;
-    //public static final double DEPLOY_ANGLE2 = 20;
+    public static final double LOADING_ANGLE = 43;
+    public static final double DEPLOY_ANGLE = 20;
+    public static final double DEPLOY_ANGLE_LOW = 60;
+    // public static final double DEPLOY_ANGLE2 = 20;
     public static final double DEPLOY_HIGH_CUBES1 = 33.5;
-    //public static final double DEPLOY_HIGH_CUBES2 = 33.5;
+    // public static final double DEPLOY_HIGH_CUBES2 = 33.5;
     public static final double AUTONOMOUS_CLIMB_SPEED = 1;
     public static final int CYCLES_PER_SECOND = 50;
+    public static final double AUTO_NODES_MAX_TIME = 5;
+
+    // ok technically this is not the right names for these constants,
+    // the first is the limelight value and the second is the odometry value.
+    // but how it works is the lower the number is the more it trusts the input so
+    // for it to make more sense, (i.e. 0.7 is more trust than 0.3), we flipped the
+    // names
+    public static final double ODOMETRY_TRUST_VALUE = 0.7;
+    public static final double LIMELIGHT_TRUST_VALUE = 0.3;
 
     /**
      * The Vision constants.
      */
     public static final class VisionConstants {
         public static final NetworkTable LIMELIGHT_TABLE1 = NetworkTableInstance.getDefault().getTable("limelight-ii");
-        public static final NetworkTable LIMELIGHT_TABLE2 = NetworkTableInstance.getDefault().getTable("limelight-iii");
+        public static final NetworkTable LIMELIGHT3_TABLE = NetworkTableInstance.getDefault().getTable("limelight-iii");
 
         public static final NetworkTableEntry HAS_TARGET_ENTRY = LIMELIGHT_TABLE1.getEntry("tv"); // double not boolean
-        
+
         /**
-         * An array of doubles with the following values:<p>
-         * [0] - meters from the corner of the blue alliance x axis<p>
-         * [1] - meters from the corner of the blue alliance y axis<p>
-         * [2] - meters from the the field carpet in the z axis<p>
-         * [3] - roll in degrees<p>
-         * [4] - pitch in degrees<p>
+         * An array of doubles with the following values:
+         * <p>
+         * [0] - meters from the corner of the blue alliance x axis
+         * <p>
+         * [1] - meters from the corner of the blue alliance y axis
+         * <p>
+         * [2] - meters from the the field carpet in the z axis
+         * <p>
+         * [3] - roll in degrees
+         * <p>
+         * [4] - pitch in degrees
+         * <p>
          * [5] - yaw in degrees
          */
         public static final NetworkTableEntry ROBOT_POSE_ENTRY = LIMELIGHT_TABLE1.getEntry("botpose_wpiblue");
 
         /**
-         * An array of doubles with the following values:<p>
-         * [0] - meters from the limelight to the april tag in the right direction<p>
-         * [1] - meters from the limelight to the april tag in the down direction<p>
-         * [2] - meters from the limelight to the april tag in the forward direction<p>
-         * [3] - pitch from the camera to the april tag in degrees<p>
-         * [4] - yaw from the camera to the april tag in degrees<p>
+         * An array of doubles with the following values:
+         * <p>
+         * [0] - meters from the limelight to the april tag in the right direction
+         * <p>
+         * [1] - meters from the limelight to the april tag in the down direction
+         * <p>
+         * [2] - meters from the limelight to the april tag in the forward direction
+         * <p>
+         * [3] - pitch from the camera to the april tag in degrees
+         * <p>
+         * [4] - yaw from the camera to the april tag in degrees
+         * <p>
          * [5] - roll from the camera to the april tag in degrees
          */
-        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1.getEntry("targetpose_cameraspace");
+        public static final NetworkTableEntry CAMERA_TRANSLATION_ENTRY = LIMELIGHT_TABLE1
+                .getEntry("targetpose_cameraspace");
 
-        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 2;
+        public static final double MAX_DISTANCE_FOR_LIMELIGHT = 2.5;
+
+        public static final double VISION_ANGLE_TOLERANCE = 5;
+
+        public static final double LIMELIGHT2_YAW = 22.5;
+
+        public static final double LIMELIGHT3_YAW = 32.2;
+
+        public static final double MAX_SIDES_RATIO = 1.2;
+
+        public static final double VISION_TX_LIMIT = 5;
+
+        public static final double VISION_TA_LIMIT = 0.5;
     }
 
     public static final class LedConstants {

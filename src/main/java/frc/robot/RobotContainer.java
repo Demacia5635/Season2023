@@ -16,12 +16,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.Flicker;
 import frc.robot.commands.RollyPolly;
 import frc.robot.commands.chassis.Drive;
+import frc.robot.commands.chassis.GoToNodesHalfManual;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
@@ -46,7 +48,7 @@ import frc.robot.utils.UtilsGeneral;
 public class RobotContainer {
     private static RobotContainer instance;
     private final CommandXboxController main = new CommandXboxController(0);
-    private final CommandXboxController secondary = new CommandXboxController(1);
+    public final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
@@ -60,6 +62,12 @@ public class RobotContainer {
     private final SubStrip allStrip;
 
     private GamePiece gamePiece = GamePiece.CUBE;
+
+    public static class LedConstants {
+        public static final int LENGTH = 250;
+        public static final int PORT = 1;
+
+    }
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -95,7 +103,13 @@ public class RobotContainer {
         SmartDashboard.putData(gripper);
         configureButtonBindings();
 
+        leds = new AddressableLED(LedConstants.PORT);
+        leds.setLength(LedConstants.LENGTH);
+        buffer = new AddressableLEDBuffer(LedConstants.LENGTH);
+        leds.start();
+
         SmartDashboard.putData(CommandScheduler.getInstance());
+        SmartDashboard.putBoolean("is left led", false);
 
         generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
     }
@@ -119,18 +133,18 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
                 parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary, parallelogram)
-                        .andThen(gripper.getOpenCommand()));
+                .andThen(new GoToNodesHalfManual(chassis, secondary, parallelogram));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
+               /*.andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()))*/;
 
         main.leftBumper().onTrue(new InstantCommand(() -> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(() -> gripper.getOpenCommand().schedule()));
@@ -142,7 +156,7 @@ public class RobotContainer {
         main.a().onTrue(load);
         main.x().onTrue(unload);
         main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
-        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
+        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis)
                 .until(() -> UtilsGeneral.hasInput(main.getHID())));
@@ -153,7 +167,6 @@ public class RobotContainer {
 
         secondary.rightBumper()
                 .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 140))).ignoringDisable(true));
-
     }
 
     /**
@@ -161,13 +174,24 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    // TODO: return noraml auto command
+    // TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-        return generateAutonomous.getAutonomous();
+        return generateAutonomous.getAutonomous().withTimeout(14.5)
+                .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
     }
 
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();
-        parallelogram.getCalibrateCommad().schedule();
+        new StartEndCommand(()->parallelogram.setPower(-0.3), ()->{parallelogram.setPower(0);}, parallelogram)
+            .withTimeout(0.4).andThen(
+        new InstantCommand(()->parallelogram.getCalibrationCommand(chassis).schedule())).schedule();
+    }
+
+    public void onEnableInit(){
+        chassis.setBreak();
+    }
+
+    public void setChassisCoast(){
+        chassis.setCoast();
     }
 }

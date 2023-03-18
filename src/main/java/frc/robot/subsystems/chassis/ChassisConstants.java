@@ -30,7 +30,6 @@ public class ChassisConstants {
         public static final double MAX_ACCUM_INTEGRAL = 80000;
         public static final double MAX_CURRENT_ANGLE = 20;
         
-        // TODO: Motion Magic Stuff, just find the right values (you might need to change the PID values too)
         public static final double ANGLE_KF = 0;
         public static final double MAX_VELOCITY_ANGLE = 20000;
         public static final double MAX_ACCELERATION_ANGLE = 15000;
@@ -59,10 +58,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(285.7324, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(302.7832, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(225.4394, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(214.8925, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(209.35546875, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(53.96484375, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(187.03125, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.73828125, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -79,6 +78,7 @@ public class ChassisConstants {
     public static final double MAX_AUTO_ACCELERATION = 3; // meters per second squared
     public static final double MAX_AUTO_SPEED = 2;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_AUTO_ACCELERATION);
+    public static final PathConstraints PATH_CONSTANTS_AUTO_MIDDLE = new PathConstraints(0.75, MAX_AUTO_ACCELERATION);
     public static final double MAX_DRIVE_SPEED = 4;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
@@ -90,9 +90,9 @@ public class ChassisConstants {
     public static final double TELEOP_ROTATION_KP = 3;
     public static final double TELEOP_ROTATION_KI = 0.3;
 
-    public static final double TELEOP_ANGLE_TOLERANCE = Math.PI / 120;
+    public static final double TELEOP_ANGLE_TOLERANCE = Math.toRadians(1.5);
 
-    public static final double AUTO_ANGLE_TOLERANCE = Math.PI/360;
+    public static final double AUTO_ANGLE_TOLERANCE = Math.toRadians(2);
     public static final double AUTO_TRANSLATION_TOLERANCE = 0.02;
 
     public static final double STOP_VELOCITY = 0.3;

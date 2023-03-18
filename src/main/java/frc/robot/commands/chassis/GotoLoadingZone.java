@@ -1,7 +1,5 @@
 package frc.robot.commands.chassis;
 
-import java.util.Random;
-
 import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
@@ -55,6 +52,7 @@ public class GotoLoadingZone extends CommandBase {
             } else {
                 this.position = Position.TOP;
             }
+
         }).ignoringDisable(true));
 
         addRequirements(onEntry.getRequirements().toArray(Subsystem[]::new));
@@ -65,7 +63,7 @@ public class GotoLoadingZone extends CommandBase {
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Position position) {
         this(chassis, secondary, new InstantCommand(), position);
     }
-    
+
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Command onEntry) {
         this(chassis, secondary, onEntry, Position.BOTTOM);
     }
@@ -92,7 +90,7 @@ public class GotoLoadingZone extends CommandBase {
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.12, endY ), new Rotation2d()),
+            generator.add(new Pose2d(new Translation2d(15.19, endY), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -108,13 +106,14 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.19, endY), new Rotation2d()),
                             new Rotation2d());
+
             }
         }
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION), generator.generate(chassis.getPose()));
-
+        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION),
+                generator.generate(chassis.getPose()));
         command.initialize();
     }
 
