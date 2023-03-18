@@ -117,7 +117,7 @@ public class GoToNodesHalfManual extends CommandBase {
         secondary.povDown().onTrue(new InstantCommand(()->level = changeLevel(level)).ignoringDisable(true));
         this.chassis = chassis;
         this.parallelogram = parallelogram;
-        onPosition = (()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
+        onPosition = (()->parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
         command = new InstantCommand();
         isScheduled = false;
 
