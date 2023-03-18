@@ -99,6 +99,10 @@ public class TrajectoryGenerator {
         return generate();
     }
 
+    public int length() {
+        return positions.size();
+    }
+
     /**
      * Generates the trajectory, converts the points to the current alliance
      * 

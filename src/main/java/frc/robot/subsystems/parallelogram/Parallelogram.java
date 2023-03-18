@@ -10,9 +10,14 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.parallelogram.CalibrateParallelogram;
+import frc.robot.commands.parallelogram.EndGoToAngle;
 import frc.robot.commands.parallelogram.GoToAngle;
+import frc.robot.commands.parallelogram.ResetCalibrate;
+import frc.robot.subsystems.chassis.Chassis;
 
 /**
  * Paralellogram subsystem.
@@ -29,10 +34,6 @@ public class Parallelogram extends SubsystemBase {
      * constructs a new parallelogram
      */
     public Parallelogram() {
-        SmartDashboard.putNumber("wanted angle", 0);
-
-        SmartDashboard.putNumber("desired angle", 90.0);
-        SmartDashboard.putNumber("Height", 1.0);
 
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
@@ -48,10 +49,14 @@ public class Parallelogram extends SubsystemBase {
 
         isBrake = false;
 
-        SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
-                new CalibrateParallelogram(this));
+        // SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
+        //         getCalibrationCommand());
         SmartDashboard.putData("Parallelogram/Go to angle",
-                new GoToAngle(this, 20));
+                getGoToAngleCommand(30));
+        // SmartDashboard.putData("Parallelogram/go back",
+        //         getGoBackCommand());
+        SmartDashboard.putData("Parallelogram/check",
+                getGoToAngleCommand(120));
     }
 
     /**
@@ -103,15 +108,6 @@ public class Parallelogram extends SubsystemBase {
         return motor.getSelectedSensorPosition() / ParallelConstants.PULSE_PER_ANGLE;
     }
 
-    // public double getOffset(){
-    // return gyro.getPitch() - 90 ;
-    // }
-
-    /*
-     * Resets the offset for the gyro.
-     */
-
-
     /**
      * Sets motor neutral mode to brake.
      */
@@ -126,6 +122,34 @@ public class Parallelogram extends SubsystemBase {
     public void setCoast() {
         motor.setNeutralMode(NeutralMode.Coast);
         isBrake = false;
+    }
+
+    /**
+     * Creates and returns go back command.
+     * @return go back command.
+     */
+    public CommandBase getGoBackCommand() {
+        return new SequentialCommandGroup(new GoToAngle(this, 115),
+        new CalibrateParallelogram(this), new ResetCalibrate(this));
+    }
+
+    /**
+     * Creates and returns calibration command.
+     * @return calibration command.
+     */
+    public CommandBase getCalibrationCommand(Chassis chassis) {
+        return new CalibrateParallelogram(this).andThen(new ResetCalibrate(this));
+    }
+
+    /**
+     * Creates and returns go to angle command.
+     * @param angle the desired angle of the parallelogram.
+     * @return go to angle command.
+     */
+    public CommandBase getGoToAngleCommand(double angle) {
+        return new GoToAngle(this, angle +
+        ParallelConstants.PRECENTAGE_GOTOANGLE*(ParallelConstants.DIGITAL_INPUT_ANGLE-angle))
+        .andThen(new EndGoToAngle(this, angle));
     }
 
     /**
@@ -162,6 +186,7 @@ public class Parallelogram extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("encoder", motor::getSelectedSensorPosition, null);
     }
+
 
     @Override
     public void periodic() {

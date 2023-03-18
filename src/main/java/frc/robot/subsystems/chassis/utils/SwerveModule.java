@@ -5,6 +5,7 @@ package frc.robot.subsystems.chassis.utils;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
@@ -50,11 +51,23 @@ public class SwerveModule implements Sendable {
         absoluteEncoder.configFactoryDefault();
 
         moveMotor.config_kP(0, SwerveModuleConstants.VELOCITY_KP);
+        moveMotor.config_kI(0, SwerveModuleConstants.VELOCITY_KI);
 
         angleMotor.config_kP(0, SwerveModuleConstants.ANGLE_KP);
         angleMotor.config_kI(0, SwerveModuleConstants.ANGLE_KI);
         angleMotor.config_kD(0, SwerveModuleConstants.ANGLE_KD);
+        angleMotor.config_kF(0, SwerveModuleConstants.ANGLE_KF);
         angleMotor.configMaxIntegralAccumulator(0, SwerveModuleConstants.MAX_ACCUM_INTEGRAL);
+
+        SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
+        currentLimit.currentLimit = SwerveModuleConstants.MAX_CURRENT_ANGLE;
+        currentLimit.enable = true;
+
+        angleMotor.configSupplyCurrentLimit(currentLimit);
+
+        angleMotor.configMotionCruiseVelocity(SwerveModuleConstants.MAX_VELOCITY_ANGLE);
+        angleMotor.configMotionAcceleration(SwerveModuleConstants.MAX_ACCELERATION_ANGLE);
+        angleMotor.configMotionSCurveStrength(SwerveModuleConstants.S_CURVE_STRENGTH_ANGLE);
 
         angleMotor.setNeutralMode(NeutralMode.Brake);
         moveMotor.setNeutralMode(NeutralMode.Brake);
@@ -67,6 +80,10 @@ public class SwerveModule implements Sendable {
      */
     public double getAngle() {
         return UtilsGeneral.normalizeDegrees(absoluteEncoder.getAbsolutePosition() - angleOffset);
+    }
+
+    public void setPower(double power){
+        moveMotor.set(ControlMode.PercentOutput, power);
     }
 
     /**
@@ -116,7 +133,7 @@ public class SwerveModule implements Sendable {
      */
     public void setAngle(double angle) {
         desiredAngle = angle;
-        angleMotor.set(ControlMode.Position, calculateTarget(angle));
+        angleMotor.set(ControlMode.MotionMagic, calculateTarget(angle));
     }
 
     /**

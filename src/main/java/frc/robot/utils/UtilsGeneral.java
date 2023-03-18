@@ -237,4 +237,12 @@ public final class UtilsGeneral {
         SendableRegistry.add(value, name);
         SmartDashboard.putData(key, value);
     }
+
+    public static Translation2d normalizeTranslation(Translation2d translation, double max) {
+        if (translation.getNorm() > max) {
+            return new Translation2d(max, translation.getAngle());
+        }
+        return translation;
+    }
+
 }

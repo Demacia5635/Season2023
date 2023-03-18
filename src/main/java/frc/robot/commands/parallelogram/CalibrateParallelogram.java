@@ -6,25 +6,25 @@ import frc.robot.subsystems.parallelogram.Parallelogram;
 
 public class CalibrateParallelogram extends CommandBase {
     private Parallelogram parallelogram;
-
+    
     /**
      * Command's constructor.
      * @param parallelogram
      */
     public CalibrateParallelogram(Parallelogram parallelogram) {
         this.parallelogram = parallelogram;
-        parallelogram.resetPosition();
+        addRequirements(parallelogram);
     }
 
 
     @Override
     public void initialize() {
         parallelogram.setBrake();
+        
     }
 
-
     @Override
-    public void execute() {
+    public void execute(){
         parallelogram.setPower(ParallelConstants.CALIBRATION_POWER);
     }
 
@@ -36,8 +36,6 @@ public class CalibrateParallelogram extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        parallelogram.resetPosition();
-        new ResetCalibrate(parallelogram).schedule();
         parallelogram.setPower(0);
     }
 }

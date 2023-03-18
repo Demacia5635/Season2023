@@ -1,5 +1,7 @@
 package frc.robot.commands.chassis;
 
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,10 +10,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.UtilsGeneral.Zone;
@@ -27,6 +30,9 @@ public class GotoLoadingZone extends CommandBase {
 
     private Command command;
     private Position position;
+
+    private boolean commandEnded;
+    private boolean onEntryEnded;
 
     /**
      * Constructs a new GotoLoadingZone command.
@@ -46,15 +52,18 @@ public class GotoLoadingZone extends CommandBase {
             } else {
                 this.position = Position.TOP;
             }
+
         }).ignoringDisable(true));
 
+        addRequirements(onEntry.getRequirements().toArray(Subsystem[]::new));
+        addRequirements(chassis);
         SmartDashboard.putData(this);
     }
 
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Position position) {
         this(chassis, secondary, new InstantCommand(), position);
     }
-    
+
     public GotoLoadingZone(Chassis chassis, CommandXboxController secondary, Command onEntry) {
         this(chassis, secondary, onEntry, Position.BOTTOM);
     }
@@ -69,18 +78,19 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public void initialize() {
+        onEntryEnded = false;
+        commandEnded = false;
         entered = false;
         TrajectoryGenerator generator = new TrajectoryGenerator(Alliance.Blue);
-        double endY = position == Position.TOP ? 7.5 : 6.25;
+        double endY = position == Position.TOP ? 7.5 : 6.0;
 
         Zone zone = Zone.fromRobotLocation(chassis.getPose().getTranslation());
-
         if (zone == Zone.COMMUNITY_BOTTOM || zone == Zone.COMMUNITY_ENTRANCE_BOTTOM) {
             generator.add(new Pose2d(new Translation2d(5.3, 0.76), new Rotation2d()),
                     new Rotation2d());
             generator.add(new Pose2d(new Translation2d(11.11, endY), new Rotation2d()),
                     new Rotation2d());
-            generator.add(new Pose2d(new Translation2d(15.23, endY), new Rotation2d()),
+            generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
                     new Rotation2d());
         } else {
             switch (zone) {
@@ -96,35 +106,50 @@ public class GotoLoadingZone extends CommandBase {
                             new Rotation2d());
                 case LOADING_ZONE:
                 default:
-                    generator.add(new Pose2d(new Translation2d(15.23, endY), new Rotation2d()),
+                    generator.add(new Pose2d(new Translation2d(15.12, endY), new Rotation2d()),
                             new Rotation2d());
+
             }
         }
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
-
-        command.schedule();
+        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION),
+                generator.generate(chassis.getPose()));
+        command.initialize();
     }
 
     @Override
     public void execute() {
         if (!entered && Zone.fromRobotLocation(chassis.getPose().getTranslation()) == Zone.LOADING_ZONE) {
-            onEntry.schedule();
+            onEntry.initialize();
             entered = true;
+        } else if (entered && !onEntryEnded) {
+            onEntry.execute();
         }
+        if (!commandEnded)
+            command.execute();
     }
 
     @Override
     public boolean isFinished() {
-        return (CommandScheduler.getInstance().requiring(chassis) != command && onEntry.isFinished());
+        if (!onEntryEnded && onEntry.isFinished()) {
+            onEntryEnded = true;
+            onEntry.end(false);
+        }
+        if (!commandEnded && command.isFinished()) {
+            commandEnded = true;
+            command.end(false);
+        }
+        return commandEnded && onEntryEnded;
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
-        onEntry.cancel();
+        if (interrupted) {
+            command.end(interrupted);
+            onEntry.end(interrupted);
+        }
         chassis.stop();
-        System.out.println("loading zone ended, " + interrupted);
+        System.out.println("LOADING ZONE ENDEDDDDDDDDDDDDDDDD");
     }
 
     @Override
