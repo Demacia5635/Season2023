@@ -23,7 +23,7 @@ import frc.robot.utils.UtilsGeneral;
  * This command is used to go to the nodes on the field from the community.
  */
 //TODO: Changed Y values. prev values were 1.38
-public class GotoNodes extends CommandBase {
+public class GoToNodesHalfManual extends CommandBase {
     private static final Translation2d[][] NODES = {
         { new Translation2d(1.34 , 0.51 ), new Translation2d(1.34 , 1.07 ), new Translation2d(1.34 , 1.63 ) },
         { new Translation2d(1.34 , 2.17 ), new Translation2d(1.34 , 2.75 ), new Translation2d(1.34 , 3.3 ) },
@@ -101,7 +101,7 @@ public class GotoNodes extends CommandBase {
      * @param chassis
      * @param secondary
      */
-    public GotoNodes(Chassis chassis, CommandXboxController secondary, Parallelogram parallelogram) {
+    public GoToNodesHalfManual(Chassis chassis, CommandXboxController secondary, Parallelogram parallelogram) {
         nodePosition = Position.BOTTOM;
         gridPosition = Position.BOTTOM;
         level = Level.MIDDLE;
@@ -131,11 +131,11 @@ public class GotoNodes extends CommandBase {
             onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE_LOW);
             return Level.LOW;
         }else if (level == Level.LOW) {
-            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE);
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE);
             return Level.MIDDLE;
         }
         else {
-            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1);
+            onPosition = ()->parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE);
             return Level.HIGH;
         }
     }
@@ -155,6 +155,7 @@ public class GotoNodes extends CommandBase {
     /**
      * Initialize the command.
      */
+    
     private void initCommand() {
         Translation2d node = NODES[gridPosition.getValue()][nodePosition.getValue()];
         if (nodePosition == Position.MIDDLE) {
@@ -174,7 +175,7 @@ public class GotoNodes extends CommandBase {
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
-        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(onPosition.get(), generator.generate(chassis.getPose()));
     }
 
     @Override

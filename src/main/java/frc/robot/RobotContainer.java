@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.chassis.Drive;
+import frc.robot.commands.chassis.GoToNodesHalfManual;
 import frc.robot.commands.chassis.GotoCommunity;
 import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
@@ -57,7 +58,7 @@ public class RobotContainer {
     private GamePiece gamePiece = GamePiece.CUBE;
 
     public static class LedConstants {
-        public static final int LENGTH = 150;
+        public static final int LENGTH = 250;
         public static final int PORT = 1;
 
     }
@@ -113,13 +114,12 @@ public class RobotContainer {
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
-                .andThen(new GotoNodes(chassis, secondary, parallelogram)
-                        .andThen(gripper.getOpenCommand()));
+                .andThen(new GoToNodesHalfManual(chassis, secondary, parallelogram));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
                 .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
+               /*.andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()))*/;
 
         main.leftBumper().onTrue(new InstantCommand(() -> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(() -> gripper.getOpenCommand().schedule()));
@@ -185,7 +185,7 @@ public class RobotContainer {
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
 
-                main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
+                main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180DependsOnAlliance(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
     }
 
     /**
@@ -201,6 +201,16 @@ public class RobotContainer {
 
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();
-        parallelogram.getCalibrationCommand(chassis).schedule();
+        new StartEndCommand(()->parallelogram.setPower(-0.3), ()->{parallelogram.setPower(0);}, parallelogram)
+            .withTimeout(0.4).andThen(
+        new InstantCommand(()->parallelogram.getCalibrationCommand(chassis).schedule())).schedule();
+    }
+
+    public void onEnableInit(){
+        chassis.setBreak();
+    }
+
+    public void setChassisCoast(){
+        chassis.setCoast();
     }
 }
