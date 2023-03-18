@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,7 +33,7 @@ import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.subsystems.parallelogram.Parallelogram;
-import frc.robot.utils.GamePiece;
+import frc.robot.utils.IntPair;
 import frc.robot.utils.UtilsGeneral;
 
 /**
@@ -51,7 +52,6 @@ public class RobotContainer {
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
-    private Color LedLastColor;
     private GenerateAutonomous generateAutonomous;
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
@@ -60,14 +60,12 @@ public class RobotContainer {
     private final SubStrip pitchStrip;
     private final SubStrip allStrip;
 
-    private GamePiece gamePiece = GamePiece.CUBE;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
         chassis = new Chassis();
-        rollStrip = new SubStrip(0, 20);
+        rollStrip = new SubStrip(new IntPair(0, 20));
         Command rollCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
                         new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow),
@@ -75,7 +73,7 @@ public class RobotContainer {
                 .ignoringDisable(true);
         rollStrip.setDefaultCommand(rollCommand);
         rollCommand.schedule();
-        pitchStrip = new SubStrip(21, 41);
+        pitchStrip = new SubStrip(new IntPair(20, 20));
         Command pitchCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
                         .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen),
@@ -84,7 +82,7 @@ public class RobotContainer {
         pitchStrip.setDefaultCommand(pitchCommand);
         pitchCommand.schedule();
 
-        allStrip = new SubStrip(0, 126);
+        allStrip = new SubStrip(new IntPair(0, 175));
 
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
@@ -150,15 +148,36 @@ public class RobotContainer {
                 .until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
-        secondary.leftBumper()
-                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(168, 230, 0))).ignoringDisable(true));
+        secondary.back().and(secondary.start())
+                .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
-        secondary.rightBumper()
-                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 140))).ignoringDisable(true));
+        secondary.leftBumper().and(secondary.rightBumper())
+                .onTrue(new InstantCommand(() -> {
+                    if (allStrip.getColors()[0].equals(Color.kRed))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(Color.kRed);
+                }).ignoringDisable(true));
+        secondary.leftBumper().and(secondary.rightBumper().negate())
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(168, 0, 230);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }).ignoringDisable(true));
+        secondary.rightBumper().and(secondary.leftBumper().negate())
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(255, 140, 0);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }).ignoringDisable(true));
 
     }
 
-    /**
+    /*
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous

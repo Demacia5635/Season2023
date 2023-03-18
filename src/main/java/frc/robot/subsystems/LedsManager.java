@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.LedConstants.LED_STRIPS;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,8 +44,8 @@ public final class LedsManager extends SubsystemBase {
         ledsGeometry.setColor(leds);
     }
 
-    public Color[] getColors(int startIndex, int size) {
-        return IntStream.range(startIndex, size + startIndex).mapToObj((i) -> leds[i]).toArray(Color[]::new);
+    public Color[] getColors(int[] indexes) {
+        return Arrays.stream(indexes).mapToObj((i) -> leds[i]).toArray(Color[]::new);
     }
 
     @Override
