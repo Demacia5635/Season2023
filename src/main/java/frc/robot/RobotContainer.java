@@ -32,6 +32,7 @@ import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
 import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.subsystems.parallelogram.Parallelogram;
+import frc.robot.utils.IntPair;
 import frc.robot.utils.UtilsGeneral;
 
 /**
@@ -64,7 +65,7 @@ public class RobotContainer {
      */
     private RobotContainer() {
         chassis = new Chassis();
-        rollStrip = new SubStrip(0, 20);
+        rollStrip = new SubStrip(new IntPair(0, 20));
         Command rollCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
                         new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow),
@@ -72,7 +73,7 @@ public class RobotContainer {
                 .ignoringDisable(true);
         rollStrip.setDefaultCommand(rollCommand);
         rollCommand.schedule();
-        pitchStrip = new SubStrip(21, 41);
+        pitchStrip = new SubStrip(new IntPair(20, 20));
         Command pitchCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
                         .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen),
@@ -81,7 +82,7 @@ public class RobotContainer {
         pitchStrip.setDefaultCommand(pitchCommand);
         pitchCommand.schedule();
 
-        allStrip = new SubStrip(0, 126);
+        allStrip = new SubStrip(new IntPair(0, 175));
 
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
@@ -150,16 +151,37 @@ public class RobotContainer {
 
         secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
-                
-        main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
-        secondary.leftBumper().and(secondary.rightBumper()).onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 0))).ignoringDisable(true));
+
+        main.start().onTrue(new InstantCommand(() -> {
+            chassis.setAngleTo180();
+            System.out.println("RESETANGLEGYRO");
+        }).ignoringDisable(true));
+
+        secondary.leftBumper().and(secondary.rightBumper())
+                .onTrue(new InstantCommand(() -> {
+                    if (allStrip.getColors()[0].equals(Color.kRed))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(Color.kRed);
+                }).ignoringDisable(true));
         secondary.leftBumper().and(secondary.rightBumper().negate())
-                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(168, 0, 230))).ignoringDisable(true));
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(168, 0, 230);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }).ignoringDisable(true));
         secondary.rightBumper().and(secondary.leftBumper().negate())
-                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 140, 0))).ignoringDisable(true));
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(255, 140, 0);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }).ignoringDisable(true));
 
     }
-
 
     /*
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -176,11 +198,11 @@ public class RobotContainer {
         parallelogram.getCalibrationCommand(chassis).schedule();
     }
 
-    public void onEnable(){
+    public void onEnable() {
         chassis.setBreak();
     }
 
-    public void onRobotinit(){
+    public void onRobotinit() {
         chassis.setCoast();
     }
 
