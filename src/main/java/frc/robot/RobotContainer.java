@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.LedConstants;
@@ -63,12 +62,6 @@ public class RobotContainer {
 
     private GamePiece gamePiece = GamePiece.CUBE;
 
-    public static class LedConstants {
-        public static final int LENGTH = 250;
-        public static final int PORT = 1;
-
-    }
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -102,11 +95,6 @@ public class RobotContainer {
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
-
-        leds = new AddressableLED(LedConstants.PORT);
-        leds.setLength(LedConstants.LENGTH);
-        buffer = new AddressableLEDBuffer(LedConstants.LENGTH);
-        leds.start();
 
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putBoolean("is left led", false);
@@ -167,6 +155,7 @@ public class RobotContainer {
 
         secondary.rightBumper()
                 .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 140))).ignoringDisable(true));
+
     }
 
     /**
@@ -174,10 +163,9 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    // TODO: RETURN NORAML AUTO COMMAN
+    //  TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-        return generateAutonomous.getAutonomous().withTimeout(14.5)
-                .andThen(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis));
+       return generateAutonomous.getAutonomous();
     }
 
     public void onTeleopInit() {
