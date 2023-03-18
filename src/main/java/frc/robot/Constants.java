@@ -38,7 +38,7 @@ public final class Constants {
     public static final double FIELD_WIDTH = 16.54; // in meters
     public static final double FIELD_HEIGHT = 8.02; // in meters
 
-    public static final double LOADING_ANGLE = 43;
+    public static final double LOADING_ANGLE = 44;
     public static final double DEPLOY_ANGLE = 20;
     public static final double DEPLOY_ANGLE_LOW = 60;
     // public static final double DEPLOY_ANGLE2 = 20;
