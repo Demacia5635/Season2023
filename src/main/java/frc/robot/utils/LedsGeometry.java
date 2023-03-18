@@ -12,8 +12,8 @@ public class LedsGeometry {
     private final IntPair[] deFlattenedCoords;
     public final int totalLength;
 
-    private AddressableLEDBuffer[] buffers;
-    private boolean[] hasLMsChanged;
+    private final AddressableLEDBuffer[] buffers;
+    private final boolean[] hasLMsChanged;
 
     /**
      * Creates a new LedsGeometry
@@ -42,6 +42,8 @@ public class LedsGeometry {
 
         buffers = Arrays.stream(lengths).mapToObj((length) -> new AddressableLEDBuffer(length))
                 .toArray(AddressableLEDBuffer[]::new);
+
+        hasLMsChanged = new boolean[buffers.length];
     }
 
     public void setColor(Color[] colors) {
@@ -53,8 +55,10 @@ public class LedsGeometry {
         }
 
         for (int i = 0; i < lengths.length; i++) {
-            if (hasLMsChanged[i])
+            if (hasLMsChanged[i]) {
                 addressableLEDs[i].setData(buffers[i]);
+            }
+            
             hasLMsChanged[i] = false;
         }
     }

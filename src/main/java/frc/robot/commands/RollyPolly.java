@@ -1,58 +1,62 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.LedConstants.EPSILON;
+import static frc.robot.Constants.LedConstants.MAX_ANGLE;
+
+import java.util.function.DoubleSupplier;
 import java.util.stream.IntStream;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.utils.IndividualLed;
 
 public class RollyPolly extends CommandBase {
     private final SubStrip strip;
-    private final Chassis chassis;
+    private final DoubleSupplier supplier;
+    private final Color positive, negative;
+    private Debouncer debouncer;
+    private Debouncer fellOff;
+    private boolean ended;
 
-    private static final Color LEVEL_COLOR = new Color(0, 255, 0);
-    private static final double EPSILON = 1; // in degrees
-
-    public RollyPolly(SubStrip strip, Chassis chassis) {
+    public RollyPolly(SubStrip strip, DoubleSupplier angleSupplier, Color positive, Color negative) {
         this.strip = strip;
-        this.chassis = chassis;
+        supplier = angleSupplier;
+        this.positive = positive;
+        this.negative = negative;
 
         addRequirements(strip);
     }
 
     @Override
     public void initialize() {
-        setLevelColor();
-    }
-
-    private void setLevelColor() {
-        strip.setColor(IntStream.range(0, strip.size).mapToObj((i) -> new IndividualLed(i, LEVEL_COLOR))
-                .toArray(IndividualLed[]::new));
+        debouncer = new Debouncer(1.5, DebounceType.kRising);
+        fellOff = new Debouncer(1.5, DebounceType.kRising);
+        ended = false;
     }
 
     private void setRollingColor(double roll) {
-        Color positive = new Color(255, 255, 0);
-        Color negative = new Color(0, 0, 255);
+        int index = (int) (((roll / MAX_ANGLE) + 1) * strip.size / 2);
         strip.setColor(
-                IntStream.range(0, strip.size).mapToObj((i) -> new IndividualLed(i, roll > 0 ? positive : negative))
+                IntStream.range(0, strip.size).mapToObj((i) -> new IndividualLed(i, i < index ? positive : negative))
                         .toArray(IndividualLed[]::new));
     }
 
     @Override
     public void execute() {
-        double roll = chassis.getRoll();
+        double roll = supplier.getAsDouble();
 
-        if (Math.abs(roll) <= EPSILON)
-            setLevelColor();
-        else
-            setRollingColor(roll);
+        setRollingColor(roll);
+        ended = debouncer.calculate(Math.abs(roll) < EPSILON);
+        if (fellOff.calculate(Math.abs(roll) > MAX_ANGLE))
+            new Rainbow(strip, 3).until(() -> Math.abs(supplier.getAsDouble()) < EPSILON).schedule();
     }
 
     @Override
-    public void end(boolean interrupted) {
-        strip.turnOff();
+    public boolean isFinished() {
+        return ended;
     }
 
     @Override

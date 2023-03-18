@@ -5,8 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,9 +13,13 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.LedConstants;
+import frc.robot.commands.Flicker;
 import frc.robot.commands.RollyPolly;
 import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GotoCommunity;
@@ -48,14 +50,14 @@ public class RobotContainer {
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
-    private final AddressableLED leds;
-    private final AddressableLEDBuffer buffer;
     private Color LedLastColor;
     private GenerateAutonomous generateAutonomous;
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
 
-    private final SubStrip strip;
+    private final SubStrip rollStrip;
+    private final SubStrip pitchStrip;
+    private final SubStrip allStrip;
 
     private GamePiece gamePiece = GamePiece.CUBE;
 
@@ -63,28 +65,39 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
-        strip = new SubStrip(0, 100);
         chassis = new Chassis();
-        
-        new RollyPolly(strip, chassis).schedule();
+        rollStrip = new SubStrip(0, 20);
+        Command rollCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
+                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow),
+                        new Flicker(rollStrip)))
+                .ignoringDisable(true);
+        rollStrip.setDefaultCommand(rollCommand);
+        rollCommand.schedule();
+        pitchStrip = new SubStrip(21, 41);
+        Command pitchCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
+                        .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen),
+                                new Flicker(pitchStrip)))
+                .ignoringDisable(true);
+        pitchStrip.setDefaultCommand(pitchCommand);
+        pitchCommand.schedule();
+
+        allStrip = new SubStrip(0, 126);
+
         parallelogram = new Parallelogram();
         chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
         SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
         SmartDashboard.putData(chassis);
         gripper = new Gripper(GripperConstants.MOTOR_ID);
-        gotoNodes = new GotoNodes(chassis, secondary ,parallelogram);
+        gotoNodes = new GotoNodes(chassis, secondary, parallelogram);
         leaveCommunity = new LeaveCommunity(chassis);
         SmartDashboard.putData(gripper);
         configureButtonBindings();
-        
-        leds = new AddressableLED(0);
-        leds.setLength(126);
-        buffer = new AddressableLEDBuffer(126);
-        leds.start();
 
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper,parallelogram, chassis);
+        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
     }
 
     /**
@@ -107,7 +120,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
-        parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
+                parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
                 .andThen(gripper.getCloseCommand());
 
         Command unload = new GotoCommunity(chassis)
@@ -115,55 +128,32 @@ public class RobotContainer {
                         .andThen(gripper.getOpenCommand()));
 
         load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen((new InstantCommand(()->parallelogram.getGoBackCommand().schedule())));
+                .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
         unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen(new InstantCommand(()->parallelogram.getGoBackCommand().schedule()));
+                .andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
 
-        main.leftBumper().onTrue(new InstantCommand(()-> gripper.getCloseCommand().schedule()));
-        main.rightBumper().onTrue(new InstantCommand(()->gripper.getOpenCommand().schedule()));
+        main.leftBumper().onTrue(new InstantCommand(() -> gripper.getCloseCommand().schedule()));
+        main.rightBumper().onTrue(new InstantCommand(() -> gripper.getOpenCommand().schedule()));
 
         load.setName("Load");
 
         unload.setName("Unload");
-    
 
         main.a().onTrue(load);
         main.x().onTrue(unload);
-        main.y().onTrue(new InstantCommand(()-> parallelogram.getGoBackCommand().schedule()));
+        main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
         main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE1));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
-        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis).until(() -> UtilsGeneral.hasInput(main.getHID())));
+        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis)
+                .until(() -> UtilsGeneral.hasInput(main.getHID())));
         main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
 
-        secondary.leftBumper().onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(168, 230, 0))) {
-                for (int i = 0; i < 126; i++) {
-                    buffer.setRGB(i, 168, 230, 0);
-                }
-                gamePiece = GamePiece.CUBE;
-            } else {
-                for (int i = 0; i < 126; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-            leds.setData(buffer);
-        }).ignoringDisable(true));
+        secondary.leftBumper()
+                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(168, 230, 0))).ignoringDisable(true));
 
-        secondary.rightBumper().onTrue(new InstantCommand(() -> {
-            if (!buffer.getLED(0).equals(new Color(255, 0, 140))) {
-                for (int i = 0; i < 126; i++) {
-                    buffer.setRGB(i, 255, 0, 140);
-                }
-                gamePiece = GamePiece.CONE;
-            } else {
-                for (int i = 0; i < 126; i++) {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
+        secondary.rightBumper()
+                .onTrue(new InstantCommand(() -> allStrip.setColor(new Color(255, 0, 140))).ignoringDisable(true));
 
-            leds.setData(buffer);
-        }).ignoringDisable(true));
-        
     }
 
     /**
@@ -171,10 +161,11 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    //TODO: return noraml auto command
+    // TODO: return noraml auto command
     public Command getAutonomousCommand() {
-       return generateAutonomous.getAutonomous();
+        return generateAutonomous.getAutonomous();
     }
+
     public void onTeleopInit() {
         chassis.getDefaultCommand().schedule();
         parallelogram.getCalibrateCommad().schedule();

@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.LedConstants.LED_STRIPS;
+
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LedConstants;
 import frc.robot.utils.IndividualLed;
 import frc.robot.utils.LedsGeometry;
 
@@ -19,13 +21,13 @@ public final class LedsManager extends SubsystemBase {
     private Color[] leds;
 
     private LedsManager() {
-        ledsGeometry = new LedsGeometry(LedConstants.LED_STRIPS);
+        ledsGeometry = new LedsGeometry(LED_STRIPS);
         leds = new Color[ledsGeometry.totalLength];
         setDefaultColor();
     }
 
     private void setDefaultColor() {
-        Arrays.fill(leds, new Color(168, 0, 230));
+        Arrays.fill(leds, Color.kBlack);
     }
 
     public static LedsManager getInstance() {
@@ -41,6 +43,10 @@ public final class LedsManager extends SubsystemBase {
 
     private void setChanges() {
         ledsGeometry.setColor(leds);
+    }
+
+    public Color[] getColors(int startIndex, int size) {
+        return IntStream.range(startIndex, size + startIndex).mapToObj((i) -> leds[i]).toArray(Color[]::new);
     }
 
     @Override

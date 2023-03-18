@@ -22,8 +22,22 @@ public class SubStrip extends SubsystemBase {
                 .map((led) -> new IndividualLed(offset + led.index, led.color)).toArray(IndividualLed[]::new));
     }
 
+    public void setColor(Color color) {
+        setColor(IntStream.range(0, size).mapToObj((i) -> new IndividualLed(i, color))
+                .toArray(IndividualLed[]::new));
+    }
+
     public void turnOff() {
         setColor(IntStream.range(0, size).mapToObj((i) -> new IndividualLed(i, Color.kBlack))
+                .toArray(IndividualLed[]::new));
+    }
+
+    public Color[] getColors() {
+        return LedsManager.getInstance().getColors(offset, size);
+    }
+
+    public void setColor(Color[] colors) {
+        setColor(IntStream.range(0, Math.min(colors.length, size)).mapToObj((i) -> new IndividualLed(i, colors[i]))
                 .toArray(IndividualLed[]::new));
     }
 }

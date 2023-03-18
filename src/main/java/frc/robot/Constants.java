@@ -83,11 +83,9 @@ public final class Constants {
 
     public static final class LedConstants {
         public static final IntPair[] LED_STRIPS = {
-            new IntPair(0, 60),
-            new IntPair(1, 60),
-            new IntPair(2, 30),
-            new IntPair(3, 30),
-            new IntPair(4, 10)
+            new IntPair(0, 126)
         };
+        public static final double MAX_ANGLE = 50;
+        public static final double EPSILON = 3;
     }
 }
