@@ -133,7 +133,7 @@ public class SwerveModule implements Sendable {
      */
     public void setAngle(double angle) {
         desiredAngle = angle;
-        angleMotor.set(ControlMode.MotionMagic, calculateTarget(angle));
+        angleMotor.set(ControlMode.Position, calculateTarget(angle));
     }
 
     /**

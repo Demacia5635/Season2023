@@ -58,10 +58,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(216.69, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(52.82, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(186.67, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.38, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(209.35546875, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(53.96484375, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(187.03125, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.73828125, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -92,7 +92,7 @@ public class ChassisConstants {
 
     public static final double TELEOP_ANGLE_TOLERANCE = Math.toRadians(1.5);
 
-    public static final double AUTO_ANGLE_TOLERANCE = Math.toRadians(1);
+    public static final double AUTO_ANGLE_TOLERANCE = Math.toRadians(2);
     public static final double AUTO_TRANSLATION_TOLERANCE = 0.02;
 
     public static final double STOP_VELOCITY = 0.3;

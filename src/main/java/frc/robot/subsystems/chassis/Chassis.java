@@ -25,7 +25,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -75,9 +77,9 @@ public class Chassis extends SubsystemBase {
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()),
                 VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
-                        Constants.LIMELIGHT_TRUST_VALUE),
+                        0),
                 VecBuilder.fill(Constants.ODOMETRY_TRUST_VALUE, Constants.ODOMETRY_TRUST_VALUE,
-                        Constants.ODOMETRY_TRUST_VALUE));
+                        1));
         isBreak = true;
 
         startPitch = gyro.getPitch();
@@ -267,17 +269,19 @@ public class Chassis extends SubsystemBase {
     public void resetAngle() {
         gyro.setYaw(0);
         gyro.setFusedHeading(0);
-        while (Math.abs(gyro.getFusedHeading()) > 0.1)
-            ;
+        Rotation2d rotation = getGyroRotation();
         poseEstimator.resetPosition(getGyroRotation(), getModulePositions(),
-                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
+                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), rotation));
     }
 
-    public void setAngleTo180(){
+    public void setAngleTo180DependsOnAlliance(){
+        double angle = DriverStation.getAlliance() == Alliance.Blue? 180 : 0;
+        System.out.println(angle);
         gyro.setYaw(0);
         gyro.setFusedHeading(0);
-        poseEstimator.resetPosition(getGyroRotation(), getModulePositions(),
-                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
+        Rotation2d rotation = getGyroRotation();
+        poseEstimator.resetPosition(rotation, getModulePositions(),
+                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), rotation.rotateBy(Rotation2d.fromDegrees(angle))));
     }
 
     /**
@@ -559,7 +563,7 @@ public class Chassis extends SubsystemBase {
         // UtilsGeneral.putData("Change Neutral", "Change",
         // new InstantCommand(this::swapNeutralMode).ignoringDisable(true));
 
-        UtilsGeneral.putData("setCoast", "setBreak",
+        UtilsGeneral.putData("setCoast", "setCoast",
                 new InstantCommand(this::setCoast).ignoringDisable(true));
 
         UtilsGeneral.putData("setBreak", "setBreak",
