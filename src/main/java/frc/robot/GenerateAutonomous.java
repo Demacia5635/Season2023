@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -52,11 +48,11 @@ public class GenerateAutonomous {
     }
 
     public SequentialCommandGroup getAutonomous() {
-        boolean isClimb = climb.getSelected().equals(true);
-        boolean isPlace = placeGamePeace.getSelected().equals(true);
-        boolean isLeave = exitCommunity.getSelected().equals(true);
+        boolean isClimb = climb.getSelected();
+        boolean isPlace = placeGamePeace.getSelected();
+        boolean isLeave = exitCommunity.getSelected();
         SequentialCommandGroup autonomous = new SequentialCommandGroup(
-                isPlace ? gotoNodes.andThen(gripper.getOpenCommand())
+                isPlace ? parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1).andThen(gripper.getOpenCommand())
                         .withTimeout(isClimb ? Constants.AUTO_NODES_MAX_TIME : 15)
                         : new InstantCommand(() -> System.out.println("didnt place Game Peace")),
                 new InstantCommand(() -> System.out.println("Auto test EEEE")),

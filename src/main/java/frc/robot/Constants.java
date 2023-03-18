@@ -40,7 +40,7 @@ public final class Constants {
 
     public static final double LOADING_ANGLE = 38.5;
     public static final double DEPLOY_ANGLE = 20;
-    public static final double DEPLOY_ANGLE_LOW = 65;
+    public static final double DEPLOY_ANGLE_LOW = 60;
     // public static final double DEPLOY_ANGLE2 = 20;
     public static final double DEPLOY_HIGH_CUBES1 = 33.5;
     // public static final double DEPLOY_HIGH_CUBES2 = 33.5;

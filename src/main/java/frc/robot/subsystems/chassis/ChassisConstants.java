@@ -58,10 +58,10 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(283.359375, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(303.134765625, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(229.833984375, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(212.16796875, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(216.69, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(52.82, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(186.67, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.38, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -78,6 +78,7 @@ public class ChassisConstants {
     public static final double MAX_AUTO_ACCELERATION = 3; // meters per second squared
     public static final double MAX_AUTO_SPEED = 2;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_AUTO_ACCELERATION);
+    public static final PathConstraints PATH_CONSTANTS_AUTO_MIDDLE = new PathConstraints(0.75, MAX_AUTO_ACCELERATION);
     public static final double MAX_DRIVE_SPEED = 4;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 

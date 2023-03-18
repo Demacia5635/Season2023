@@ -43,7 +43,7 @@ import frc.robot.utils.UtilsGeneral;
 public class RobotContainer {
     private static RobotContainer instance;
     private final CommandXboxController main = new CommandXboxController(0);
-    private final CommandXboxController secondary = new CommandXboxController(1);
+    public final CommandXboxController secondary = new CommandXboxController(1);
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
@@ -57,7 +57,7 @@ public class RobotContainer {
     private GamePiece gamePiece = GamePiece.CUBE;
 
     public static class LedConstants {
-        public static final int LENGTH = 126;
+        public static final int LENGTH = 150;
         public static final int PORT = 1;
 
     }
@@ -184,6 +184,8 @@ public class RobotContainer {
         secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
+
+                main.start().onTrue(new InstantCommand(()->{chassis.setAngleTo180(); System.out.println("RESETANGLEGYRO");}).ignoringDisable(true));
     }
 
     /**

@@ -273,6 +273,13 @@ public class Chassis extends SubsystemBase {
                 new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
     }
 
+    public void setAngleTo180(){
+        gyro.setYaw(0);
+        gyro.setFusedHeading(0);
+        poseEstimator.resetPosition(getGyroRotation(), getModulePositions(),
+                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), new Rotation2d()));
+    }
+
     /**
      * Gets the positions of the modules
      * 
@@ -302,7 +309,7 @@ public class Chassis extends SubsystemBase {
         return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond).rotateBy(getRotation());
     }
 
-    /**
+        /**
      * Creates a path following command, executing events along the way
      * 
      * @param trajectory The trajectory to follow
@@ -419,6 +426,13 @@ public class Chassis extends SubsystemBase {
         if (points.length < 2)
             return null;
         var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
+        return createPathFollowingCommand(trajectory, false, keepPosition);
+    }
+
+    public Command createPathFollowingCommand(boolean keepPosition, PathConstraints constraints, PathPoint... points) {
+        if (points.length < 2)
+            return null;
+        var trajectory = PathPlanner.generatePath(constraints, Arrays.asList(points));
         return createPathFollowingCommand(trajectory, false, keepPosition);
     }
 
