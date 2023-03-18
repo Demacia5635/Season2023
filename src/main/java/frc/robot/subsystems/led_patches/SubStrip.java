@@ -7,19 +7,28 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.LedsManager;
 import frc.robot.utils.IndividualLed;
+import frc.robot.utils.IntPair;
 
 public class SubStrip extends SubsystemBase {
     public final int size;
-    private final int offset;
+    private final int[] deflattenedCoords;
 
-    public SubStrip(int offset, int size) {
-        this.offset = offset;
-        this.size = size;
+    public SubStrip(IntPair... pairs) {
+        size = Arrays.stream(pairs).mapToInt((pair) -> pair.second).sum();
+        deflattenedCoords = new int[size];
+        int k = 0;
+        for (int i = 0; i < pairs.length; i++) {
+            IntPair pair = pairs[i];
+            for (int j = 0; j < pair.second; j++) {
+                deflattenedCoords[k] = pair.first + j;
+                k++;
+            }
+        }
     }
 
     public void setColor(IndividualLed... leds) {
         LedsManager.getInstance().update(Arrays.stream(leds)
-                .map((led) -> new IndividualLed(offset + led.index, led.color)).toArray(IndividualLed[]::new));
+                .map((led) -> new IndividualLed(deflattenedCoords[led.index], led.color)).toArray(IndividualLed[]::new));
     }
 
     public void setColor(Color color) {
@@ -33,7 +42,7 @@ public class SubStrip extends SubsystemBase {
     }
 
     public Color[] getColors() {
-        return LedsManager.getInstance().getColors(offset, size);
+        return LedsManager.getInstance().getColors(deflattenedCoords);
     }
 
     public void setColor(Color[] colors) {
