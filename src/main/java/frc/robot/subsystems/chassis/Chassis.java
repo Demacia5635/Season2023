@@ -77,9 +77,9 @@ public class Chassis extends SubsystemBase {
         poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.KINEMATICS, getGyroRotation(),
                 getModulePositions(), new Pose2d(0, 0, getGyroRotation()),
                 VecBuilder.fill(Constants.LIMELIGHT_TRUST_VALUE, Constants.LIMELIGHT_TRUST_VALUE,
-                        0),
+                Constants.LIMELIGHT_TRUST_VALUE),
                 VecBuilder.fill(Constants.ODOMETRY_TRUST_VALUE, Constants.ODOMETRY_TRUST_VALUE,
-                        1));
+                Constants.ODOMETRY_TRUST_VALUE));
         isBreak = true;
 
         startPitch = gyro.getPitch();
@@ -284,6 +284,16 @@ public class Chassis extends SubsystemBase {
                 new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), rotation.rotateBy(Rotation2d.fromDegrees(angle))));
     }
 
+    public void setAngleTo0DependsOnAlliance(){
+        double angle = DriverStation.getAlliance() == Alliance.Blue? 0 : 180;
+        System.out.println(angle);
+        gyro.setYaw(0);
+        gyro.setFusedHeading(0);
+        Rotation2d rotation = getGyroRotation();
+        poseEstimator.resetPosition(rotation, getModulePositions(),
+                new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), rotation.rotateBy(Rotation2d.fromDegrees(angle))));
+    }
+
     /**
      * Gets the positions of the modules
      * 
@@ -459,7 +469,8 @@ public class Chassis extends SubsystemBase {
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {
         if (visionInput != null)
-            poseEstimator.addVisionMeasurement(visionInput.getFirst(), visionInput.getSecond());
+            poseEstimator.addVisionMeasurement(new Pose2d(new Translation2d(visionInput.getFirst().getX()
+            ,visionInput.getFirst().getY()),getRotation()), visionInput.getSecond());
         else
             poseEstimator.update(getGyroRotation(), getModulePositions());
     }

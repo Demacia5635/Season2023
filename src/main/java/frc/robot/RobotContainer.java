@@ -68,7 +68,7 @@ public class RobotContainer {
         rollStrip = new SubStrip(new IntPair(65, 74));
         Command rollCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
-                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow, 0),
+                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow, 2),
                         new Flicker(rollStrip)))
                 .ignoringDisable(true);
         rollStrip.setDefaultCommand(rollCommand);
@@ -176,6 +176,9 @@ public class RobotContainer {
                         allStrip.setColor(color);
                 }).ignoringDisable(true));
 
+        main.start().onTrue(new InstantCommand(()->chassis.setAngleTo180DependsOnAlliance()).ignoringDisable(true));
+        main.back().onTrue(new InstantCommand(()->chassis.setAngleTo0DependsOnAlliance()).ignoringDisable(true));
+ 
     }
 
     /*

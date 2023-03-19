@@ -93,7 +93,7 @@ public class VisionUtils {
         if (ta < VisionConstants.VISION_TA_LIMIT) {
            // return null;
         }
-        if(distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT){
+        if(distance > VisionConstants.MAX_DISTANCE_FOR_LIMELIGHT || distance == 0){
             return null;
         }
         return new Pair<Pose2d, Double>(

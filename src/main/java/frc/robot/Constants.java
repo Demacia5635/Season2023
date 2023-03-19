@@ -121,6 +121,6 @@ public final class Constants {
             new IntPair(1, 175)
         };
         public static final double MAX_ANGLE = 50;
-        public static final double EPSILON = 3;
+        public static final double EPSILON = 5;
     }
 }
