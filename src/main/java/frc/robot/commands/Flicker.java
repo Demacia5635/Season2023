@@ -35,13 +35,21 @@ public class Flicker extends CommandBase {
             strip.setColor(colors);
         else if (timer.get() < 1.5)
             strip.turnOff();
+        else if (timer.get() < 1.8)
+            strip.setColor(colors);
+        else if (timer.get() < 2.1)
+            strip.turnOff();
+        else if (timer.get() < 2.4)
+            strip.setColor(colors);
+        else if (timer.get() < 2.7)
+            strip.turnOff();
         else
             strip.setColor(colors);
     }
 
     @Override
     public boolean isFinished() {
-        return timer.get() >= 1.8;
+        return timer.get() >= 3;
     }
 
     @Override

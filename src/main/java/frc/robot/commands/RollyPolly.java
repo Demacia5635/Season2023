@@ -10,6 +10,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.led_patches.SubStrip;
 import frc.robot.utils.IndividualLed;
 
@@ -48,12 +49,12 @@ public class RollyPolly extends CommandBase {
 
     @Override
     public void execute() {
-        double roll = supplier.getAsDouble();
+        double roll = -supplier.getAsDouble();
 
         setRollingColor(roll);
         ended = debouncer.calculate(Math.abs(roll) < EPSILON);
         if (fellOff.calculate(Math.abs(roll) > MAX_ANGLE))
-            new Rainbow(strip, 3).until(() -> Math.abs(supplier.getAsDouble()) < EPSILON).schedule();
+            RobotContainer.getInstance().getParty().until(() -> Math.abs(supplier.getAsDouble()) < EPSILON).schedule();
     }
 
     @Override
