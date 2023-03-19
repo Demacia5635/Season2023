@@ -17,15 +17,17 @@ public class RollyPolly extends CommandBase {
     private final SubStrip strip;
     private final DoubleSupplier supplier;
     private final Color positive, negative;
+    private final int offset;
     private Debouncer debouncer;
     private Debouncer fellOff;
     private boolean ended;
 
-    public RollyPolly(SubStrip strip, DoubleSupplier angleSupplier, Color positive, Color negative) {
+    public RollyPolly(SubStrip strip, DoubleSupplier angleSupplier, Color positive, Color negative, int offset) {
         this.strip = strip;
         supplier = angleSupplier;
         this.positive = positive;
         this.negative = negative;
+        this.offset = offset;
 
         addRequirements(strip);
     }
@@ -38,7 +40,7 @@ public class RollyPolly extends CommandBase {
     }
 
     private void setRollingColor(double roll) {
-        int index = (int) (((roll / MAX_ANGLE) + 1) * strip.size / 2);
+        int index = (int) (((roll / MAX_ANGLE) + 1) * strip.size / 2) + offset;
         strip.setColor(
                 IntStream.range(0, strip.size).mapToObj((i) -> new IndividualLed(i, i < index ? positive : negative))
                         .toArray(IndividualLed[]::new));

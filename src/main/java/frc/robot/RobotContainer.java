@@ -68,7 +68,7 @@ public class RobotContainer {
         rollStrip = new SubStrip(new IntPair(65, 74));
         Command rollCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
-                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow),
+                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow, 0),
                         new Flicker(rollStrip)))
                 .ignoringDisable(true);
         rollStrip.setDefaultCommand(rollCommand);
@@ -76,7 +76,7 @@ public class RobotContainer {
         pitchStrip = new SubStrip(new IntPair(139, 36), new IntPair(28, 36));
         Command pitchCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
-                        .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen),
+                        .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen, 0),
                                 new Flicker(pitchStrip)))
                 .ignoringDisable(true);
         pitchStrip.setDefaultCommand(pitchCommand);
