@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.LedConstants;
 import frc.robot.commands.Flicker;
+import frc.robot.commands.Rainbow;
 import frc.robot.commands.RollyPolly;
 import frc.robot.commands.chassis.Drive;
 import frc.robot.commands.chassis.GoToNodesHalfManual;
@@ -111,6 +112,10 @@ public class RobotContainer {
             instance = new RobotContainer();
         }
         return instance;
+    }
+
+    public Command getParty() {
+        return new Rainbow(allStrip, 3);
     }
 
     /**
