@@ -58,16 +58,16 @@ public class ChassisConstants {
             this.absoluteEncoderID = absoluteEncoderID;
         }
 
-        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(210.849609375, 7, 8, 11);
-        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(54.580078125, 5, 6, 13);
-        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(191.6015625, 1, 2, 10);
-        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.474609375, 3, 4, 12);
+        public static final SwerveModuleConstants FRONT_LEFT = new SwerveModuleConstants(209.35546875, 7, 8, 11);
+        public static final SwerveModuleConstants FRONT_RIGHT = new SwerveModuleConstants(53.61328125, 5, 6, 13);
+        public static final SwerveModuleConstants BACK_LEFT = new SwerveModuleConstants(190.107421875, 1, 2, 10);
+        public static final SwerveModuleConstants BACK_RIGHT = new SwerveModuleConstants(216.650390625, 3, 4, 12);
     }
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
             new Translation2d(0.26515, 0.2215), // front left
             new Translation2d(0.26515, -0.2215), // front right
-            new Translation2d(-0.26515, 0.2215), // back left
+            new Translation2d(-0.25451, 0.2065), // back left - changed values because the chassis is curved. prev values were: -0.26515, 0.2215, change values are -0.25451, 0.2065
             new Translation2d(-0.26515, -0.2215) // back right
     );
 

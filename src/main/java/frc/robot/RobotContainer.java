@@ -146,7 +146,8 @@ public class RobotContainer {
         unload.setName("Unload");
 
         main.a().onTrue(load);
-        main.x().onTrue(unload);
+        //Change X from auto place to Go to manual angle parallelogram
+        main.x().onTrue(new InstantCommand(()->parallelogram.getGoToAngleCommand(Constants.MANUAL_PLACEMENT)));
         main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
         main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
@@ -196,7 +197,7 @@ public class RobotContainer {
      */
     //  TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-       return generateAutonomous.getAutonomous();
+       return generateAutonomous.getAutonomous().withTimeout(14.65).andThen(new StartEndCommand(chassis::setRampPosition, ()->{}, chassis));
     }
 
     public void onTeleopInit() {

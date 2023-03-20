@@ -108,7 +108,7 @@ public class LeaveCommunity extends CommandBase {
                 case COMMUNITY_BOTTOM:
                     generator1.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180))); //TODO: change values to fit "before ramp", "on ramp" and "after ramp"
                     generator2.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(5.5, 2.75), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(5.75, 2.75), Rotation2d.fromDegrees(180)));
                 default:
                     break;
             }
