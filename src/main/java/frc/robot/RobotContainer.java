@@ -57,6 +57,8 @@ public class RobotContainer {
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
 
+    private final Command rollyPollyCommand;
+
     private final SubStrip rollStrip;
     private final SubStrip pitchStrip;
     private final SubStrip allStrip;
@@ -72,16 +74,14 @@ public class RobotContainer {
                         new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow, 2),
                         new Flicker(rollStrip)))
                 .ignoringDisable(true);
-        rollStrip.setDefaultCommand(rollCommand);
-        rollCommand.schedule();
         pitchStrip = new SubStrip(new IntPair(139, 36), new IntPair(28, 36));
         Command pitchCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
                         .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen, 0),
                                 new Flicker(pitchStrip)))
                 .ignoringDisable(true);
-        pitchStrip.setDefaultCommand(pitchCommand);
-        pitchCommand.schedule();
+
+        rollyPollyCommand = pitchCommand.alongWith(rollCommand);
 
         allStrip = new SubStrip(new IntPair(0, 175));
         allStrip.turnOff();
@@ -171,7 +171,7 @@ public class RobotContainer {
                         allStrip.turnOff();
                     else
                         allStrip.setColor(color);
-                }).ignoringDisable(true));
+                }, allStrip).ignoringDisable(true));
         secondary.rightBumper().and(secondary.leftBumper().negate())
                 .onTrue(new InstantCommand(() -> {
                     Color color = new Color(255, 140, 0);
@@ -179,11 +179,14 @@ public class RobotContainer {
                         allStrip.turnOff();
                     else
                         allStrip.setColor(color);
-                }).ignoringDisable(true));
+                }, allStrip).ignoringDisable(true));
 
         main.start().onTrue(new InstantCommand(()->chassis.setAngleTo180DependsOnAlliance()).ignoringDisable(true));
         main.back().onTrue(new InstantCommand(()->chassis.setAngleTo0DependsOnAlliance()).ignoringDisable(true));
  
+        secondary.leftTrigger().toggleOnTrue(rollyPollyCommand);
+
+        secondary.rightTrigger().onTrue(getParty());
     }
 
     /*
