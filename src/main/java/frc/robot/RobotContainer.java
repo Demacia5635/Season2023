@@ -8,6 +8,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -147,7 +148,7 @@ public class RobotContainer {
 
         main.a().onTrue(load);
         //Change X from auto place to Go to manual angle parallelogram
-        main.x().onTrue(new InstantCommand(()->parallelogram.getGoToAngleCommand(Constants.MANUAL_PLACEMENT)));
+        main.x().onTrue(new InstantCommand(()->parallelogram.getGoToAngleCommand(Constants.MANUAL_PLACEMENT).schedule()));
         main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
         main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
@@ -208,6 +209,7 @@ public class RobotContainer {
     }
 
     public void onEnableInit(){
+        parallelogram.resetPosition();
         chassis.setBreak();
     }
 

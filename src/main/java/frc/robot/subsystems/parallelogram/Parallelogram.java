@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -35,6 +36,7 @@ public class Parallelogram extends SubsystemBase {
      */
     public Parallelogram() {
 
+        
         motor = new TalonFX(ParallelConstants.PORT_NUMBER_PARALLEL_MOTOR);
         magneticDigitalInput = new DigitalInput(ParallelConstants.PORT_DIGITAL_INPUT);
         feedForwardVelocity = new SimpleMotorFeedforward(ParallelConstants.KS_VELOCITY, ParallelConstants.KV_VELOCITY);
@@ -42,13 +44,13 @@ public class Parallelogram extends SubsystemBase {
                 ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
         motor.setInverted(ParallelConstants.MOTOR_INVERT_TYPE);
-
+        
         motor.config_kP(0, ParallelConstants.KP_POSITION);
         motor.config_kI(0, ParallelConstants.KI_POSITION);
         motor.config_kD(0, ParallelConstants.KD_POSITION);
-
+        
         isBrake = false;
-
+        
         // SmartDashboard.putData("Parallelogram/Calibrate Parallelogram",
         //         getCalibrationCommand());
         SmartDashboard.putData("Parallelogram/Go to angle",
@@ -57,6 +59,13 @@ public class Parallelogram extends SubsystemBase {
         //         getGoBackCommand());
         SmartDashboard.putData("Parallelogram/check",
                 getGoToAngleCommand(120));
+
+        new Thread(() -> {
+            Timer timer = new Timer();
+            timer.start();
+            while (timer.get() < 2);
+            resetPosition();
+        }).start();
     }
 
     /**

@@ -276,6 +276,7 @@ public class Chassis extends SubsystemBase {
 
     public void setAngleTo180DependsOnAlliance(){
         double angle = DriverStation.getAlliance() == Alliance.Blue? 180 : 0;
+        // double angle = !UtilsGeneral.isRedAlliance() ? 180 : 0;
         System.out.println(angle);
         gyro.setYaw(0);
         gyro.setFusedHeading(0);
@@ -286,6 +287,7 @@ public class Chassis extends SubsystemBase {
 
     public void setAngleTo0DependsOnAlliance(){
         double angle = DriverStation.getAlliance() == Alliance.Blue? 0 : 180;
+        // double angle = !UtilsGeneral.isRedAlliance()? 0 : 180;
         System.out.println(angle);
         gyro.setYaw(0);
         gyro.setFusedHeading(0);

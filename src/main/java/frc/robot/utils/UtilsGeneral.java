@@ -177,6 +177,7 @@ public final class UtilsGeneral {
      */
     public static boolean isRedAlliance() {
         return DriverStation.getAlliance() == Alliance.Red;
+        // return false;
     }
 
         /**
