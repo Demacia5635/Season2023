@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -59,6 +60,13 @@ public class Parallelogram extends SubsystemBase {
         //         getGoBackCommand());
         SmartDashboard.putData("Parallelogram/check",
                 getGoToAngleCommand(120));
+
+        new Thread(() -> {
+            Timer timer = new Timer();
+            timer.start();
+            while (timer.get() < 2);
+            resetPosition();
+        }).start();
     }
 
     /**
