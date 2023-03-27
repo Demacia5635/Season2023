@@ -200,7 +200,7 @@ public final class UtilsGeneral {
         deafultAlliance.addOption("BLUE", Alliance.Blue);
         deafultAlliance.addOption("Red", Alliance.Red);
         deafultAlliance.setDefaultOption("BLUE", Alliance.Blue);
-        SmartDashboard.putData(deafultAlliance);
+        SmartDashboard.putData("Default Alliance", deafultAlliance);
     }
 
         /**
