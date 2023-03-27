@@ -44,7 +44,8 @@ public class Parallelogram extends SubsystemBase {
                 ParallelConstants.ARM_FEED_FORWARD_KG, ParallelConstants.ARM_FEED_FORWARD_KV);
 
         motor.setInverted(ParallelConstants.MOTOR_INVERT_TYPE);
-        
+
+
         motor.config_kP(0, ParallelConstants.KP_POSITION);
         motor.config_kI(0, ParallelConstants.KI_POSITION);
         motor.config_kD(0, ParallelConstants.KD_POSITION);
