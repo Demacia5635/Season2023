@@ -2,6 +2,8 @@ package frc.robot.utils;
 
 import java.util.function.DoubleSupplier;
 
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
@@ -10,6 +12,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -17,6 +20,9 @@ import frc.robot.Constants;
  * Contains general utility methods
  */
 public final class UtilsGeneral {
+
+    public static SendableChooser<Alliance> deafultAlliance = new SendableChooser<>();
+
     /**
      * Gets the difference between two angles, accounting for wrapping around 360
      * degrees
@@ -176,7 +182,25 @@ public final class UtilsGeneral {
      * @return true if red, false if blue
      */
     public static boolean isRedAlliance() {
-        return DriverStation.getAlliance() == Alliance.Red;
+        return getAllianceWithDeafult() == Alliance.Red;
+    }
+
+    public static Alliance getAllianceWithDeafult(){
+        switch (DriverStation.getAlliance()){
+            case Blue:
+                return Alliance.Blue;
+            case Red:
+                return Alliance.Red;
+            default:
+                return deafultAlliance.getSelected();
+        }      
+    }
+
+    public static void initializeDeafultAllianceChooser(){
+        deafultAlliance.addOption("BLUE", Alliance.Blue);
+        deafultAlliance.addOption("Red", Alliance.Red);
+        deafultAlliance.setDefaultOption("BLUE", Alliance.Blue);
+        SmartDashboard.putData(deafultAlliance);
     }
 
         /**
@@ -226,6 +250,14 @@ public final class UtilsGeneral {
                 || Math.abs(controller.getRightTriggerAxis()) > Constants.JOYSTICK_IDLE_DEADBAND;
     }
 
+    public static Translation2d normalizeTranslation(Translation2d translation, double max) {
+        if (translation.getNorm() > max) {
+            return new Translation2d(max, translation.getAngle());
+        }
+        return translation;
+    }
+
+
     /**
      * Puts a Sendable to the SmartDashboard with the given key and name
      * 
@@ -237,12 +269,4 @@ public final class UtilsGeneral {
         SendableRegistry.add(value, name);
         SmartDashboard.putData(key, value);
     }
-
-    public static Translation2d normalizeTranslation(Translation2d translation, double max) {
-        if (translation.getNorm() > max) {
-            return new Translation2d(max, translation.getAngle());
-        }
-        return translation;
-    }
-
 }

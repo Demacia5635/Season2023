@@ -10,6 +10,7 @@ import frc.robot.commands.chassis.RampTest;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.parallelogram.Parallelogram;
+import frc.robot.utils.UtilsGeneral;
 
 /** Add your docs here. */
 public class GenerateAutonomous {
@@ -25,6 +26,7 @@ public class GenerateAutonomous {
     /** Creates a new GenerateAutonomous. */
     public GenerateAutonomous(GotoNodes gotoNodes, LeaveCommunity leaveCommunity, Gripper gripper,
             Parallelogram parallelogram, Chassis chassis) {
+        UtilsGeneral.initializeDeafultAllianceChooser();
         this.gotoNodes = gotoNodes;
         this.leaveCommunity = leaveCommunity;
         this.gripper = gripper;
