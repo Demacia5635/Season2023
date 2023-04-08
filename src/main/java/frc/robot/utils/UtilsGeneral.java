@@ -2,7 +2,7 @@ package frc.robot.utils;
 
 import java.util.function.DoubleSupplier;
 
-import com.pathplanner.lib.PathPoint;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,13 +12,17 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
  * Contains general utility methods
  */
-public final class Utils {
+public final class UtilsGeneral {
+
+    public static SendableChooser<Alliance> deafultAlliance = new SendableChooser<>();
+
     /**
      * Gets the difference between two angles, accounting for wrapping around 360
      * degrees
@@ -28,14 +32,8 @@ public final class Utils {
      * @return The difference between the two angles, between -180 and 180 degrees
      */
     public static double getAngleDifference(double current, double target) {
-        double difference = target - current;
-        difference %= 360;
-        if (difference > 180) {
-            difference -= 360;
-        } else if (difference < -180) {
-            difference += 360;
-        }
-        return difference;
+        double difference = (target - current) % 360;
+        return difference - ((int)difference / 180) * 360;
     }
 
     /**
@@ -184,10 +182,28 @@ public final class Utils {
      * @return true if red, false if blue
      */
     public static boolean isRedAlliance() {
-        return getAlliance() == Alliance.Red;
+        return getAllianceWithDeafult() == Alliance.Red;
     }
 
-    /**
+    public static Alliance getAllianceWithDeafult(){
+        switch (DriverStation.getAlliance()){
+            case Blue:
+                return Alliance.Blue;
+            case Red:
+                return Alliance.Red;
+            default:
+                return deafultAlliance.getSelected();
+        }      
+    }
+
+    public static void initializeDeafultAllianceChooser(){
+        deafultAlliance.addOption("BLUE", Alliance.Blue);
+        deafultAlliance.addOption("Red", Alliance.Red);
+        deafultAlliance.setDefaultOption("BLUE", Alliance.Blue);
+        SmartDashboard.putData("Default Alliance", deafultAlliance);
+    }
+
+        /**
      * The zone the robot is in
      */
     public static enum Zone {
@@ -220,39 +236,6 @@ public final class Utils {
     }
 
     /**
-     * The alliance the robot is on
-     * 
-     * @return The alliance the robot is on
-     */
-    public static Alliance getAlliance() {
-        return DriverStation.getAlliance();
-    }
-
-    /**
-     * Creates a path point with the position and heading relative to the alliance
-     * 
-     * @param position          The position of the point
-     * @param heading           The heading of the point
-     * @param holonomicRotation The holonomic rotation of the point
-     * @param velocity          The velocity of the point, -1 for default
-     * @param alliance          The alliance the point is relative to
-     * @return The path point, with the position and heading relative to the
-     *         alliance
-     */
-    public static PathPoint createAllianceRelativePathPoint(Translation2d position, Rotation2d heading,
-            Rotation2d holonomicRotation, double velocity, Alliance alliance) {
-
-        if (getAlliance() != alliance) {
-            position = new Translation2d(Constants.FIELD_WIDTH - position.getX(), position.getY());
-            heading = heading.rotateBy(Rotation2d.fromDegrees(180));
-            holonomicRotation = holonomicRotation.rotateBy(Rotation2d.fromDegrees(180));
-            if (velocity > 0)
-                velocity = -velocity;
-        }
-        return new PathPoint(position, heading, holonomicRotation, velocity);
-    }
-
-    /**
      * Checks for an input in the controller's joysticks and triggers
      * 
      * @param controller The controller to check
@@ -266,6 +249,14 @@ public final class Utils {
                 || Math.abs(controller.getLeftTriggerAxis()) > Constants.JOYSTICK_IDLE_DEADBAND
                 || Math.abs(controller.getRightTriggerAxis()) > Constants.JOYSTICK_IDLE_DEADBAND;
     }
+
+    public static Translation2d normalizeTranslation(Translation2d translation, double max) {
+        if (translation.getNorm() > max) {
+            return new Translation2d(max, translation.getAngle());
+        }
+        return translation;
+    }
+
 
     /**
      * Puts a Sendable to the SmartDashboard with the given key and name

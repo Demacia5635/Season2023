@@ -1,17 +1,16 @@
-package frc.robot.commands;
+package frc.robot.commands.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Chassis;
-import frc.robot.utils.TrajectoryGenerator;
-import frc.robot.utils.Utils;
-import frc.robot.utils.Utils.Zone;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
+import frc.robot.utils.UtilsGeneral;
+import frc.robot.utils.UtilsGeneral.Zone;
 
 /**
  * Drives the robot semi autonomously to the community zone.
@@ -19,7 +18,6 @@ import frc.robot.utils.Utils.Zone;
 public class GotoCommunity extends CommandBase {
 
     private final Chassis chassis;
-    private final XboxController controller;
     private Command command;
 
     /**
@@ -28,9 +26,9 @@ public class GotoCommunity extends CommandBase {
      * @param chassis    The chassis subsystem
      * @param controller The controller to use for input
      */
-    public GotoCommunity(Chassis chassis, XboxController controller) {
+    public GotoCommunity(Chassis chassis) {
         this.chassis = chassis;
-        this.controller = controller;
+        addRequirements(chassis);
     }
 
     @Override
@@ -47,7 +45,7 @@ public class GotoCommunity extends CommandBase {
             // Enter through the top
             switch (zone) {
                 case LOADING_ZONE:
-                    generator.add(new Pose2d(new Translation2d(10.98, 7.34), Rotation2d.fromDegrees(180)),
+                    generator.add(new Pose2d(new Translation2d(10.98, 7), Rotation2d.fromDegrees(180)),
                             Rotation2d.fromDegrees(180));
                 case OPEN_AREA:
                     generator.add(new Pose2d(new Translation2d(5.65, 4.735), Rotation2d.fromDegrees(180)),
@@ -62,19 +60,26 @@ public class GotoCommunity extends CommandBase {
                     Rotation2d.fromDegrees(180));
         }
 
-        command = chassis.createPathFollowingCommand(generator.generate(chassis.getPose()));
+        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
 
-        command.schedule();
+        command.initialize();
+    }
+
+    @Override
+    public void execute() {
+        command.execute();
     }
 
     @Override
     public boolean isFinished() {
-        return !command.isScheduled() || Utils.hasInput(controller);
+        return command.isFinished()
+                || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6
+                        : chassis.getPose().getX() < 2.6);
     }
 
     @Override
     public void end(boolean interrupted) {
-        command.cancel();
+        command.end(interrupted);
         chassis.stop();
     }
 }

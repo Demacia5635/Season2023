@@ -8,15 +8,35 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.Drive;
-import frc.robot.commands.GoUpRamp;
-import frc.robot.commands.GotoCommunity;
-import frc.robot.commands.GotoLoadingZone;
-import frc.robot.commands.GotoNodes;
-import frc.robot.subsystems.Chassis;
+import frc.robot.Constants.LedConstants;
+import frc.robot.commands.Flicker;
+import frc.robot.commands.Rainbow;
+import frc.robot.commands.RollyPolly;
+import frc.robot.commands.chassis.Drive;
+import frc.robot.commands.chassis.GoToNodesHalfManual;
+import frc.robot.commands.chassis.GotoCommunity;
+import frc.robot.commands.chassis.GotoLoadingZone;
+import frc.robot.commands.chassis.GotoNodes;
+import frc.robot.commands.chassis.LeaveCommunity;
+import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperConstants;
+import frc.robot.subsystems.led_patches.SubStrip;
+import frc.robot.subsystems.parallelogram.Parallelogram;
+import frc.robot.utils.IntPair;
+import frc.robot.utils.UtilsGeneral;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -28,22 +48,59 @@ import frc.robot.subsystems.Chassis;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final XboxController controller = new XboxController(0);
-    private final JoystickButton aButton = new JoystickButton(controller, 1);
-    private final JoystickButton bButton = new JoystickButton(controller, 2);
-    private final JoystickButton xButton = new JoystickButton(controller, 3);
-    private final Chassis chassis;
     private static RobotContainer instance;
+    private final CommandXboxController main = new CommandXboxController(0);
+    public final CommandXboxController secondary = new CommandXboxController(1);
+    private final Chassis chassis;
+    private final Parallelogram parallelogram;
+    private final Gripper gripper;
+    private GenerateAutonomous generateAutonomous;
+    private GotoNodes gotoNodes;
+    private LeaveCommunity leaveCommunity;
+
+    private final Command rollyPollyCommand;
+
+    private final SubStrip rollStrip;
+    private final SubStrip pitchStrip;
+    private final SubStrip allStrip;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
         chassis = new Chassis();
-        chassis.setDefaultCommand(new Drive(chassis, controller));
-        SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
+        rollStrip = new SubStrip(new IntPair(65, 74));
+        Command rollCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
+                        new RollyPolly(rollStrip, chassis::getRoll, Color.kBlue, Color.kYellow, 2),
+                        new Flicker(rollStrip)))
+                .ignoringDisable(true);
+        pitchStrip = new SubStrip(new IntPair(139, 36), new IntPair(28, 36));
+        Command pitchCommand = new RepeatCommand(
+                new WaitUntilCommand(() -> Math.abs(chassis.getPitch()) > LedConstants.EPSILON)
+                        .andThen(new RollyPolly(pitchStrip, chassis::getPitch, Color.kRed, Color.kGreen, 0),
+                                new Flicker(pitchStrip)))
+                .ignoringDisable(true);
 
+        rollyPollyCommand = pitchCommand.alongWith(rollCommand);
+
+        allStrip = new SubStrip(new IntPair(0, 175));
+        allStrip.turnOff();
+
+        parallelogram = new Parallelogram();
+        chassis.setDefaultCommand(new Drive(chassis, main.getHID()));
+        SmartDashboard.putData((Sendable) chassis.getDefaultCommand());
+        SmartDashboard.putData(chassis);
+        gripper = new Gripper(GripperConstants.MOTOR_ID);
+        gotoNodes = new GotoNodes(chassis, secondary, parallelogram);
+        leaveCommunity = new LeaveCommunity(chassis);
+        SmartDashboard.putData(gripper);
         configureButtonBindings();
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        SmartDashboard.putBoolean("is left led", false);
+
+        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
     }
 
     /**
@@ -58,6 +115,10 @@ public class RobotContainer {
         return instance;
     }
 
+    public Command getParty() {
+        return new Rainbow(allStrip, 3);
+    }
+
     /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by
@@ -65,17 +126,94 @@ public class RobotContainer {
      * or {@link XboxController}), and then passing it to a {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        aButton.onTrue(new GotoLoadingZone(chassis, controller));
-        bButton.onTrue(new GotoCommunity(chassis, controller).andThen(new GotoNodes(chassis, controller)));
-        xButton.onTrue(new GoUpRamp(chassis, 1.5));
+
+        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
+                parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
+                .andThen(gripper.getCloseCommand());
+
+        Command unload = new GotoCommunity(chassis)
+                .andThen(new GoToNodesHalfManual(chassis, secondary, parallelogram));
+
+        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
+                .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
+        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
+               /*.andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()))*/;
+
+        main.leftBumper().onTrue(new InstantCommand(() -> gripper.getCloseCommand().schedule()));
+        main.rightBumper().onTrue(new InstantCommand(() -> gripper.getOpenCommand().schedule()));
+
+        load.setName("Load");
+
+        unload.setName("Unload");
+
+        main.a().onTrue(load);
+        //Change X from auto place to Go to manual angle parallelogram
+        main.x().onTrue(new InstantCommand(()->parallelogram.getGoToAngleCommand(Constants.MANUAL_PLACEMENT).schedule()));
+        main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
+        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
+        main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
+        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis)
+                .until(() -> UtilsGeneral.hasInput(main.getHID())));
+        main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
+
+        secondary.back().and(secondary.start())
+                .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
+        secondary.leftBumper().and(secondary.rightBumper())
+                .onTrue(new InstantCommand(() -> {
+                    if (allStrip.getColors()[0].equals(Color.kRed))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(Color.kRed);
+                }).ignoringDisable(true));
+        secondary.leftBumper().and(secondary.rightBumper().negate())
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(168, 0, 230);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }, allStrip).ignoringDisable(true));
+        secondary.rightBumper().and(secondary.leftBumper().negate())
+                .onTrue(new InstantCommand(() -> {
+                    Color color = new Color(255, 140, 0);
+                    if (allStrip.getColors()[0].equals(color))
+                        allStrip.turnOff();
+                    else
+                        allStrip.setColor(color);
+                }, allStrip).ignoringDisable(true));
+
+        main.start().onTrue(new InstantCommand(()->chassis.setAngleTo180DependsOnAlliance()).ignoringDisable(true));
+        main.back().onTrue(new InstantCommand(()->chassis.setAngleTo0DependsOnAlliance()).ignoringDisable(true));
+ 
+        secondary.leftTrigger().toggleOnTrue(rollyPollyCommand);
+
+        secondary.rightTrigger().onTrue(getParty());
     }
 
-    /**
+    /*
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
+    //  TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-        return null;
+       return generateAutonomous.getAutonomous().withTimeout(14.65).andThen(new StartEndCommand(chassis::setRampPosition, ()->{}, chassis));
+    }
+
+    public void onTeleopInit() {
+        chassis.getDefaultCommand().schedule();
+        new StartEndCommand(()->parallelogram.setPower(-0.3), ()->{parallelogram.setPower(0);}, parallelogram)
+            .withTimeout(0.4).andThen(
+        new InstantCommand(()->parallelogram.getCalibrationCommand(chassis).schedule())).schedule();
+    }
+
+    public void onEnableInit(){
+        parallelogram.resetPosition();
+        chassis.setBreak();
+    }
+
+    public void setChassisCoast(){
+        chassis.setCoast();
     }
 }
