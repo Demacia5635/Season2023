@@ -68,6 +68,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     private RobotContainer() {
+        UtilsGeneral.initializeDeafultAllianceChooser();
         chassis = new Chassis();
         rollStrip = new SubStrip(new IntPair(65, 74));
         Command rollCommand = new RepeatCommand(
