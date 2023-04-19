@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
@@ -466,7 +467,7 @@ public class Chassis extends SubsystemBase {
      *                    the vision measurement by {@link Timer#getFPGATimestamp()}
      */
     private void addVisionInput(Pair<Pose2d, Double> visionInput) {
-        updatePosition(visionInput);
+        if (!DriverStation.isAutonomous() || DriverStation.isDisabled())updatePosition(visionInput);
     }
 
     private synchronized void updatePosition(Pair<Pose2d, Double> visionInput) {

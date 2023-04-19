@@ -117,7 +117,7 @@ public class LeaveCommunity extends CommandBase {
 
         }
 
-
+                                                                                                                                                                                                
         if (generator1.length() == 0)
             command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
         else
