@@ -55,7 +55,7 @@ public class RobotContainer {
     private final Chassis chassis;
     private final Parallelogram parallelogram;
     private final Gripper gripper;
-    private GenerateAutonomous generateAutonomous;
+    private GenerateAutonomous2 generateAutonomous;
     private GotoNodes gotoNodes;
     private LeaveCommunity leaveCommunity;
 
@@ -102,7 +102,7 @@ public class RobotContainer {
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putBoolean("is left led", false);
 
-        generateAutonomous = new GenerateAutonomous(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
+        generateAutonomous = new GenerateAutonomous2(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
     }
 
     /**
