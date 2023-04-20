@@ -208,7 +208,7 @@ public class GoToNodesHalfManual extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return command.isDone();
+        return command.isFinished();
     }
     
     @Override

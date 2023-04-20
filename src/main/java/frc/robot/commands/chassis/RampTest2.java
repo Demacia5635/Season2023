@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.utils.UtilsGeneral;
 
-public class RampTest extends CommandBase {
+public class RampTest2 extends CommandBase {
     private final Chassis chassis;
-    private final static double START_VEL = 1.8;
+    private double START_VEL;
     private final static double MIN_ANGLE = 12;
     private int moreCycles = 0;
     private double velocity;
@@ -19,8 +19,9 @@ public class RampTest extends CommandBase {
     private double sign;
     private int phase;
 
-    public RampTest(Chassis chassis) {
+    public RampTest2(Chassis chassis, double startVelocity) {
         this.chassis = chassis;
+        this.START_VEL = startVelocity;
     }
 
     @Override

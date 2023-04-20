@@ -131,11 +131,11 @@ public class GotoLoadingZone extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (!onEntryEnded && onEntry.isDone()) {
+        if (!onEntryEnded && onEntry.isFinished()) {
             onEntryEnded = true;
             onEntry.end(false);
         }
-        if (!commandEnded && command.isDone()) {
+        if (!commandEnded && command.isFinished()) {
             commandEnded = true;
             command.end(false);
         }

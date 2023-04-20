@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.RampTest;
+import frc.robot.commands.chassis.RampTest2;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.parallelogram.Parallelogram;
@@ -60,9 +61,8 @@ public class GenerateAutonomous {
                 new InstantCommand(() -> System.out.println("Auto test EEEE")),
                 (isLeave ? leaveCommunity : new InstantCommand(() -> System.out.println("didnt leave")))
                         .alongWith(parallelogram.getGoBackCommand()),
-                isClimb ? (isLeave ? new RampTest(chassis)
-                        : new InstantCommand(() -> System.out.println("wanted to climb but leave was false")))
-                        : new InstantCommand(() -> System.out.println("didnt climb")));
+                        (isClimb ? new RampTest2(chassis, isLeave? 1.8 : -1.8)
+                        : new InstantCommand(() -> System.out.println("didnt climb"))));
         autonomous.setName("Auto");
         return autonomous;
     }
