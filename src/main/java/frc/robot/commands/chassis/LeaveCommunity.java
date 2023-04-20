@@ -38,14 +38,14 @@ public class LeaveCommunity extends CommandBase {
     public LeaveCommunity(Chassis chassis) {
         this.chassis = chassis;
         chooserStartPlacement = new SendableChooser<>();
-        chooserStartPlacement.setDefaultOption("Top", StartPlacement.TOP);
+        chooserStartPlacement.setDefaultOption("Middle", StartPlacement.MIDDLE);
         chooserStartPlacement.addOption("Bottom", StartPlacement.BOTTOM);
-        chooserStartPlacement.addOption("Middle", StartPlacement.MIDDLE);
+        chooserStartPlacement.addOption("Top", StartPlacement.TOP);
         SmartDashboard.putData("Leave topOtBottom", chooserStartPlacement);
 
         chooserExitOrRamp = new SendableChooser<>();
-        chooserExitOrRamp.setDefaultOption("To Exit", ExitOrRamp.TO_EXIT);
-        chooserExitOrRamp.addOption("To Ramp", ExitOrRamp.TO_RAMP);
+        chooserExitOrRamp.setDefaultOption("To Ramp", ExitOrRamp.TO_RAMP);
+        chooserExitOrRamp.addOption("To Exit", ExitOrRamp.TO_EXIT);
         SmartDashboard.putData("Leave ExitOrRamp",chooserExitOrRamp);
 
         addRequirements(chassis);
@@ -108,7 +108,7 @@ public class LeaveCommunity extends CommandBase {
                 case COMMUNITY_BOTTOM:
                     generator1.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180))); //TODO: change values to fit "before ramp", "on ramp" and "after ramp"
                     generator2.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(5.75, 2.75), Rotation2d.fromDegrees(180)));
+                    generator2.add(new Pose2d(new Translation2d(6.1, 2.75), Rotation2d.fromDegrees(180)));
                 default:
                     System.out.println("here");
                     break;
