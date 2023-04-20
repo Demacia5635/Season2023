@@ -207,7 +207,7 @@ public class GotoNodes extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return command.isFinished();
+        return command.isDone();
     }
     
     @Override

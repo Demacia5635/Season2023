@@ -72,7 +72,7 @@ public class GotoCommunity extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return command.isFinished()
+        return command.isDone()
                 || (UtilsGeneral.isRedAlliance() ? chassis.getPose().getX() > 16.54 - 2.6
                         : chassis.getPose().getX() < 2.6);
     }

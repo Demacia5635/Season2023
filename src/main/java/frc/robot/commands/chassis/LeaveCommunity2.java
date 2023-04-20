@@ -1,4 +1,3 @@
-
 package frc.robot.commands.chassis;
 
 import com.pathplanner.lib.PathConstraints;
@@ -17,7 +16,7 @@ import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 
-public class LeaveCommunity extends CommandBase {
+public class LeaveCommunity2 extends CommandBase {
     private final Chassis chassis;
     private Command command;
 
@@ -35,7 +34,7 @@ public class LeaveCommunity extends CommandBase {
 
 
     /** Creates a new LeaveCommunity. */
-    public LeaveCommunity(Chassis chassis) {
+    public LeaveCommunity2(Chassis chassis) {
         this.chassis = chassis;
         chooserStartPlacement = new SendableChooser<>();
         chooserStartPlacement.setDefaultOption("Top", StartPlacement.TOP);
@@ -79,6 +78,15 @@ public class LeaveCommunity extends CommandBase {
             else {
                 generator2.add(new Pose2d(new Translation2d(5.8, 4.7), Rotation2d.fromDegrees(180)));
             }
+
+            //seperate
+            if (generator1.length() == 0)
+            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
+            else
+            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
+            .andThen(chassis.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
+            System.out.println("Initializing LC commandvfro middle");
+            command.initialize();
         } 
         
         else if (chooserStartPlacement.getSelected() == StartPlacement.BOTTOM){
@@ -99,6 +107,16 @@ public class LeaveCommunity extends CommandBase {
             else {
                 generator2.add(new Pose2d(new Translation2d(5.8, 0.6), Rotation2d.fromDegrees(180)));
             }
+
+
+            //seperate
+            if (generator1.length() == 0)
+            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
+            else
+            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
+            .andThen(chassis.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
+            System.out.println("Initializing LC commandvfro middle");
+            command.initialize();
         } 
         
         else {
@@ -106,25 +124,14 @@ public class LeaveCommunity extends CommandBase {
                 case COMMUNITY_MIDDLE:
                 case COMMUNITY_TOP:
                 case COMMUNITY_BOTTOM:
-                    generator1.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180))); //TODO: change values to fit "before ramp", "on ramp" and "after ramp"
-                    generator2.add(new Pose2d(new Translation2d(2.2, 2.75), Rotation2d.fromDegrees(180)));
-                    generator2.add(new Pose2d(new Translation2d(5.75, 2.75), Rotation2d.fromDegrees(180)));
+                    command = new LeaveCommunityMiddle(chassis);
                 default:
-                    System.out.println("here");
                     break;
             }
-            pathConstraints = ChassisConstants.PATH_CONSTANTS_AUTO_MIDDLE;
 
         }
 
                                                                                                                                                                                                 
-        if (generator1.length() == 0)
-            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
-        else
-            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
-            .andThen(chassis.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
-            System.out.println("Initializing LC commandvfro middle");
-            command.initialize();
     }
 
     @Override
@@ -143,7 +150,7 @@ public class LeaveCommunity extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return command.isDone();
+        return command.isFinished();
     }
     
 }
