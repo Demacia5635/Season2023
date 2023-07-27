@@ -31,6 +31,7 @@ import frc.robot.commands.chassis.GotoLoadingZone;
 import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.LeaveCommunity;
 import frc.robot.commands.chassis.RampTest;
+import frc.robot.commands.parallelogram.GoToAngle;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperConstants;
@@ -70,7 +71,7 @@ public class RobotContainer {
      */
     private RobotContainer() {
         UtilsGeneral.initializeDeafultAllianceChooser();
-        chassis = new Chassis();
+        chassis = Chassis.GetInstance();
         rollStrip = new SubStrip(new IntPair(65, 74));
         Command rollCommand = new RepeatCommand(
                 new WaitUntilCommand(() -> Math.abs(chassis.getRoll()) > LedConstants.EPSILON).andThen(
@@ -103,6 +104,11 @@ public class RobotContainer {
         SmartDashboard.putBoolean("is left led", false);
 
         generateAutonomous = new GenerateAutonomous2(gotoNodes, leaveCommunity, gripper, parallelogram, chassis);
+
+
+
+        Joystick joystick = new Joystick(2);
+        double x = joystick.getX();
     }
 
     /**
@@ -129,46 +135,41 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
-                parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
-                .andThen(gripper.getCloseCommand());
+        // Command load = gripper.getOpenCommand().alongWith(new GotoLoadingZone(chassis, secondary,
+        //         parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE)))
+        //         .andThen(gripper.getCloseCommand());
 
-        Command unload = new GotoCommunity(chassis)
-                .andThen(new GoToNodesHalfManual(chassis, secondary, parallelogram));
+        // Command unload = new GotoCommunity(chassis)
+        //         .andThen(gotoNodes.GetCommand());
 
-        load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
-                .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
-        unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
+        // load = load.until(() -> UtilsGeneral.hasInput(main.getHID()))
+        //         .andThen((new InstantCommand(() -> parallelogram.getGoBackCommand().schedule())));
+        // unload = unload.until(() -> UtilsGeneral.hasInput(main.getHID()))
                /*.andThen(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()))*/;
 
         main.leftBumper().onTrue(new InstantCommand(() -> gripper.getCloseCommand().schedule()));
         main.rightBumper().onTrue(new InstantCommand(() -> gripper.getOpenCommand().schedule()));
 
-        load.setName("Load");
+        // load.setName("Load");
 
-        unload.setName("Unload");
-
-        main.a().onTrue(load);
+        // unload.setName("Unload");
         //Change X from auto place to Go to manual angle parallelogram
-        main.x().onTrue(new InstantCommand(()->parallelogram.getGoToAngleCommand(Constants.MANUAL_PLACEMENT).schedule()));
-        main.y().onTrue(new InstantCommand(() -> parallelogram.getGoBackCommand().schedule()));
-        main.povRight().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
-        main.povUp().onTrue(parallelogram.getGoToAngleCommand(Constants.LOADING_ANGLE));
-        main.povDown().onTrue(new StartEndCommand(chassis::setRampPosition, chassis::stop, chassis)
-                .until(() -> UtilsGeneral.hasInput(main.getHID())));
-        main.povLeft().onTrue(parallelogram.getGoToAngleCommand(Constants.DEPLOY_HIGH_CUBES1));
-
-        secondary.back().and(secondary.start())
+       main.y().onTrue(parallelogram.getGoBackCommand());
+       main.a().onTrue(new GoToAngle(parallelogram, Constants.LOADING_ANGLE));
+       main.b().onTrue(gripper.getOpenCommand());
+       main.x().onTrue(gripper.getCloseCommand());
+        
+       secondary.back().and(secondary.start())
                 .whileTrue(new RunCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
-        secondary.leftBumper().and(secondary.rightBumper())
+        main.leftBumper().and(secondary.rightBumper())
                 .onTrue(new InstantCommand(() -> {
                     if (allStrip.getColors()[0].equals(Color.kRed))
                         allStrip.turnOff();
                     else
                         allStrip.setColor(Color.kRed);
                 }).ignoringDisable(true));
-        secondary.leftBumper().and(secondary.rightBumper().negate())
+        main.leftBumper().and(secondary.rightBumper().negate())
                 .onTrue(new InstantCommand(() -> {
                     Color color = new Color(168, 0, 230);
                     if (allStrip.getColors()[0].equals(color))
@@ -176,7 +177,7 @@ public class RobotContainer {
                     else
                         allStrip.setColor(color);
                 }, allStrip).ignoringDisable(true));
-        secondary.rightBumper().and(secondary.leftBumper().negate())
+        main.rightBumper().and(secondary.leftBumper().negate())
                 .onTrue(new InstantCommand(() -> {
                     Color color = new Color(255, 140, 0);
                     if (allStrip.getColors()[0].equals(color))
@@ -200,7 +201,7 @@ public class RobotContainer {
      */
     //  TODO: RETURN NORAML AUTO COMMAN
     public Command getAutonomousCommand() {
-       return generateAutonomous.getAutonomous().withTimeout(14.65).andThen(new StartEndCommand(chassis::setRampPosition, ()->{}, chassis));
+       return null;
     }
 
     public void onTeleopInit() {

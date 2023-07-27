@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
 import frc.robot.subsystems.chassis.utils.ChassisUtils.Zone;
+import frc.robot.subsystems.chassis.utils.ChassisCommands;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 
 public class LeaveCommunity2 extends CommandBase {
@@ -81,10 +82,10 @@ public class LeaveCommunity2 extends CommandBase {
 
             //seperate
             if (generator1.length() == 0)
-            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
+            command = ChassisCommands.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
             else
-            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
-            .andThen(chassis.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
+            command = ChassisCommands.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
+            .andThen(ChassisCommands.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
             System.out.println("Initializing LC commandvfro middle");
             command.initialize();
         } 
@@ -111,10 +112,10 @@ public class LeaveCommunity2 extends CommandBase {
 
             //seperate
             if (generator1.length() == 0)
-            command = chassis.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
+            command = ChassisCommands.createPathFollowingCommand(false, generator2.generate(chassis.getPose()));
             else
-            command = chassis.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
-            .andThen(chassis.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
+            command = ChassisCommands.createPathFollowingCommand(false, generator1.generate(chassis.getPose()))
+            .andThen(ChassisCommands.createPathFollowingCommand(false, pathConstraints, generator2.generate()));
             System.out.println("Initializing LC commandvfro middle");
             command.initialize();
         } 
@@ -129,9 +130,7 @@ public class LeaveCommunity2 extends CommandBase {
                     break;
             }
 
-        }
-
-                                                                                                                                                                                                
+        }                                                                                                                                                                                      
     }
 
     @Override

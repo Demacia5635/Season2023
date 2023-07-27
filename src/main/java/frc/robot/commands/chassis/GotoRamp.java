@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
+import frc.robot.subsystems.chassis.utils.ChassisCommands;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 
 /**
@@ -31,7 +32,7 @@ public class GotoRamp extends CommandBase {
         generator.add(new Pose2d(new Translation2d(3.91, 2.75), Rotation2d.fromDegrees(235)),
                 Rotation2d.fromDegrees(180));
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(1.5, ChassisConstants.MAX_AUTO_ACCELERATION),
+        command = ChassisCommands.createPathFollowingCommand(new PathConstraints(1.5, ChassisConstants.MAX_AUTO_ACCELERATION),
                 generator.generate(chassis.getPose()));
         command.initialize();
     }

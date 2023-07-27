@@ -73,14 +73,14 @@ public class ChassisConstants {
 
     public static final int GYRO_ID = 14;
 
-    public static final double MAX_SPEED = 4.2; // meters per second
+    public static final double MAX_SPEED = 1; // meters per second
     public static final double MAX_ACCELERATION = 8; // meters per second squared
     public static final double MAX_AUTO_ACCELERATION = 3; // meters per second squared
     public static final double MAX_AUTO_SPEED = 2;
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(MAX_AUTO_SPEED, MAX_AUTO_ACCELERATION);
     public static final PathConstraints PATH_CONSTANTS_AUTO_MIDDLE = new PathConstraints(0.75, MAX_AUTO_ACCELERATION);
-    public static final double MAX_DRIVE_SPEED = 4;
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
+    public static final double MAX_DRIVE_SPEED = 1;
+    public static final double MAX_ANGULAR_SPEED = 1 * Math.PI; // radians per second
 
     public static final double AUTO_TRANSLATION_KP = 2;
     public static final double AUTO_TRANSLATION_KI = 0.4;

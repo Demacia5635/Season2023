@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.ChassisCommands;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.utils.UtilsGeneral;
@@ -23,7 +24,7 @@ import frc.robot.utils.UtilsGeneral;
  * This command is used to go to the nodes on the field from the community.
  */
 //TODO: Changed Y values. prev values were 1.38
-public class GotoNodes extends CommandBase {
+public class GotoNodes{
     private static final Translation2d[][] NODES = {
         { new Translation2d(1.34 , 0.51 ), new Translation2d(1.34 , 1.07 ), new Translation2d(1.34 , 1.63 ) },
         { new Translation2d(1.34 , 2.17 ), new Translation2d(1.34 , 2.75 ), new Translation2d(1.34 , 3.3 ) },
@@ -120,10 +121,6 @@ public class GotoNodes extends CommandBase {
         onPosition = (()->parallelogram.getGoToAngleCommand(Constants.DEPLOY_ANGLE));
         command = new InstantCommand();
         isScheduled = false;
-
-        addRequirements(chassis);
-        addRequirements(onPosition.get().getRequirements().toArray(Subsystem[]::new));
-        SmartDashboard.putData(this);
     }
 
     public Level changeLevel(Level level){
@@ -155,7 +152,7 @@ public class GotoNodes extends CommandBase {
     /**
      * Initialize the command.
      */
-    private void initCommand() {
+    private void GenerateCommand() {
         Translation2d node = NODES[gridPosition.getValue()][nodePosition.getValue()];
         if (nodePosition == Position.MIDDLE) {
             if(level == Level.HIGH){
@@ -174,13 +171,7 @@ public class GotoNodes extends CommandBase {
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
-        command = chassis.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
-    }
-
-    @Override
-    public void initialize() {
-        isScheduled = true;
-        changeTarget(gridPosition, nodePosition);
+        command = ChassisCommands.createPathFollowingCommand(false, generator.generate(chassis.getPose()));
     }
 
     /**
@@ -190,32 +181,13 @@ public class GotoNodes extends CommandBase {
     private void changeTarget(Position grid, Position node) {
         gridPosition = grid;
         nodePosition = node;
-
-        command.end(true);
-        initCommand();
-        if (isScheduled)
-            command.initialize();
+        GenerateCommand();
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        command.end(interrupted);
-        chassis.stop();
-        isScheduled = false;
-        System.out.println("goToCommunity Ended");
+    public Command GetCommand(){
+        return command;
     }
 
-    @Override
-    public boolean isFinished() {
-        return command.isFinished();
-    }
-    
-    @Override
-    public void execute() {
-        command.execute();
-    }
-
-    @Override
     public void initSendable(SendableBuilder builder) {
         builder.addStringProperty("Grid selected pos", ()->{
             Position t = Position.fromAllianceRelative(gridPosition);

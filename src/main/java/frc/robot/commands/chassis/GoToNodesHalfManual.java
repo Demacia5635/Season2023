@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.chassis.Chassis;
+import frc.robot.subsystems.chassis.utils.ChassisCommands;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.subsystems.parallelogram.Parallelogram;
 import frc.robot.utils.UtilsGeneral;
@@ -175,7 +176,7 @@ public class GoToNodesHalfManual extends CommandBase {
 
         generator.add(new Pose2d(node, Rotation2d.fromDegrees(180)));
 
-        command = chassis.createPathFollowingCommand(onPosition.get(), generator.generate(chassis.getPose()));
+        command = ChassisCommands.createPathFollowingCommand(onPosition.get(), generator.generate(chassis.getPose()));
     }
 
     @Override

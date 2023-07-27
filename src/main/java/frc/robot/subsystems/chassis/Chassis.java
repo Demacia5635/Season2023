@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.chassis.GotoNodes;
 import frc.robot.commands.chassis.KeepPosition;
 import frc.robot.subsystems.chassis.ChassisConstants.SwerveModuleConstants;
 import frc.robot.subsystems.chassis.utils.SwerveModule;
@@ -58,10 +59,23 @@ public class Chassis extends SubsystemBase {
 
     private Translation2d lastVel;
 
+    static Chassis instance;
+
+    public static Chassis CreateInstance(){
+        if(instance == null){
+            instance = new Chassis();
+        }
+        return instance;
+    }
+
+    public static Chassis GetInstance(){
+        return instance;
+    }
+
     /**
      * Creates a new Chassis.
      */
-    public Chassis() {
+    private Chassis() {
         field = new Field2d();
         pathDisplay = new Field2d();
         gyro = new PigeonIMU(ChassisConstants.GYRO_ID);
@@ -85,6 +99,7 @@ public class Chassis extends SubsystemBase {
 
         startPitch = gyro.getPitch();
         startRoll = gyro.getRoll();
+
 
         setupVisionListener();
         setupPathDisplay();
@@ -206,7 +221,7 @@ public class Chassis extends SubsystemBase {
      * @param states The states of the modules, in order of front left, front right,
      *               back left, back right
      */
-    private void setModuleStates(SwerveModuleState[] states) {
+    public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, ChassisConstants.MAX_SPEED);
         for (int i = 0; i < 4; i++) {
             states[i] = SwerveModuleState.optimize(states[i], modules[i].getAngleRotation());
@@ -335,131 +350,7 @@ public class Chassis extends SubsystemBase {
      *                   command
      * @return The path following command
      */
-    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory,
-            boolean resetPose, boolean keepPosition, Command onTrajectoryEnd) {
-        var command = new SequentialCommandGroup(
-                new PPSwerveControllerCommand(
-                        trajectory,
-                        this::getPose,
-                        ChassisConstants.KINEMATICS,
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
-                                0),
-                        new PIDController(ChassisConstants.AUTO_TRANSLATION_KP, ChassisConstants.AUTO_TRANSLATION_KI,
-                                0),
-                        new PIDController(ChassisConstants.AUTO_ROTATION_KP, ChassisConstants.AUTO_ROTATION_KI, 0),
-                        this::setModuleStates,
-                        this).andThen(
-                                (keepPosition ? new KeepPosition(this,
-                                        new Pose2d(trajectory.getEndState().poseMeters.getTranslation(),
-                                                trajectory.getEndState().holonomicRotation))
-                                        : new InstantCommand())
-                                        .andThen(onTrajectoryEnd)),
-                new InstantCommand(() -> System.out.println(("Trajectory ended"))));
-
-        return command;
-    }
-
-    public Command createPathFollowingCommand(PathPlannerTrajectory trajectory,
-            boolean resetPose, boolean keepPosition) {
-        return createPathFollowingCommand(trajectory, resetPose, keepPosition, new InstantCommand());
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param path      The path to follow
-     * @param events    The events to run on the markers in the path
-     * @param resetPose Whether to reset the pose of the robot at the start of the
-     *                  command
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(String path, boolean resetPose) {
-        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, resetPose, true);
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param path         The path to follow
-     * @param events       The events to run on the markers in the path
-     * @param resetPose    Whether to reset the pose of the robot at the start of
-     *                     the command
-     * @param keepPosition Whether to keep the position of the robot at the end of
-     *                     the command
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(String path, boolean resetPose,
-            boolean keepPosition) {
-        var trajectory = PathPlanner.loadPath(path, ChassisConstants.PATH_CONSTRAINTS);
-        return createPathFollowingCommand(trajectory, resetPose, keepPosition);
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param path The path to follow
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(String path) {
-        return createPathFollowingCommand(path, true);
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param points The points to follow (including the current position)
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(PathPoint... points) {
-        if (points.length < 2)
-            return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, false, true);
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param points The points to follow (including the current position)
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(PathConstraints constraints, PathPoint... points) {
-        if (points.length < 2)
-            return null;
-        var trajectory = PathPlanner.generatePath(constraints, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, false, true);
-    }
-
-    /**
-     * Creates a path following command
-     * 
-     * @param keepPosition Whether to keep the position of the robot at the end of
-     *                     the command
-     * @param points       The points to follow (including the current position)
-     * @return the path following command
-     */
-    public Command createPathFollowingCommand(boolean keepPosition, PathPoint... points) {
-        if (points.length < 2)
-            return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, false, keepPosition);
-    }
-
-    public Command createPathFollowingCommand(boolean keepPosition, PathConstraints constraints, PathPoint... points) {
-        if (points.length < 2)
-            return null;
-        var trajectory = PathPlanner.generatePath(constraints, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, false, keepPosition);
-    }
-
-    public Command createPathFollowingCommand(Command onTrajectoryEnd, PathPoint... points) {
-        if (points.length < 2)
-            return null;
-        var trajectory = PathPlanner.generatePath(ChassisConstants.PATH_CONSTRAINTS, Arrays.asList(points));
-        return createPathFollowingCommand(trajectory, false, true, onTrajectoryEnd);
-    }
-
+   
     /**
      * Adds a vision input to the estimated pose of the robot
      * 
@@ -557,6 +448,8 @@ public class Chassis extends SubsystemBase {
         updatePosition(null);
         field.setRobotPose(getPose());
     }
+
+    
 
     @Override
     public void initSendable(SendableBuilder builder) {

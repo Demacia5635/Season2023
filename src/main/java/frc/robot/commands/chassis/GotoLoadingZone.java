@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.chassis.Chassis;
 import frc.robot.subsystems.chassis.ChassisConstants;
+import frc.robot.subsystems.chassis.utils.ChassisCommands;
 import frc.robot.subsystems.chassis.utils.TrajectoryGenerator;
 import frc.robot.utils.UtilsGeneral;
 import frc.robot.utils.UtilsGeneral.Zone;
@@ -112,7 +113,7 @@ public class GotoLoadingZone extends CommandBase {
             }
         }
 
-        command = chassis.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION),
+        command = ChassisCommands.createPathFollowingCommand(new PathConstraints(1.2, ChassisConstants.MAX_AUTO_ACCELERATION),
                 generator.generate(chassis.getPose()));
         command.initialize();
     }
